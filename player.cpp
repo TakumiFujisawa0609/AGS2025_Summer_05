@@ -4,7 +4,7 @@
 void Player::Init(void)
 {
 	// プレイヤーモデルID
-	ModelId_ = MV1LoadModel("Data/Model/player/YUH姉貴ver1.0a/YUH姉貴.mv1");
+	ModelId_ = MV1LoadModel("Data/Model/player/playerkari.mv1");
 	//プレイヤーの位置
 	pos_ = INIT_POS;
 	// 座標をモデルに設定
@@ -38,6 +38,7 @@ void Player::Update(void)
 	}
 
 	//プレイヤーの移動制限
+	/*
 	if (pos_.x > MOVE_LIMIT)
 	{
 		pos_.x = MOVE_LIMIT;
@@ -45,7 +46,7 @@ void Player::Update(void)
 	if (pos_.y < MOVE_LIMIT)
 	{
 		pos_.y = MOVE_LIMIT;
-	}
+	}*/
 
 	// 座標をモデルに設定
 	MV1SetPosition(ModelId_, pos_);
