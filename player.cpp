@@ -1,10 +1,10 @@
 #include<DxLib.h>
-#include"player.h""
+#include"player.h"
 
 void Player::Init(void)
 {
 	// プレイヤーモデルID
-	ModelId_ = MV1LoadModel("Data/Model/player/YUH姉貴ver1.0a/YUH姉貴.pmx");
+	ModelId_ = MV1LoadModel("Data/Model/player/YUH姉貴ver1.0a/YUH姉貴.mv1");
 	//プレイヤーの位置
 	pos_ = INIT_POS;
 	// 座標をモデルに設定
@@ -61,7 +61,7 @@ void Player::Draw(void)
 #ifdef DEBUG
 	// プレイヤーの衝突判定確認用球体描画
 	DrawSphere3D(playerPos_, 80.0f, 10, 0x0000ff, 0x0000ff, false);
-#endif
+#endif //DEBUG
 }
 
 void Player::Release(void)
