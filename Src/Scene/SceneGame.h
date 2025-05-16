@@ -6,6 +6,7 @@
 #include"../Application.h"
 
 class Grid;
+class Player;
 
 class SceneGame : public SceneBase
 {
@@ -38,6 +39,7 @@ private:
 
 	
 	//プレイヤー
+	Player* player_;
 
 	//グリッド線
 	Grid* grid_;

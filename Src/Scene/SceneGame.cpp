@@ -12,10 +12,12 @@
 #include"../Manager/System/Collision.h"
 #include"../Object/Manager/StageManager.h"
 #include"../Object/Grid.h"
+#include"../Object/player.h"
 
 SceneGame::SceneGame(void)
 {
 	grid_ = nullptr;
+	player_ = nullptr;
 }
 
 void SceneGame::Init(void)
@@ -23,6 +25,10 @@ void SceneGame::Init(void)
 	//グリッド線
 	grid_ = new Grid();
 	grid_->Init();
+
+	//プレイヤー
+	player_ = new Player();
+	player_->Init();
 
 	//サウンド
 	auto& sound = SoundManager::GetInstance();
@@ -55,6 +61,9 @@ void SceneGame::Update(void)
 	}
 
 	StageManager::GetInstance().Update();
+
+	//プレイヤー
+	player_->Update();
 }
 
 void SceneGame::Draw(void)
@@ -66,6 +75,9 @@ void SceneGame::Draw(void)
 
 	//グリッド線
 	grid_->Draw();
+
+	//プレイヤー
+	player_->Draw();
 }
 
 void SceneGame::Release(void)
@@ -73,4 +85,9 @@ void SceneGame::Release(void)
 	grid_->Release();
 	delete grid_;
 	grid_ = nullptr;
+
+	//プレイヤー
+	player_->Release();
+	delete player_;
+	player_ = nullptr;
 }
