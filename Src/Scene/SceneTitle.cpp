@@ -81,7 +81,7 @@ void SceneTitle::Draw(void)
 	int font = CreateFontToHandle(NULL, 10, 10);
 
 	//隠し要素
-	DrawStringFToHandle(0.0f, 0.0f, "音源探してくれた人:要注意人物", 0x222222, font);
+	//DrawStringFToHandle(0.0f, 0.0f, "音源探してくれた人:要注意人物", 0x222222, font);
 
 	DeleteFontToHandle(font);
 

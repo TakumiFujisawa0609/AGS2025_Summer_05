@@ -140,6 +140,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Stage\PrivateRoomStage.cpp" />
+    <ClCompile Include="Src\Stage\GuildStage.cpp" />
+    <ClCompile Include="Src\Stage\GardenStage.cpp" />
+    <ClCompile Include="Src\Stage\AtelierStage.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="Src\Application.cpp" />
@@ -169,8 +173,14 @@
     <ClCompile Include="Src\Scene\SceneGameOver.cpp" />
     <ClCompile Include="Src\Scene\SceneTitle.cpp" />
     <ClCompile Include="Src\Utility\Utility.cpp" />
+    <ClCompile Include="Src\Stage\StageBase.cpp" />
+    <ClCompile Include="Src\Object\Manager\StageManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Stage\PrivateRoomStage.h" />
+    <ClInclude Include="Src\Stage\GuildStage.h" />
+    <ClInclude Include="Src\Stage\GardenStage.h" />
+    <ClInclude Include="Src\Stage\AtelierStage.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="Src\Application.h" />
@@ -200,6 +210,8 @@
     <ClInclude Include="Src\Scene\SceneGameOver.h" />
     <ClInclude Include="Src\Scene\SceneTitle.h" />
     <ClInclude Include="Src\Utility\Utility.h" />
+    <ClInclude Include="Src\Stage\StageBase.h" />
+    <ClInclude Include="Src\Object\Manager\StageManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

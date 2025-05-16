@@ -10,6 +10,7 @@
 #include"../Manager/Generic/ResourceManager.h"
 #include"../Manager/Decoration/SoundManager.h"
 #include"../Manager/System/Collision.h"
+#include"../Object/Manager/StageManager.h"
 #include"../Object/Grid.h"
 
 SceneGame::SceneGame(void)
@@ -52,10 +53,15 @@ void SceneGame::Update(void)
 		//処理終了
 		return;
 	}
+
+	StageManager::GetInstance().Update();
 }
 
 void SceneGame::Draw(void)
 {
+	//ステージの描画
+	StageManager::GetInstance().Draw();
+
 	DrawFormatString(0, 0, 0xffffff, "ゲームシーン");
 
 	//グリッド線

@@ -6,6 +6,7 @@
 #include "Manager/Generic/ResourceManager.h"
 #include "Manager/Generic/InputManager.h"
 #include "Manager/Generic/SceneManager.h"
+#include "Object/Manager/StageManager.h"
 #include"Fps/FpsControll.h"
 
 
@@ -70,6 +71,9 @@ void Application::Init(void)
 	// シーン管理初期化
 	SceneManager::CreateInstance();
 
+	// ステージ管理初期化
+	StageManager::CreateInstance();
+
 	//FPS制御初期化
 	fps_->FpsControll_Initialize();
 }
@@ -104,14 +108,13 @@ void Application::Run(void)
 			return;
 		}
 		//更新処理
-		//更新処理
 		inputManager.Update();
 		sceneManager.Update();
 		
 		//描画処理
 		sceneManager.Draw();
 
-		if (CheckHitKey(KEY_INPUT_TAB) == 1)
+		if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_TAB) == 1)
 		{
 			fps_->FpsControll_Draw();
 		}
@@ -130,6 +133,7 @@ void Application::Destroy(void)
 	InputManager::GetInstance().Destroy();
 	ResourceManager::GetInstance().Destroy();
 	SceneManager::GetInstance().Destroy();
+	StageManager::GetInstance().Destroy();
 
 	//エフェクシアの終了
 	Effkseer_End();
