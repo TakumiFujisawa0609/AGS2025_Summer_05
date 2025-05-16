@@ -27,7 +27,7 @@ public:
 	void Release(void) override;
 
 private:
-
+	int modelId_;
 
 };
 

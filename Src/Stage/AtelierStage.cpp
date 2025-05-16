@@ -18,7 +18,7 @@ AtelierStage::AtelierStage(void)
 //初期化処理
 void AtelierStage::Init(void)
 {
-
+	modelId_= LoadGraph("Data/Model/Atelier/Magic Pot.png");
 }
 
 //更新処理
@@ -39,6 +39,8 @@ void AtelierStage::Update(void)
 void AtelierStage::Draw(void)
 {
 	DrawFormatString(0, 20, 0xffffff, "アトリエステージ");
+
+	DrawGraph(Application::SCREEN_SIZE_X/2, 100, modelId_, TRUE);
 }
 
 //解放処理
