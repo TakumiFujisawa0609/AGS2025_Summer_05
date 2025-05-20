@@ -12,6 +12,8 @@
 #include"../Manager/System/Collision.h"
 #include"../Object/Manager/StageManager.h"
 #include"../Object/Grid.h"
+#include"../DrawUI/DubegUI/InventoryUI.h"
+#include"../Object/Manager/ItemManager.h"
 
 SceneGame::SceneGame(void)
 {
@@ -32,6 +34,13 @@ void SceneGame::Init(void)
 	sound.Add(SoundManager::TYPE::SE, SoundManager::SOUND::SE_PUSH, res.Load(ResourceManager::SRC::SE_PUSH).handleId_);
 	sound.AdjustVolume(SoundManager::SOUND::BGM_TITLE, 40);
 	sound.AdjustVolume(SoundManager::SOUND::SE_PUSH, 50);
+
+	// アイテムマネージャー生成・仮データ登録
+	itemManager_ = new ItemManager();
+	itemManager_->Init();
+
+	// UIの生成
+	inventoryUI_ = new InventoryUI(*itemManager_);
 }
 
 void SceneGame::Update(void)
@@ -54,6 +63,9 @@ void SceneGame::Update(void)
 		return;
 	}
 
+	// インベントリUIの更新
+	inventoryUI_->Update();
+
 	StageManager::GetInstance().Update();
 }
 
@@ -66,6 +78,9 @@ void SceneGame::Draw(void)
 
 	//グリッド線
 	grid_->Draw();
+
+	// インベントリUIの描画
+	inventoryUI_->Draw();
 }
 
 void SceneGame::Release(void)
@@ -73,4 +88,10 @@ void SceneGame::Release(void)
 	grid_->Release();
 	delete grid_;
 	grid_ = nullptr;
+
+	delete inventoryUI_;
+	inventoryUI_ = nullptr;
+
+	delete itemManager_;
+	itemManager_ = nullptr;
 }

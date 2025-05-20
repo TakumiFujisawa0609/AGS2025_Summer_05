@@ -140,6 +140,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\Item\AntidoteHerb.cpp" />
+    <ClCompile Include="Src\DrawUI\DubegUI\InventoryUI.cpp" />
+    <ClCompile Include="Src\Object\Manager\ItemManager.cpp" />
+    <ClCompile Include="Src\Object\Item\Herb.cpp" />
+    <ClCompile Include="Src\Object\Item\ItemBase.cpp" />
     <ClCompile Include="Src\Stage\PrivateRoomStage.cpp" />
     <ClCompile Include="Src\Stage\GuildStage.cpp" />
     <ClCompile Include="Src\Stage\GardenStage.cpp" />
@@ -177,6 +182,11 @@
     <ClCompile Include="Src\Object\Manager\StageManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\Item\AntidoteHerb.h" />
+    <ClInclude Include="Src\DrawUI\DubegUI\InventoryUI.h" />
+    <ClInclude Include="Src\Object\Manager\ItemManager.h" />
+    <ClInclude Include="Src\Object\Item\Herb.h" />
+    <ClInclude Include="Src\Object\Item\ItemBase.h" />
     <ClInclude Include="Src\Stage\PrivateRoomStage.h" />
     <ClInclude Include="Src\Stage\GuildStage.h" />
     <ClInclude Include="Src\Stage\GardenStage.h" />

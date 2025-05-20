@@ -43,6 +43,7 @@ void InputManager::Init(void)
 	InputManager::GetInstance().Add(KEY_INPUT_TAB);
 
 	InputManager::GetInstance().Add(KEY_INPUT_P);
+	InputManager::GetInstance().Add(KEY_INPUT_Z);
 
 	InputManager::MouseInfo info;
 
