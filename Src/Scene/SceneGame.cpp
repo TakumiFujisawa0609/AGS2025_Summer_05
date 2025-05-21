@@ -12,6 +12,9 @@
 #include"../Manager/System/Collision.h"
 #include"../Object/Manager/StageManager.h"
 #include"../Object/Grid.h"
+
+
+
 #include"../Object/player.h"
 
 SceneGame::SceneGame(void)

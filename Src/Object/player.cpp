@@ -54,19 +54,27 @@ void Player::Release(void)
 	MV1DeleteModel(modelId_);
 }
 
+void Player::GetPos(void)
+{
+	//return pos_;
+}
+
 void Player::ProcessMove(void)
 {
 	InputManager& ins = InputManager::GetInstance();
 
 	// 移動方向を決める
 	VECTOR moveDir = Utility::VECTOR_ZERO;
-	if (ins.IsNew(KEY_INPUT_W)) { moveDir = Utility::DIR_F; }
-	if (ins.IsNew(KEY_INPUT_S)) { moveDir = Utility::DIR_B; }
-	if (ins.IsNew(KEY_INPUT_A)) { moveDir = Utility::DIR_L; }
-	if (ins.IsNew(KEY_INPUT_D)) { moveDir = Utility::DIR_R; }
+	if (ins.IsNew(KEY_INPUT_W)) { moveDir = VAdd(moveDir, Utility::DIR_F); }
+	if (ins.IsNew(KEY_INPUT_S)) { moveDir = VAdd(moveDir, Utility::DIR_B); }
+	if (ins.IsNew(KEY_INPUT_A)) { moveDir = VAdd(moveDir, Utility::DIR_L); }
+	if (ins.IsNew(KEY_INPUT_D)) { moveDir = VAdd(moveDir, Utility::DIR_R); }
 
 	if (!Utility::EqualsVZero(moveDir))
 	{
+		// 正規化
+		moveDir = VNorm(moveDir);
+
 		// 移動量を計算する(方向×スピード)
 		VECTOR movePow = VScale(moveDir, SPEED_MOVE);
 
