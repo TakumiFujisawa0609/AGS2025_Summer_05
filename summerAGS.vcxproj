@@ -140,10 +140,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Src\Object\Item\AntidoteHerb.cpp" />
-    <ClCompile Include="Src\DrawUI\DubegUI\InventoryUI.cpp" />
+    <ClCompile Include="Src\Object\Manager\AlchemyManager.cpp" />
+    <ClCompile Include="Src\Object\Item\Product\MagicPotion.cpp" />
+    <ClCompile Include="Src\Object\Item\Product\AntidotePotion.cpp" />
+    <ClCompile Include="Src\Object\Item\Product\RecoveryPotion.cpp" />
+    <ClCompile Include="Src\Object\Item\Product\ProductItem.cpp" />
+    <ClCompile Include="Src\Object\Item\Material\MaterialItem.cpp" />
+    <ClCompile Include="Src\Object\Item\Material\MagicFlower.cpp" />
+    <ClCompile Include="Src\Object\Item\Material\AntidoteHerb.cpp" />
+    <ClCompile Include="Src\DrawUI\SceneUI\InventoryUI.cpp" />
     <ClCompile Include="Src\Object\Manager\ItemManager.cpp" />
-    <ClCompile Include="Src\Object\Item\Herb.cpp" />
+    <ClCompile Include="Src\Object\Item\Material\Herb.cpp" />
     <ClCompile Include="Src\Object\Item\ItemBase.cpp" />
     <ClCompile Include="Src\Stage\PrivateRoomStage.cpp" />
     <ClCompile Include="Src\Stage\GuildStage.cpp" />
@@ -180,12 +187,20 @@
     <ClCompile Include="Src\Utility\Utility.cpp" />
     <ClCompile Include="Src\Stage\StageBase.cpp" />
     <ClCompile Include="Src\Object\Manager\StageManager.cpp" />
+    <ClCompile Include="Src\Object\Item\Material\Water.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Src\Object\Item\AntidoteHerb.h" />
-    <ClInclude Include="Src\DrawUI\DubegUI\InventoryUI.h" />
+    <ClInclude Include="Src\Object\Manager\AlchemyManager.h" />
+    <ClInclude Include="Src\Object\Item\Product\MagicPotion.h" />
+    <ClInclude Include="Src\Object\Item\Product\AntidotePotion.h" />
+    <ClInclude Include="Src\Object\Item\Product\RecoveryPotion.h" />
+    <ClInclude Include="Src\Object\Item\Product\ProductItem.h" />
+    <ClInclude Include="Src\Object\Item\Material\MaterialItem.h" />
+    <ClInclude Include="Src\Object\Item\Material\MagicFlower.h" />
+    <ClInclude Include="Src\Object\Item\Material\AntidoteHerb.h" />
+    <ClInclude Include="Src\DrawUI\SceneUI\InventoryUI.h" />
     <ClInclude Include="Src\Object\Manager\ItemManager.h" />
-    <ClInclude Include="Src\Object\Item\Herb.h" />
+    <ClInclude Include="Src\Object\Item\Material\Herb.h" />
     <ClInclude Include="Src\Object\Item\ItemBase.h" />
     <ClInclude Include="Src\Stage\PrivateRoomStage.h" />
     <ClInclude Include="Src\Stage\GuildStage.h" />
@@ -222,6 +237,7 @@
     <ClInclude Include="Src\Utility\Utility.h" />
     <ClInclude Include="Src\Stage\StageBase.h" />
     <ClInclude Include="Src\Object\Manager\StageManager.h" />
+    <ClInclude Include="Src\Object\Item\Material\Water.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

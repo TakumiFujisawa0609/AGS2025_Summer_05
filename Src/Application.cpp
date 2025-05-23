@@ -7,7 +7,8 @@
 #include "Manager/Generic/InputManager.h"
 #include "Manager/Generic/SceneManager.h"
 #include "Object/Manager/StageManager.h"
-#include"Fps/FpsControll.h"
+#include "Object/Manager/ItemManager.h"
+#include "Fps/FpsControll.h"
 
 
 Application* Application::instance_ = nullptr;
@@ -41,8 +42,14 @@ void Application::Init(void)
 	//アプリケーションの初期設定
 	SetWindowText("アルケミストライフ");
 	
+#ifdef _DEBUG
 	//ウィンドウのサイズ
-	SetGraphMode(SCREEN_SIZE_X,	SCREEN_SIZE_Y, 32);
+	SetGraphMode(SCREEN_SIZE_X, SCREEN_SIZE_Y, 32);
+#else
+	//ウィンドウのサイズ
+	SetGraphMode(DEFA_SCREEN_SIZE_X, DEFA_SCREEN_SZIE_Y, 32);
+#endif // _DEBUG
+	
 	ChangeWindowMode(true);
 
 	//非アクティブ状態でも動作する
@@ -73,6 +80,9 @@ void Application::Init(void)
 
 	// ステージ管理初期化
 	StageManager::CreateInstance();
+
+	//アイテムマネージャー初期化
+	ItemManager::CreateInstance();
 
 	//FPS制御初期化
 	fps_->FpsControll_Initialize();
@@ -134,6 +144,7 @@ void Application::Destroy(void)
 	ResourceManager::GetInstance().Destroy();
 	SceneManager::GetInstance().Destroy();
 	StageManager::GetInstance().Destroy();
+	ItemManager::GetInstance().Destroy();
 
 	//エフェクシアの終了
 	Effkseer_End();

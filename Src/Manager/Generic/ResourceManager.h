@@ -17,12 +17,16 @@ public:
 		GAMEOVER_LOGO,			//ゲームオーバー
 		GAMECLERA_LOGO,			//ゲームクリア
 
-		SKY_DOME,				//スカイドーム
-		STAGE,					//ステージモデル
-		GEM,					//宝石モデル
-		
-		//敵関連
-		ENEMY,					//敵モデル
+		//完成品アイテム
+		RECOVERY_POTION,		//回復ポーション
+		ANTIDOTE_POTION,		//解毒ポーション
+		MAGIC_POTION,			//魔力ポーション
+
+		//材料
+		HERB,					//薬草
+		ANTIDOTE_HERB,			//解毒草
+		MAGIC_FLOWER,			//魔力草
+		WATER,					//水
 
 		//ミニマップ関係
 		MAP_FRAME,				//ミニマップ枠

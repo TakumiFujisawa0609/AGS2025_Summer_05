@@ -12,7 +12,7 @@
 #include"../Manager/System/Collision.h"
 #include"../Object/Manager/StageManager.h"
 #include"../Object/Grid.h"
-#include"../DrawUI/DubegUI/InventoryUI.h"
+#include"../DrawUI/SceneUI/InventoryUI.h"
 #include"../Object/Manager/ItemManager.h"
 
 SceneGame::SceneGame(void)
@@ -22,6 +22,9 @@ SceneGame::SceneGame(void)
 
 void SceneGame::Init(void)
 {
+	//アイテムマネージャー
+	auto itemManager_ = &ItemManager::GetInstance();
+
 	//グリッド線
 	grid_ = new Grid();
 	grid_->Init();
@@ -35,12 +38,8 @@ void SceneGame::Init(void)
 	sound.AdjustVolume(SoundManager::SOUND::BGM_TITLE, 40);
 	sound.AdjustVolume(SoundManager::SOUND::SE_PUSH, 50);
 
-	// アイテムマネージャー生成・仮データ登録
-	itemManager_ = new ItemManager();
-	itemManager_->Init();
-
 	// UIの生成
-	inventoryUI_ = new InventoryUI(*itemManager_);
+	inventoryUI_ = new InventoryUI();
 }
 
 void SceneGame::Update(void)
@@ -74,13 +73,14 @@ void SceneGame::Draw(void)
 	//ステージの描画
 	StageManager::GetInstance().Draw();
 
-	DrawFormatString(0, 0, 0xffffff, "ゲームシーン");
-
-	//グリッド線
-	grid_->Draw();
-
 	// インベントリUIの描画
 	inventoryUI_->Draw();
+
+#ifdef _DEBUG
+	//デバック表示
+	DrawDebug();
+#endif // _DEBUG
+
 }
 
 void SceneGame::Release(void)
@@ -91,7 +91,12 @@ void SceneGame::Release(void)
 
 	delete inventoryUI_;
 	inventoryUI_ = nullptr;
+}
 
-	delete itemManager_;
-	itemManager_ = nullptr;
+void SceneGame::DrawDebug(void)
+{
+	DrawFormatString(0, 0, 0xffffff, "ゲームシーン");
+
+	//グリッド線
+	grid_->Draw();
 }

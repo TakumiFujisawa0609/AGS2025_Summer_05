@@ -7,7 +7,6 @@
 
 class Grid;
 class InventoryUI;
-class ItemManager;
 
 class SceneGame : public SceneBase
 {
@@ -45,18 +44,11 @@ private:
 	Grid* grid_;
 
 	InventoryUI* inventoryUI_;     // ←追加
-	ItemManager* itemManager_;     // ←追加（所持アイテムを保持）
 
 	//描画(デバッグ)
 	void DrawDebug(void);
 
 	//当たり判定
 	void Collision(void);
-
-	//ゲームのクリア処理
-	void GameClear(void);
-
-	//ゲームオーバー処理
-	void GameOver(void);
 };
 

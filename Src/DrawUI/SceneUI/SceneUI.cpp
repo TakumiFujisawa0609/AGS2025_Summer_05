@@ -44,7 +44,7 @@ void SceneUi::DrawFont(void)
 		int yPos = Application::SCREEN_SIZE_Y / 2;
 
 #else
-		int xPos = (Application::DEFA_SCREEN_SIZE_X - textWidth) / 2;
+		int xPos = (Application::DEFA_SCREEN_SIZE_X / 2) - textWidth * 2;
 		int yPos = Application::DEFA_SCREEN_SZIE_Y / 2;
 #endif // _DEBUG
 

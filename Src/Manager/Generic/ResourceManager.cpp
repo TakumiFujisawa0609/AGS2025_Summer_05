@@ -118,10 +118,6 @@ void ResourceManager::ResourcePlayer(void)
 void ResourceManager::ResourceEnemy(void)
 {
 	Resource res;
-
-	// 敵モデルを登録
-	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "");
-	resourcesMap_.emplace(SRC::ENEMY, res);
 }
 
 // 全リソースの解放処理

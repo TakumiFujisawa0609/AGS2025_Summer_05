@@ -49,6 +49,7 @@ void SceneManager::Init(void)
 	isSceneChanging_ = false;
 
 	//デルタタイム
+
 	preTime_ = std::chrono::system_clock::now();
 
 	//3D用の初期化処理
