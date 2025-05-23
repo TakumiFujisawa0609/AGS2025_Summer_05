@@ -22,7 +22,8 @@ public:
 	//‰ð•ú
 	void Release(void);	
 
-	void GetPos(void);
+	VECTOR GetPos(void) const;
+	void SetPos(VECTOR pos);
 
 	// ƒ‚ƒfƒ‹‚Ì‘å‚«‚³
 	static constexpr VECTOR SCALES = { 0.5f, 0.5f, 0.5f };

@@ -54,9 +54,14 @@ void Player::Release(void)
 	MV1DeleteModel(modelId_);
 }
 
-void Player::GetPos(void)
+VECTOR Player::GetPos(void) const
 {
-	//return pos_;
+	return pos_;
+}
+
+void Player::SetPos(VECTOR pos)
+{
+	pos_ = pos;
 }
 
 void Player::ProcessMove(void)
