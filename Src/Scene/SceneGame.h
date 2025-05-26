@@ -3,11 +3,10 @@
 #include<memory>
 
 #include"SceneBase.h"
-#include"../Application.h"
 
 class Grid;
+class Player;
 class InventoryUI;
-class AlchemyManager;
 
 class SceneGame : public SceneBase
 {
@@ -40,6 +39,7 @@ private:
 
 	
 	//プレイヤー
+	Player* player_;
 
 	//グリッド線
 	Grid* grid_;

@@ -2,25 +2,24 @@
 
 #include<DxLib.h>
 
-#include "../Application.h"
-#include "../Common/Easing.h"
-#include "../Manager/Generic/SceneManager.h"
-#include "../Manager/Generic/InputManager.h"
-#include "../Manager/Generic/Resource.h"
-#include "../Manager/Generic/ResourceManager.h"
-#include "../Manager/Decoration/SoundManager.h"
-#include "../Manager/System/Collision.h"
-#include "../Object/Manager/StageManager.h"
-#include "../Object/Grid.h"
-#include "../DrawUI/SceneUI/InventoryUI.h"
-#include "../Object/Manager/ItemManager.h"
-#include "../Object/Manager/AlchemyManager.h"
+#include"../Application.h"
+#include"../Common/Easing.h"
+#include"../Manager/Generic/SceneManager.h"
+#include"../Manager/Generic/InputManager.h"
+#include"../Manager/Generic/Resource.h"
+#include"../Manager/Generic/ResourceManager.h"
+#include"../Manager/Decoration/SoundManager.h"
+#include"../Manager/System/Collision.h"
+#include"../Object/Manager/StageManager.h"
+#include"../DrawUI/SceneUI/InventoryUI.h"
+#include"../Object/Manager/AlchemyManager.h"
+#include"../Object/Manager/ItemManager.h"
+#include"../Object/Grid.h"
+#include"../Object/player.h"
 
 SceneGame::SceneGame(void)
 {
 	grid_ = nullptr;
-
-	inventoryUI_ = nullptr;
 }
 
 void SceneGame::Init(void)
@@ -31,6 +30,10 @@ void SceneGame::Init(void)
 	//グリッド線
 	grid_ = new Grid();
 	grid_->Init();
+
+	//プレイヤー
+	player_ = new Player();
+	player_->Init();
 
 	//サウンド
 	auto& sound = SoundManager::GetInstance();
@@ -90,6 +93,9 @@ void SceneGame::Update(void)
 
 
 	StageManager::GetInstance().Update();
+
+	//プレイヤー
+	player_->Update();
 }
 
 void SceneGame::Draw(void)
@@ -113,6 +119,8 @@ void SceneGame::Draw(void)
 	DrawDebug();
 #endif // _DEBUG
 
+	//グリッド線
+	grid_->Draw();
 }
 
 void SceneGame::Release(void)
@@ -120,15 +128,4 @@ void SceneGame::Release(void)
 	grid_->Release();
 	delete grid_;
 	grid_ = nullptr;
-
-	delete inventoryUI_;
-	inventoryUI_ = nullptr;
-}
-
-void SceneGame::DrawDebug(void)
-{
-	DrawFormatString(0, 0, 0xffffff, "ゲームシーン");
-
-	//グリッド線
-	grid_->Draw();
 }
