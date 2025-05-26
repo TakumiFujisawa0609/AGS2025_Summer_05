@@ -7,6 +7,7 @@
 
 class Grid;
 class InventoryUI;
+class AlchemyManager;
 
 class SceneGame : public SceneBase
 {
@@ -43,7 +44,8 @@ private:
 	//グリッド線
 	Grid* grid_;
 
-	InventoryUI* inventoryUI_;     // ←追加
+	//インベントリUI
+	InventoryUI* inventoryUI_;
 
 	//描画(デバッグ)
 	void DrawDebug(void);

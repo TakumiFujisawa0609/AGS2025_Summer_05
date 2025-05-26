@@ -21,6 +21,7 @@ public:
 		RECOVERY_POTION,		//回復ポーション
 		ANTIDOTE_POTION,		//解毒ポーション
 		MAGIC_POTION,			//魔力ポーション
+		GARBAGE,				//失敗の作品
 
 		//材料
 		HERB,					//薬草

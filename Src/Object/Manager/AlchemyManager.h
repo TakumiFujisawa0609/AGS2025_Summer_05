@@ -2,13 +2,17 @@
 
 #include<vector>
 #include<memory>
+#include<map>
 
 #include "../Item/Material/MaterialItem.h"
 #include "../Item/Product/ProductItem.h"
+#include "AlchemyRecipe.h"
 
 class AlchemyManager
 {
 public:
+	const int MAX_COLUMNS = 5;
+
 	static void CreateInstance();
 	static AlchemyManager& GetInstance();
 	static void Destroy();
@@ -39,6 +43,8 @@ private:
 
 	void SelectAmount(void);
 
+	void ExecuteAlchemy(void);
+
 	void ResetSelection(void);
 
 	struct SelectedMaterial
@@ -48,6 +54,8 @@ private:
 	};
 
 	std::vector<SelectedMaterial> selectedMaterials_;
+	
+	std::vector<AlchemyRecipe> recipes_;
 
 	int currentPhase_;
 
@@ -55,8 +63,19 @@ private:
 
 	int currentAmount_;
 
+	// 個数選択中の素材Index
+	int selectedMaterialIndex_; 
+
+
 	bool isOpen_;
 
 	static AlchemyManager* instance_;
+
+	// 生成結果のメッセージ
+	std::string resultMessage_;    
+
+	// 表示タイマー（フレーム数）
+	int resultMessageTimer_;       
+
 };
 

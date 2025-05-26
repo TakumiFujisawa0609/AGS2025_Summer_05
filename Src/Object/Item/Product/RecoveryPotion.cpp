@@ -1,12 +1,12 @@
 #include "RecoveryPotion.h"
 
-#include "../../../Manager/Generic/Resource.h"
 #include "../../../Manager/Generic/ResourceManager.h"
 
 // コンストラクタ
 RecoveryPotion::RecoveryPotion(void)
     : ProductItem
     (
+        "RecoveryPotion",
         "回復ポーソン",
         "飲むと体力を回復する",
         0,

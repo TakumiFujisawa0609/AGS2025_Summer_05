@@ -140,6 +140,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\Item\Product\Garbage.cpp" />
+    <ClCompile Include="Src\Object\Manager\AlchemyRecipe.cpp" />
     <ClCompile Include="Src\Object\Manager\AlchemyManager.cpp" />
     <ClCompile Include="Src\Object\Item\Product\MagicPotion.cpp" />
     <ClCompile Include="Src\Object\Item\Product\AntidotePotion.cpp" />
@@ -190,6 +192,8 @@
     <ClCompile Include="Src\Object\Item\Material\Water.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\Item\Product\Garbage.h" />
+    <ClInclude Include="Src\Object\Manager\AlchemyRecipe.h" />
     <ClInclude Include="Src\Object\Manager\AlchemyManager.h" />
     <ClInclude Include="Src\Object\Item\Product\MagicPotion.h" />
     <ClInclude Include="Src\Object\Item\Product\AntidotePotion.h" />

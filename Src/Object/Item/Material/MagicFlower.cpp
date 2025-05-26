@@ -1,11 +1,11 @@
 #include "MagicFlower.h"
 
-#include "../../../Manager/Generic/Resource.h"
 #include "../../../Manager/Generic/ResourceManager.h"
 
 MagicFlower::MagicFlower()
     : MaterialItem
     (
+        "MagicFlower",
         "–‚—Í‘",
         "Ûæ‚·‚é‚±‚Æ‚Å–‚—Í‚ğ‘½­‚¾‚ª‰ñ•œ‚Å‚«‚é",
         0,

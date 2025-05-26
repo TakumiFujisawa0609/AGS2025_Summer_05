@@ -21,10 +21,13 @@ class ItemBase
 {
 public:
     // コンストラクタ
-    ItemBase(const std::string& name, const std::string& description, int quantity, int imageHandle);
+    ItemBase(const std::string& id, const std::string& name, const std::string& description, int quantity, int imageHandle);
 
     // デストラクタ（仮想）
     virtual ~ItemBase(void) = default;
+
+    //ID取得
+    const std::string& GetId(void) const;
 
     // 名前を取得
     const std::string& GetName(void) const;
@@ -48,6 +51,7 @@ public:
     virtual ITEM_TYPE GetItemType(void) const = 0;
 
 protected:
+    std::string id_;             // ID
     std::string name_;           // アイテム名
     std::string description_;    // アイテムの説明
     int imageHandle_;            // アイテム画像

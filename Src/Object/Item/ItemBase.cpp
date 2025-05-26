@@ -1,11 +1,17 @@
 #include "ItemBase.h"
 
-ItemBase::ItemBase(const std::string& name, const std::string& description, int quantity, int imageHandle)
+ItemBase::ItemBase(const std::string& id, const std::string& name, const std::string& description, int quantity, int imageHandle)
 {
+    id_ = id;
 	name_ = name;
 	description_ = description;
 	quantity_ = quantity;
     imageHandle_ = imageHandle;
+}
+
+const std::string& ItemBase::GetId(void) const
+{
+    return id_;
 }
 
 //–¼‘O‚ÌŽæ“¾

@@ -7,120 +7,122 @@
 #include "../Item/Product/RecoveryPotion.h"
 #include "../Item/Product/AntidotePotion.h"
 #include "../Item/Product/MagicPotion.h"
+#include "../Item/Product/Garbage.h"
+
 
 // シングルトンインスタンスの初期化
 ItemManager* ItemManager::instance_ = nullptr;
 
-// インスタンス生成（初回呼び出し時のみ）
 void ItemManager::CreateInstance(void)
 {
-	if (!instance_)
-	{
-		instance_ = new ItemManager();
-		instance_->Init();
-	}
+    if (!instance_)
+    {
+        instance_ = new ItemManager();
+        instance_->Init();
+    }
 }
 
-// インスタンス取得（既に生成されている前提）
 ItemManager& ItemManager::GetInstance(void)
 {
-	return *instance_;
+    return *instance_;
 }
 
-// 初期化処理：インベントリをクリアし、初期アイテムを追加する
 void ItemManager::Init()
 {
-	// 全リストをクリア
-	materialItems_.clear();
-	productItems_.clear();
+    materialItems_.clear();
+    productItems_.clear();
+    allItems_.clear();
+    idItemMap_.clear();
 
-	// 素材アイテムを追加
-	AddItem(std::make_shared<Herb>());
-	AddItem(std::make_shared<AntidoteHerb>());
-	AddItem(std::make_shared<MagicFlower>());
-	AddItem(std::make_shared<Water>());
+    // アイテム生成＆登録（素材）
+    Register(std::make_shared<Herb>());
+    Register(std::make_shared<AntidoteHerb>());
+    Register(std::make_shared<MagicFlower>());
+    Register(std::make_shared<Water>());
 
-	// 完成品アイテムを追加（例：回復ポーション）
-	AddItem(std::make_shared<RecoveryPotion>());
-	AddItem(std::make_shared<AntidotePotion>());
-	AddItem(std::make_shared<MagicPotion>());
+    // アイテム生成＆登録（完成品）
+    Register(std::make_shared<RecoveryPotion>());
+    Register(std::make_shared<AntidotePotion>());
+    Register(std::make_shared<MagicPotion>());
+    Register(std::make_shared<Garbage>());
 
-	// 初期所持数設定（素材）
-	AddQuantity(materialItems_[0], 5); // Herb
-	AddQuantity(materialItems_[1], 5); // AntidoteHerb
-	AddQuantity(materialItems_[2], 5); // MagicFlower
+    // allItems_に登録されたアイテムからカテゴリ別に振り分け
+    for (auto& item : allItems_)
+    {
+        if (auto material = std::dynamic_pointer_cast<MaterialItem>(item))
+        {
+            materialItems_.push_back(material);
+        }
+        else if (auto product = std::dynamic_pointer_cast<ProductItem>(item))
+        {
+            productItems_.push_back(product);
+        }
+    }
 
-	// 完成品は所持0スタートでOK
+    // 初期所持数設定（例）
+    AddQuantity(FindItemById("Herb"), 5); // HerbのIDが0なら
+    AddQuantity(FindItemById("AntidoteHerb"), 5); // AntidoteHerbのIDが1なら
+    AddQuantity(FindItemById("MagicFlower"), 5); // MagicFlowerのIDが2なら
+    AddQuantity(FindItemById("Water"), 5); // WaterのIDが3なら
+
+    // 完成品は0スタート
 }
 
-// アイテムを追加（素材か完成品かを自動分類して保存）
 void ItemManager::AddItem(std::shared_ptr<ItemBase> item)
 {
-	// 素材アイテムとしてキャスト可能か確認
-	if (auto material = std::dynamic_pointer_cast<MaterialItem>(item))
-	{
-		materialItems_.push_back(material);
-	}
-	// 完成品アイテムとしてキャスト可能か確認
-	else if (auto product = std::dynamic_pointer_cast<ProductItem>(item))
-	{
-		productItems_.push_back(product);
-	}
+    // ID管理に対応しているなら追加不要かもしれませんが残す
 }
 
-// 素材アイテムを取得
 std::shared_ptr<MaterialItem> ItemManager::GetMaterialItem(int index) const
 {
-	if (index >= 0 && index < materialItems_.size())
-	{
-		return materialItems_[index];
-	}
-	return nullptr;
+    if (index >= 0 && index < (int)materialItems_.size())
+        return materialItems_[index];
+    return nullptr;
 }
 
-// 完成品アイテムを取得
 std::shared_ptr<ProductItem> ItemManager::GetProductItem(int index) const
 {
-	if (index >= 0 && index < productItems_.size())
-	{
-		return productItems_[index];
-	}
-	return nullptr;
+    if (index >= 0 && index < (int)productItems_.size())
+        return productItems_[index];
+    return nullptr;
 }
 
-// 素材アイテムの個数を取得
 int ItemManager::GetMaterialItemCount(void) const
 {
-	return static_cast<int>(materialItems_.size());
+    return static_cast<int>(materialItems_.size());
 }
 
-// 完成品アイテムの個数を取得
 int ItemManager::GetProductItemCount(void) const
 {
-	return static_cast<int>(productItems_.size());
+    return static_cast<int>(productItems_.size());
 }
 
-// 所持数を増やす（素材または完成品を指定）
 void ItemManager::AddQuantity(std::shared_ptr<ItemBase> item, int amount)
 {
-	if (item)
-	{
-		item->AddQuantity(amount);
-	}
+    if (item) item->AddQuantity(amount);
 }
 
-// 所持数を減らす（素材または完成品を指定）
 void ItemManager::SubtractQuantity(std::shared_ptr<ItemBase> item, int amount)
 {
-	if (item)
-	{
-		item->SubtractQuantity(amount);
-	}
+    if (item) item->SubtractQuantity(amount);
 }
 
-// インスタンス破棄（メモリ解放）
+void ItemManager::Register(std::shared_ptr<ItemBase> item)
+{
+    allItems_.push_back(item);
+    idItemMap_[item->GetId()] = item;
+}
+
+std::shared_ptr<ItemBase> ItemManager::FindItemById(const std::string& id)
+{
+    auto it = idItemMap_.find(id);
+    if (it != idItemMap_.end())
+        return it->second;
+    return nullptr;
+}
+
 void ItemManager::Destroy(void)
 {
-	delete instance_;
-	instance_ = nullptr;
+    delete instance_;
+    instance_ = nullptr;
 }

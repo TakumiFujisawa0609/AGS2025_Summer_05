@@ -2,22 +2,25 @@
 
 #include<DxLib.h>
 
-#include"../Application.h"
-#include"../Common/Easing.h"
-#include"../Manager/Generic/SceneManager.h"
-#include"../Manager/Generic/InputManager.h"
-#include"../Manager/Generic/Resource.h"
-#include"../Manager/Generic/ResourceManager.h"
-#include"../Manager/Decoration/SoundManager.h"
-#include"../Manager/System/Collision.h"
-#include"../Object/Manager/StageManager.h"
-#include"../Object/Grid.h"
-#include"../DrawUI/SceneUI/InventoryUI.h"
-#include"../Object/Manager/ItemManager.h"
+#include "../Application.h"
+#include "../Common/Easing.h"
+#include "../Manager/Generic/SceneManager.h"
+#include "../Manager/Generic/InputManager.h"
+#include "../Manager/Generic/Resource.h"
+#include "../Manager/Generic/ResourceManager.h"
+#include "../Manager/Decoration/SoundManager.h"
+#include "../Manager/System/Collision.h"
+#include "../Object/Manager/StageManager.h"
+#include "../Object/Grid.h"
+#include "../DrawUI/SceneUI/InventoryUI.h"
+#include "../Object/Manager/ItemManager.h"
+#include "../Object/Manager/AlchemyManager.h"
 
 SceneGame::SceneGame(void)
 {
 	grid_ = nullptr;
+
+	inventoryUI_ = nullptr;
 }
 
 void SceneGame::Init(void)
@@ -40,41 +43,70 @@ void SceneGame::Init(void)
 
 	// UIの生成
 	inventoryUI_ = new InventoryUI();
+
+	AlchemyManager::GetInstance().Init();
+
 }
 
 void SceneGame::Update(void)
 {
 	auto& sound = SoundManager::GetInstance();
+	auto& input = InputManager::GetInstance();
+	auto& alchemy = AlchemyManager::GetInstance();
 
-	//シーン遷移(デバッグ)
-	if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_SPACE))
-	{
-		//決定音
-		sound.Play(SoundManager::SOUND::SE_PUSH);
+	////シーン遷移(デバッグ)
+	//if (input.IsTrgDown(KEY_INPUT_SPACE))
+	//{
+	//	//決定音
+	//	sound.Play(SoundManager::SOUND::SE_PUSH);
 
-		//BGM停止
-		sound.Stop(SoundManager::SOUND::BGM_TITLE);
+	//	//BGM停止
+	//	sound.Stop(SoundManager::SOUND::BGM_TITLE);
 
-		//シーン遷移
-		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAMEOVER);
+	//	//シーン遷移
+	//	SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAMEOVER);
 
-		//処理終了
-		return;
-	}
+	//	//処理終了
+	//	return;
+	//}
 
 	// インベントリUIの更新
 	inventoryUI_->Update();
+
+	// Rキーで錬金メニューの開閉
+	if (input.IsTrgDown(KEY_INPUT_R))
+	{
+		if (alchemy.IsOpen())
+			alchemy.Close();
+		else
+			alchemy.Open();
+	}
+
+	// 錬金メニューが開いているときのみ更新
+	if (alchemy.IsOpen())
+	{
+		alchemy.Update();
+	}
+
 
 	StageManager::GetInstance().Update();
 }
 
 void SceneGame::Draw(void)
 {
+	auto& alchemy = AlchemyManager::GetInstance();
+
 	//ステージの描画
 	StageManager::GetInstance().Draw();
 
 	// インベントリUIの描画
 	inventoryUI_->Draw();
+
+	if(alchemy.IsOpen())
+	{
+		alchemy.Draw();
+	}
+	
 
 #ifdef _DEBUG
 	//デバック表示

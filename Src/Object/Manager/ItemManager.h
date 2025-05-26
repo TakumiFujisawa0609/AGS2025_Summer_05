@@ -2,6 +2,7 @@
 
 #include<vector>
 #include<memory>
+#include<unordered_map>
 
 #include"../../Object/Item/ItemBase.h"
 #include"../../Object/Item/Material/MaterialItem.h"
@@ -36,6 +37,12 @@ public:
 	void AddQuantity(std::shared_ptr<ItemBase> item, int amount);
 	void SubtractQuantity(std::shared_ptr<ItemBase> item, int amount);
 
+	//–¼‘O‚Ì“o˜^
+	void Register(std::shared_ptr<ItemBase> item);
+
+	//–¼‘O‚ÌŽæ“¾
+	std::shared_ptr<ItemBase> FindItemById(const std::string& id);
+
 	static void Destroy(void);
 
 private:
@@ -50,5 +57,7 @@ private:
 
 	std::vector<std::shared_ptr<MaterialItem>> materialItems_;
 	std::vector<std::shared_ptr<ProductItem>> productItems_;
+	std::vector<std::shared_ptr<ItemBase>> allItems_;
+	std::unordered_map<std::string, std::shared_ptr<ItemBase>> idItemMap_;
 };
 
