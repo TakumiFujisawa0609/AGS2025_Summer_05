@@ -118,9 +118,6 @@ void SceneGame::Draw(void)
 	//デバック表示
 	DrawDebug();
 #endif // _DEBUG
-
-	//グリッド線
-	grid_->Draw();
 }
 
 void SceneGame::Release(void)
@@ -129,3 +126,4 @@ void SceneGame::Release(void)
 	delete grid_;
 	grid_ = nullptr;
 }
+
