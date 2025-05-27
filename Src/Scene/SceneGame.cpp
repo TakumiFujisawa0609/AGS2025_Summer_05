@@ -108,6 +108,9 @@ void SceneGame::Draw(void)
 	// インベントリUIの描画
 	inventoryUI_->Draw();
 
+	//プレイヤーの描画
+	player_->Draw();
+
 	if(alchemy.IsOpen())
 	{
 		alchemy.Draw();
@@ -125,5 +128,19 @@ void SceneGame::Release(void)
 	grid_->Release();
 	delete grid_;
 	grid_ = nullptr;
+
+	//プレイヤーの解放
+	player_->Release();
+	delete player_;
+	player_ = nullptr;
+
+	//インベントリUIの解放
+	delete inventoryUI_;
+	inventoryUI_ = nullptr;
+}
+
+void SceneGame::DrawDebug(void)
+{
+	grid_->Draw();
 }
 
