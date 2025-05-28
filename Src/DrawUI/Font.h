@@ -47,6 +47,9 @@ public:
 	//デフォルトフォントで描画
 	void DrawDefaultText(int x, int y, const char* text, int color, int fontSize = -1, int fontType = -1);
 
+	//解放
+	void Destroy(void);
+
 private:
 
 	//シングルトンインスタンス

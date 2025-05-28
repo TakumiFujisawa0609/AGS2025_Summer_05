@@ -164,3 +164,12 @@ int Font::GetDynamicFontHandle(int fontSize, int fontWeight, int fontType)
 	}
 	return fontHandle;
 }
+
+void Font::Destroy(void)
+{
+	if (instance_ != nullptr)
+	{
+		delete instance_;       // デストラクタが呼ばれてフォントを解放
+		instance_ = nullptr;
+	}
+}
