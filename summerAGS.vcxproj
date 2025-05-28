@@ -140,12 +140,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\player.cpp" />
     <ClCompile Include="Src\Stage\PrivateRoomStage.cpp" />
     <ClCompile Include="Src\Stage\GuildStage.cpp" />
     <ClCompile Include="Src\Stage\GardenStage.cpp" />
     <ClCompile Include="Src\Stage\AtelierStage.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="player.cpp" />
     <ClCompile Include="Src\Application.cpp" />
     <ClCompile Include="Src\Common\Easing.cpp" />
     <ClCompile Include="Src\Common\Fader.cpp" />
@@ -177,12 +176,11 @@
     <ClCompile Include="Src\Object\Manager\StageManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\player.h" />
     <ClInclude Include="Src\Stage\PrivateRoomStage.h" />
     <ClInclude Include="Src\Stage\GuildStage.h" />
     <ClInclude Include="Src\Stage\GardenStage.h" />
     <ClInclude Include="Src\Stage\AtelierStage.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="player.h" />
     <ClInclude Include="Src\Application.h" />
     <ClInclude Include="Src\Common\Easing.h" />
     <ClInclude Include="Src\Common\Fader.h" />
