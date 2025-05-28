@@ -15,6 +15,9 @@
 #include"../Object/Manager/AlchemyManager.h"
 #include"../Object/Manager/ItemManager.h"
 #include"../Object/Grid.h"
+
+
+
 #include"../Object/player.h"
 
 SceneGame::SceneGame(void)
