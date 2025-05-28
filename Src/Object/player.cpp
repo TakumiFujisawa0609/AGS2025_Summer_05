@@ -1,23 +1,10 @@
 #include "../Application.h"
 #include "../Utility/Utility.h"
 #include "../Manager/Generic/InputManager.h"
-#include "../Manager/Generic/SceneManager.h"
-#include "../Object/Common/AnimationController.h"
 #include"player.h"
 
 Player::Player(void)
 {
-	//モデル
-	modelId_ = 0;
-
-	//座標
-	pos_ = VECTOR();
-
-	//角度
-	angles_ = VECTOR();
-
-	//大きさ
-	scales_ = VECTOR();
 }
 
 Player::~Player(void)
@@ -43,23 +30,11 @@ void Player::Init(void)
 	// モデルの角度
 	angles_ = { 0.0f, Utility::Deg2RadF(180.0f), 0.0f };
 	MV1SetRotationXYZ(modelId_, angles_);
-
-	//モデルアニメーション制御の初期化
-	animationController_ = new AnimationController(modelId_);
-	for (int i = 0; i < static_cast<int>(ANIM_TYPE::MAX); i++)
-	{
-		//animationController_->AddInFbx(i, 30.0f, i);
-	}
-
-	// 初期アニメーション再生
-	animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
 }
 
 void Player::Update(void)
 {
 	ProcessMove();
-
-	animationController_->Update();
 }
 
 void Player::Draw(void)
@@ -77,30 +52,6 @@ void Player::Release(void)
 {
 	// プレイヤーモデルの解放
 	MV1DeleteModel(modelId_);
-
-	// アニメーションコントローラの解放
-	//animationController_->Release();
-	delete animationController_;
-}
-
-VECTOR Player::GetPos(void) const
-{
-	return pos_;
-}
-
-void Player::SetPos(VECTOR pos)
-{
-	pos_ = pos;
-}
-
-//衝突判定
-void Player::CollisionStage(VECTOR pos)
-{
-	//衝突判定に指定座標に押し戻す
-	pos_ = pos;
-
-	//地面にいるとみなす
-	isOnGround_ = true;
 }
 
 void Player::ProcessMove(void)
@@ -109,16 +60,13 @@ void Player::ProcessMove(void)
 
 	// 移動方向を決める
 	VECTOR moveDir = Utility::VECTOR_ZERO;
-	if (ins.IsNew(KEY_INPUT_W)) { moveDir = VAdd(moveDir, Utility::DIR_F); }
-	if (ins.IsNew(KEY_INPUT_S)) { moveDir = VAdd(moveDir, Utility::DIR_B); }
-	if (ins.IsNew(KEY_INPUT_A)) { moveDir = VAdd(moveDir, Utility::DIR_L); }
-	if (ins.IsNew(KEY_INPUT_D)) { moveDir = VAdd(moveDir, Utility::DIR_R); }
+	if (ins.IsNew(KEY_INPUT_W)) { moveDir = Utility::DIR_F; }
+	if (ins.IsNew(KEY_INPUT_S)) { moveDir = Utility::DIR_B; }
+	if (ins.IsNew(KEY_INPUT_A)) { moveDir = Utility::DIR_L; }
+	if (ins.IsNew(KEY_INPUT_D)) { moveDir = Utility::DIR_R; }
 
 	if (!Utility::EqualsVZero(moveDir))
 	{
-		// 正規化
-		moveDir = VNorm(moveDir);
-
 		// 移動量を計算する(方向×スピード)
 		VECTOR movePow = VScale(moveDir, SPEED_MOVE);
 
@@ -128,15 +76,8 @@ void Player::ProcessMove(void)
 		// モデルに座標を設定する
 		MV1SetPosition(modelId_, pos_);
 
-		// 方向がある時のみに角度を更新する
-		if (Utility::SqrMagnitudeF(moveDir) > 0.0f)
-		{
-			// Y軸の向きだけ変更(XZ平面の向き)
-			angles_.y = atan2f(moveDir.x, moveDir.z) + DX_PI_F;
-		}
-
-		// モデルに回転を設定する
-		MV1SetRotationXYZ(modelId_, angles_);
+		// 方向から角度(ラジアン)に変換する
+		angles_.y = atan2(moveDir.x, moveDir.z);
 
 		// モデルの方向が正の負の方向を向いているので、補正する
 		angles_.y += Utility::Deg2RadF(180.0f);
