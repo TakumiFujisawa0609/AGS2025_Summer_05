@@ -165,6 +165,7 @@ int Font::GetDynamicFontHandle(int fontSize, int fontWeight, int fontType)
 	return fontHandle;
 }
 
+//‰ğ•úˆ—
 void Font::Destroy(void)
 {
 	if (instance_ != nullptr)
