@@ -85,9 +85,6 @@ void StageManager::Update(void)
 //描画処理
 void StageManager::Draw(void)
 {
-	//描画先グラフィック領域の指定
-	//(3D描画でしようするカメラの設定などがリセットされる)
-	SetDrawScreen(DX_SCREEN_BACK);
 	// 前フレームの内容を消去（重要）
 	ClearDrawScreen();
 	stage_->Draw();

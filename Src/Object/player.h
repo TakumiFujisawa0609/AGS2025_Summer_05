@@ -1,26 +1,30 @@
 #pragma once
 #include<DxLib.h>
-class Player
+
+#include "UnitBase.h"
+
+class Player : public UnitBase
 {
+
 public:
 
 	// コンストラクタ
 	Player(void);
 
 	// デストラクタ
-	~Player(void);
+	~Player(void) override;
 
 	//初期化
-	void Init(void);
+	void Init(void) override;
 
 	//更新
-	void Update(void);
+	void Update(void) override;
 
 	//描画
-	void Draw(void);
+	void Draw(void) override;
 
 	//解放
-	void Release(void);	
+	void Release(void) override;
 
 	// モデルの大きさ
 	static constexpr VECTOR SCALES = { 0.5f, 0.5f, 0.5f };
@@ -37,9 +41,11 @@ public:
 private:
 	// モデルID
 	int modelId_;
-	VECTOR pos_;
 	VECTOR angles_;
 	VECTOR scales_;
+
+	//カメラ
+	VECTOR axis_;
 
 	// 行動制御
 	void ProcessMove(void);

@@ -9,6 +9,7 @@
 
 class SceneBase;
 class Fader;
+class Camera;
 
 class SceneManager
 {
@@ -62,6 +63,9 @@ public:
 	//デルタタイムの取得
 	float GetDeltaTime(void) const;
 
+	//カメラの取得
+	std::shared_ptr<Camera> GetCamera(void) const;
+
 private:
 
 	//静的インスタンス
@@ -75,6 +79,9 @@ private:
 
 	//各種シーン
 	SceneBase* scene_;
+
+	//カメラ
+	std::shared_ptr<Camera> camera_;
 
 	//シーン遷移中判定
 	bool isSceneChanging_;

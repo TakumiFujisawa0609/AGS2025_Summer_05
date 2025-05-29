@@ -7,6 +7,7 @@
 #include"../Manager/Generic/SceneManager.h"
 #include"../Manager/Generic/InputManager.h"
 #include"../Manager/Decoration/SoundManager.h"
+#include "../Manager/Generic/Camera.h"
 #include"../DrawUI/SceneUI/SceneUI.h"
 #include"../Object/Grid.h"
 
@@ -18,6 +19,10 @@ SceneTitle::SceneTitle(void)
 
 void SceneTitle::Init(void)
 {
+	//カメラ設定
+	auto camera = SceneManager::GetInstance().GetCamera();
+	camera->ChangeMode(Camera::MODE::FREE);
+
 	//グリッド線
 	grid_ = new Grid();
 	grid_->Init();
@@ -79,9 +84,6 @@ void SceneTitle::Draw(void)
 	DrawRotaGraph(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2, 1.0, 0.0, logo_, true);
 
 	int font = CreateFontToHandle(NULL, 10, 10);
-
-	//隠し要素
-	//DrawStringFToHandle(0.0f, 0.0f, "音源探してくれた人:要注意人物", 0x222222, font);
 
 	DeleteFontToHandle(font);
 

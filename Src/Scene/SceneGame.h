@@ -2,7 +2,8 @@
 
 #include<memory>
 
-#include"SceneBase.h"
+#include "SceneBase.h"
+#include "../Application.h"
 
 class Grid;
 class Player;
