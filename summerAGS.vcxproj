@@ -190,6 +190,7 @@
     <ClCompile Include="Src\Stage\StageBase.cpp" />
     <ClCompile Include="Src\Object\Manager\StageManager.cpp" />
     <ClCompile Include="Src\Object\Item\Material\Water.cpp" />
+    <ClCompile Include="Src\Object\UnitBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Manager\Generic\Camera.h" />
@@ -242,6 +243,7 @@
     <ClInclude Include="Src\Stage\StageBase.h" />
     <ClInclude Include="Src\Object\Manager\StageManager.h" />
     <ClInclude Include="Src\Object\Item\Material\Water.h" />
+    <ClInclude Include="Src\Object\UnitBase.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

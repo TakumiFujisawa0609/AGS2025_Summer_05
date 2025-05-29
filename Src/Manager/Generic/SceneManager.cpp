@@ -10,8 +10,9 @@
 #include "../../Scene/SceneGameOver.h"
 #include "../../Scene/SceneGameClear.h"
 #include "ResourceManager.h"
-#include"../System/Collision.h"
-#include"../Decoration/SoundManager.h"
+#include "../System/Collision.h"
+#include "../Decoration/SoundManager.h"
+#include "Camera.h"
 
 SceneManager* SceneManager::instance_ = nullptr;
 
@@ -41,6 +42,10 @@ void SceneManager::Init(void)
 
 	fader_ = std::make_unique<Fader>();
 	fader_->Init();
+
+	//カメラ
+	camera_ = std::make_unique<Camera>();
+	camera_->Init();
 
 	//シーン
 	scene_ = new SceneTitle();
@@ -112,6 +117,8 @@ void SceneManager::Update(void)
 	{
 		scene_->Update();
 	}
+
+	camera_->Update();
 }
 
 void SceneManager::Draw(void)
@@ -120,6 +127,12 @@ void SceneManager::Draw(void)
 	//(3D描画でしようするカメラの設定などがリセットされる)
 	SetDrawScreen(DX_SCREEN_BACK);
 	
+	//フロントバッファの画像を消去
+	ClearDrawScreen();
+	
+	//カメラの設定
+	camera_->SetBeforeDraw();
+
 	//ゲーム内容描画
 	//描画
 	scene_->Draw();
@@ -157,6 +170,11 @@ SceneManager::SCENE_ID SceneManager::GetSceneID(void)
 float SceneManager::GetDeltaTime(void)const
 {
 	return deltaTime_;
+}
+
+std::shared_ptr<Camera> SceneManager::GetCamera(void) const
+{
+	return camera_;
 }
 
 SceneManager::SceneManager(void)

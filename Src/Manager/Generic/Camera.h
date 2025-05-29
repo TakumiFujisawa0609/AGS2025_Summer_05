@@ -89,7 +89,7 @@ public:
 	void ChangeMode(MODE mode);
 
 	//’Ç]‘ÎÛ‚Ìİ’è
-	void SetFollow(const Transform* follow);
+	const void SetFollow(const Transform* follow);
 
 	//À•W‚Ìİ’è
 	void SetPos(const VECTOR& pos, const VECTOR& target);

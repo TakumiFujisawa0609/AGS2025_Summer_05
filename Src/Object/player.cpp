@@ -17,8 +17,10 @@ void Player::Init(void)
 	modelId_ = MV1LoadModel((Application::PATH_MODEL + "player/playerkari.mv1").c_str());
 
 	// 座標設定
-	pos_ = DEFAULT_POS;
-	MV1SetPosition(modelId_, pos_);
+	//初期化
+	trans_.pos = DEFAULT_POS;
+	prePos_ = trans_.pos;
+	MV1SetPosition(modelId_, trans_.pos);
 
 	// 大きさ設定
 	scales_ = SCALES;
@@ -30,10 +32,16 @@ void Player::Init(void)
 	// モデルの角度
 	angles_ = { 0.0f, Utility::Deg2RadF(180.0f), 0.0f };
 	MV1SetRotationXYZ(modelId_, angles_);
+
+	//カメラ方向初期化
+	axis_ = { 0.0f,0.0f,0.0f };
 }
 
 void Player::Update(void)
 {
+	//移動前座標保存
+	prePos_ = trans_.pos;
+
 	ProcessMove();
 }
 
@@ -44,7 +52,7 @@ void Player::Draw(void)
 
 #ifdef _DEBUG
 	// プレイヤー座標
-	DrawFormatString(0, 40, 0xffffff, "プレイヤー座標:(%.2f, %.2f, %.2f)", pos_.x, pos_.y, pos_.z);
+	DrawFormatString(0, 40, 0xffffff, "プレイヤー座標:(%.2f, %.2f, %.2f)", trans_.pos.x, trans_.pos.y, trans_.pos.z);
 #endif //_DEBUG
 }
 
@@ -71,10 +79,10 @@ void Player::ProcessMove(void)
 		VECTOR movePow = VScale(moveDir, SPEED_MOVE);
 
 		// 移動処理(座標＋移動量)
-		pos_ = VAdd(pos_, movePow);
+		trans_.pos = VAdd(trans_.pos, movePow);
 
 		// モデルに座標を設定する
-		MV1SetPosition(modelId_, pos_);
+		MV1SetPosition(modelId_, trans_.pos);
 
 		// 方向から角度(ラジアン)に変換する
 		angles_.y = atan2(moveDir.x, moveDir.z);

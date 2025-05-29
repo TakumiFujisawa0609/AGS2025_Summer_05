@@ -2,8 +2,8 @@
 
 #include<DxLib.h>
 
-#include"../Application.h"
 #include"../Common/Easing.h"
+#include"../Manager/Generic/Camera.h"
 #include"../Manager/Generic/SceneManager.h"
 #include"../Manager/Generic/InputManager.h"
 #include"../Manager/Generic/Resource.h"
@@ -11,11 +11,11 @@
 #include"../Manager/Decoration/SoundManager.h"
 #include"../Manager/System/Collision.h"
 #include"../Object/Manager/StageManager.h"
-#include"../DrawUI/SceneUI/InventoryUI.h"
 #include"../Object/Manager/AlchemyManager.h"
 #include"../Object/Manager/ItemManager.h"
 #include"../Object/Grid.h"
 #include"../Object/player.h"
+#include"../DrawUI/SceneUI/InventoryUI.h"
 
 SceneGame::SceneGame(void)
 {
@@ -24,6 +24,12 @@ SceneGame::SceneGame(void)
 
 void SceneGame::Init(void)
 {
+	//カメラ
+	auto camera = SceneManager::GetInstance().GetCamera();
+
+	//カメラを固定に設定
+	camera->ChangeMode(Camera::MODE::FOLLOW);
+
 	//アイテムマネージャー
 	auto itemManager_ = &ItemManager::GetInstance();
 
@@ -34,6 +40,9 @@ void SceneGame::Init(void)
 	//プレイヤー
 	player_ = new Player();
 	player_->Init();
+
+	//カメラをプレイヤーに追従
+	camera->SetFollow(&player_->GetTransform());
 
 	//サウンド
 	auto& sound = SoundManager::GetInstance();
@@ -142,5 +151,6 @@ void SceneGame::Release(void)
 void SceneGame::DrawDebug(void)
 {
 	grid_->Draw();
+
 }
 
