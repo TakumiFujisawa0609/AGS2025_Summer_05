@@ -31,6 +31,10 @@ public:
 	void Close(void);
 	bool IsOpen(void) const;
 
+	//レシピと選択素材の差分をメッセージとして表示する
+	void ShowRecipeDifferenceMessage(const std::map<std::string, int>& selectedMap);
+
+
 private:
 
 	//コンストラクタ
@@ -39,9 +43,9 @@ private:
 	//デストラクタ
 	~AlchemyManager(void);
 
-	void SelectMaterial(void);
+	/*void SelectMaterial(void);
 
-	void SelectAmount(void);
+	void SelectAmount(void);*/
 
 	void ExecuteAlchemy(void);
 
@@ -65,6 +69,9 @@ private:
 
 	// 個数選択中の素材Index
 	int selectedMaterialIndex_; 
+
+	//個数選択中の素材
+	int selectedMaterialEditIndex_;
 
 
 	bool isOpen_;

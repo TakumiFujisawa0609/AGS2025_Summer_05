@@ -11,6 +11,7 @@
 #include "../Item/Product/AntidotePotion.h"
 #include "../Item/Product/MagicPotion.h"
 #include "../Item/Product/Garbage.h"
+#include "../../Application.h"
 
 
 AlchemyManager* AlchemyManager::instance_ = nullptr;
@@ -39,6 +40,9 @@ AlchemyManager::AlchemyManager(void)
 	currentPhase_ = 0;
 	currentIndex_ = 0;
 	currentAmount_ = 1;
+    selectedMaterialEditIndex_ = 0;
+    selectedMaterialIndex_ = 0;
+    resultMessageTimer_ = 0;
 	isOpen_ = false;
 }
 
@@ -89,6 +93,71 @@ bool AlchemyManager::IsOpen(void) const
 	return isOpen_;
 }
 
+void AlchemyManager::ShowRecipeDifferenceMessage(const std::map<std::string, int>& selectedMap)
+{
+    std::string message = "錬金失敗：素材の差異\n";
+    bool anyDifference = false;
+
+    for (const auto& recipe : recipes_)
+    {
+        const auto& required = recipe.GetMaterials();
+
+        bool matched = true;
+        for (const auto& [reqName, reqAmount] : required)
+        {
+            int selAmount = selectedMap.count(reqName) ? selectedMap.at(reqName) : 0;
+            if (selAmount != reqAmount)
+            {
+                matched = false;
+                break;
+            }
+        }
+
+        if (!matched)
+        {
+            // --- 不足 ---
+            for (const auto& [name, amount] : required)
+            {
+                int selectedAmount = selectedMap.count(name) ? selectedMap.at(name) : 0;
+                if (selectedAmount < amount)
+                {
+                    message += "- " + name + " が " + std::to_string(amount - selectedAmount) + " 個足りません\n";
+                    anyDifference = true;
+                }
+            }
+
+            // --- 過剰 ---
+            for (const auto& [name, amount] : selectedMap)
+            {
+                int requiredAmount = required.count(name) ? required.at(name) : 0;
+                if (amount > requiredAmount)
+                {
+                    message += "- " + name + " が " + std::to_string(amount - requiredAmount) + " 個多いです\n";
+                    anyDifference = true;
+                }
+            }
+
+            // --- 不要な素材 ---
+            for (const auto& [name, amount] : selectedMap)
+            {
+                if (!required.count(name))
+                {
+                    message += "- " + name + " はレシピに含まれていません\n";
+                    anyDifference = true;
+                }
+            }
+
+            break;  // 最初にマッチしなかったレシピだけ確認して終了
+        }
+    }
+
+    if (anyDifference)
+    {
+        resultMessage_ = message;
+        resultMessageTimer_ = 300; // 5秒表示
+    }
+}
+
 void AlchemyManager::Update()
 {
     if (!isOpen_) return;
@@ -117,39 +186,36 @@ void AlchemyManager::Update()
     int col = currentIndex_ % MAX_COLUMNS;
     int maxRow = (materialCount - 1) / MAX_COLUMNS;
 
-    if (currentPhase_ == 0)
+    if (currentPhase_ == 0) // 素材選択フェーズ
     {
-        // --- 上移動 ---
+        // --- 移動処理（変更なし） ---
         if (input.IsTrgDown(KEY_INPUT_UP))
         {
             int newRow = row - 1;
             if (newRow < 0)
-                newRow = maxRow; // 端から上なら一番下に飛ぶ（ループさせたいなら）
-            int newIndex = newRow * MAX_COLUMNS + col;
-            if (newIndex >= materialCount) // 範囲外なら最後のアイテムへ
-                newIndex = materialCount - 1;
-            currentIndex_ = newIndex;
-        }
-
-        // --- 下移動 ---
-        if (input.IsTrgDown(KEY_INPUT_DOWN))
-        {
-            int newRow = row + 1;
-            if (newRow > maxRow)
-                newRow = 0; // 一番上に戻る
+                newRow = maxRow;
             int newIndex = newRow * MAX_COLUMNS + col;
             if (newIndex >= materialCount)
                 newIndex = materialCount - 1;
             currentIndex_ = newIndex;
         }
 
-        // --- 左移動 ---
+        if (input.IsTrgDown(KEY_INPUT_DOWN))
+        {
+            int newRow = row + 1;
+            if (newRow > maxRow)
+                newRow = 0;
+            int newIndex = newRow * MAX_COLUMNS + col;
+            if (newIndex >= materialCount)
+                newIndex = materialCount - 1;
+            currentIndex_ = newIndex;
+        }
+
         if (input.IsTrgDown(KEY_INPUT_LEFT))
         {
             int newCol = col - 1;
             if (newCol < 0)
             {
-                // 左端から左に行くなら前の行の最後の列へ
                 int newRow = row - 1;
                 if (newRow < 0) newRow = maxRow;
                 newCol = MAX_COLUMNS - 1;
@@ -163,13 +229,11 @@ void AlchemyManager::Update()
             }
         }
 
-        // --- 右移動 ---
         if (input.IsTrgDown(KEY_INPUT_RIGHT))
         {
             int newCol = col + 1;
             if (newCol >= MAX_COLUMNS)
             {
-                // 右端から右に行くなら次の行の一番左へ
                 int newRow = row + 1;
                 if (newRow > maxRow) newRow = 0;
                 currentIndex_ = newRow * MAX_COLUMNS;
@@ -183,14 +247,38 @@ void AlchemyManager::Update()
             }
         }
 
+        // TABキーで選択済み素材の編集モードに切り替え
+        if (input.IsTrgDown(KEY_INPUT_TAB) && !selectedMaterials_.empty())
+        {
+            currentPhase_ = 2;
+            selectedMaterialEditIndex_ = 0;
+            return;
+        }
+
         if (input.IsTrgDown(KEY_INPUT_RETURN))
         {
             auto material = itemManager.GetMaterialItem(currentIndex_);
-            if (material && material->GetQuantity() > 0 && selectedMaterials_.size() < 3)
+            if (material && selectedMaterials_.size() < 3)
             {
-                selectedMaterialIndex_ = currentIndex_;
-                currentPhase_ = 1;
-                currentAmount_ = 1;
+                // 選択済みの同じ素材の合計数を計算
+                int alreadySelectedAmount = 0;
+                for (const auto& selected : selectedMaterials_)
+                {
+                    if (selected.item->GetName() == material->GetName())
+                    {
+                        alreadySelectedAmount += selected.amount;
+                    }
+                }
+
+                // 利用可能な残り個数を計算
+                int availableAmount = material->GetQuantity() - alreadySelectedAmount;
+
+                if (availableAmount > 0)
+                {
+                    selectedMaterialIndex_ = currentIndex_;
+                    currentPhase_ = 1;
+                    currentAmount_ = 1;
+                }
             }
         }
 
@@ -199,14 +287,27 @@ void AlchemyManager::Update()
             ExecuteAlchemy();
         }
     }
-    else if (currentPhase_ == 1)
+    else if (currentPhase_ == 1) // 個数選択フェーズ
     {
         auto material = itemManager.GetMaterialItem(selectedMaterialIndex_);
         if (!material) return;
 
+        // 選択済みの同じ素材の合計数を計算
+        int alreadySelectedAmount = 0;
+        for (const auto& selected : selectedMaterials_)
+        {
+            if (selected.item->GetName() == material->GetName())
+            {
+                alreadySelectedAmount += selected.amount;
+            }
+        }
+
+        // 利用可能な最大個数を計算
+        int maxAvailable = material->GetQuantity() - alreadySelectedAmount;
+
         if (input.IsTrgDown(KEY_INPUT_UP))
         {
-            currentAmount_ = std::min(currentAmount_ + 1, material->GetQuantity());
+            currentAmount_ = std::min(currentAmount_ + 1, maxAvailable);
         }
         if (input.IsTrgDown(KEY_INPUT_DOWN))
         {
@@ -216,6 +317,102 @@ void AlchemyManager::Update()
         {
             selectedMaterials_.push_back({ material, currentAmount_ });
             currentPhase_ = 0;
+        }
+        if (input.IsTrgDown(KEY_INPUT_X))
+        {
+            currentPhase_ = 0; // キャンセル
+        }
+    }
+    else if (currentPhase_ == 2) // 選択済み素材編集フェーズ
+    {
+        int selectedCount = static_cast<int>(selectedMaterials_.size());
+
+        if (input.IsTrgDown(KEY_INPUT_UP))
+        {
+            selectedMaterialEditIndex_ = (selectedMaterialEditIndex_ - 1 + selectedCount) % selectedCount;
+        }
+        if (input.IsTrgDown(KEY_INPUT_DOWN))
+        {
+            selectedMaterialEditIndex_ = (selectedMaterialEditIndex_ + 1) % selectedCount;
+        }
+
+        if (input.IsTrgDown(KEY_INPUT_RETURN))
+        {
+            currentPhase_ = 3;
+            currentAmount_ = selectedMaterials_[selectedMaterialEditIndex_].amount;
+        }
+
+        if (input.IsTrgDown(KEY_INPUT_DELETE))
+        {
+            selectedMaterials_.erase(selectedMaterials_.begin() + selectedMaterialEditIndex_);
+            if (selectedMaterials_.empty())
+            {
+                currentPhase_ = 0;
+            }
+            else if (selectedMaterialEditIndex_ >= static_cast<int>(selectedMaterials_.size()))
+            {
+                selectedMaterialEditIndex_ = static_cast<int>(selectedMaterials_.size()) - 1;
+            }
+        }
+
+        if (input.IsTrgDown(KEY_INPUT_TAB) || input.IsTrgDown(KEY_INPUT_X))
+        {
+            currentPhase_ = 0;
+        }
+    }
+    else if (currentPhase_ == 3) // 選択済み素材の個数変更フェーズ
+    {
+        auto material = selectedMaterials_[selectedMaterialEditIndex_].item;
+
+        // 他の選択済み同名素材の合計数を計算（編集中のものは除く）
+        int otherSelectedAmount = 0;
+        for (size_t i = 0; i < selectedMaterials_.size(); ++i)
+        {
+            if (i != static_cast<size_t>(selectedMaterialEditIndex_) &&
+                selectedMaterials_[i].item->GetName() == material->GetName())
+            {
+                otherSelectedAmount += selectedMaterials_[i].amount;
+            }
+        }
+
+        // 利用可能な最大個数を計算
+        int maxAvailable = material->GetQuantity() - otherSelectedAmount;
+
+        if (input.IsTrgDown(KEY_INPUT_UP))
+        {
+            currentAmount_ = std::min(currentAmount_ + 1, maxAvailable);
+        }
+        if (input.IsTrgDown(KEY_INPUT_DOWN))
+        {
+            currentAmount_ = std::max(0, currentAmount_ - 1);
+        }
+        if (input.IsTrgDown(KEY_INPUT_RETURN))
+        {
+            if (currentAmount_ == 0)
+            {
+                selectedMaterials_.erase(selectedMaterials_.begin() + selectedMaterialEditIndex_);
+                if (selectedMaterials_.empty())
+                {
+                    currentPhase_ = 0;
+                }
+                else
+                {
+                    if (selectedMaterialEditIndex_ >= static_cast<int>(selectedMaterials_.size()))
+                    {
+                        selectedMaterialEditIndex_ = static_cast<int>(selectedMaterials_.size()) - 1;
+                    }
+                    currentPhase_ = 2;
+                }
+            }
+            else
+            {
+                selectedMaterials_[selectedMaterialEditIndex_].amount = currentAmount_;
+                currentPhase_ = 2;
+            }
+        }
+        if (input.IsTrgDown(KEY_INPUT_X))
+        {
+            currentPhase_ = 2;
         }
     }
 }
@@ -227,24 +424,32 @@ void AlchemyManager::Draw(void)
     auto& font = Font::GetInstance();
     auto& itemManager = ItemManager::GetInstance();
 
-    // 錬金メニュータイトル
-    font.DrawDefaultText(10, 10, "錬金メニュー", 0xffffff);
+    // 画面サイズを取得
+#ifdef _DEBUG
+    const int screenWidth = Application::SCREEN_SIZE_X;
+    const int screenHeight = Application::SCREEN_SIZE_Y;
+#else
+    const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
+    const int screenHeight = Application::DEFA_SCREEN_SZIE_Y;
+#endif
 
-    // 錬金メニューの素材リストを InventoryUI風に描画
-    const int startX = 50;
-    const int startY = 50;
-    const int iconSize = 48;  // アイコンの大きさ（例）
-    const int padding = 8;    // アイコン間の余白
-    const int maxColumns = 5; // 1行あたりのアイテム数
+    // UI表示の基準位置
+    const int startX = 100;
+    const int startY = 100;
+
+    // タイトル
+    font.DrawDefaultText(startX, startY - 30, "錬金メニュー", 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+
+    // 素材アイテム一覧（左上）
+    const int iconSize = 64;
+    const int padding = 50;
+    const int maxColumns = 5;
 
     int itemCount = itemManager.GetMaterialItemCount();
-
-    // アイテム取得用関数（素材アイテム固定）
     auto getItemFunc = [&](int i) -> std::shared_ptr<ItemBase> {
         return itemManager.GetMaterialItem(i);
         };
-
-    // アイテム一覧描画
+    // Draw メソッドの素材一覧表示部分（修正版）
     for (int i = 0; i < itemCount; ++i)
     {
         auto item = getItemFunc(i);
@@ -254,20 +459,30 @@ void AlchemyManager::Draw(void)
         int col = i % maxColumns;
 
         int x = startX + col * (iconSize + padding);
-        int y = startY + row * (iconSize + padding + 20);  // 20はテキストの分の余白
+        int y = startY + row * (iconSize + padding + 20);
 
-        // アイテム画像描画（透過有効）
         DrawGraph(x, y, item->GetImageHandle(), true);
+        font.DrawDefaultText(x, y + iconSize + 2, item->GetName().c_str(), 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
 
-        // アイテム名描画
-        font.DrawDefaultText(x, y + iconSize + 2, item->GetName().c_str(), 0xffffff, 12);
+        // 選択済みの同じ素材の合計数を計算
+        int alreadySelectedAmount = 0;
+        for (const auto& selected : selectedMaterials_)
+        {
+            if (selected.item->GetName() == item->GetName())
+            {
+                alreadySelectedAmount += selected.amount;
+            }
+        }
 
-        // 所持数描画
-        std::string quantityStr = "x" + std::to_string(item->GetQuantity());
-        font.DrawDefaultText(x, y + iconSize + 18, quantityStr.c_str(), GetColor(200, 200, 200), 12);
+        // 残り利用可能数を計算して表示
+        int remainingQuantity = item->GetQuantity() - alreadySelectedAmount;
+        std::string quantityStr = "x" + std::to_string(remainingQuantity);
 
-        // 選択中アイテムに黄色枠
-        if (i == currentIndex_ && currentPhase_ == 0)  // 素材選択中のみ枠
+        // 残数が0の場合は赤色で表示
+        int quantityColor = (remainingQuantity > 0) ? GetColor(200, 200, 200) : GetColor(255, 100, 100);
+        font.DrawDefaultText(x, y + iconSize + 24, quantityStr.c_str(), quantityColor, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+
+        if (i == currentIndex_ && currentPhase_ == 0)
         {
             const int border = 3;
             int colYellow = GetColor(255, 255, 0);
@@ -275,37 +490,113 @@ void AlchemyManager::Draw(void)
         }
     }
 
-    // 使用数選択フェーズの表示
+    // 使用数選択フェーズ（Draw メソッド内の該当部分）
     if (currentPhase_ == 1)
     {
         auto item = itemManager.GetMaterialItem(selectedMaterialIndex_);
         if (item)
         {
-            std::string text = item->GetName() + " 使用数： " + std::to_string(currentAmount_);
-            font.DrawDefaultText(startX, startY + 200, text.c_str(), 0xffffff, 18);
+            // 選択済みの同じ素材の合計数を計算
+            int alreadySelectedAmount = 0;
+            for (const auto& selected : selectedMaterials_)
+            {
+                if (selected.item->GetName() == item->GetName())
+                {
+                    alreadySelectedAmount += selected.amount;
+                }
+            }
+
+            int availableAmount = item->GetQuantity() - alreadySelectedAmount;
+
+            std::string text = item->GetName() + " 使用数： " + std::to_string(currentAmount_) +
+                " (利用可能: " + std::to_string(availableAmount) + ")";
+            font.DrawDefaultText(startX, startY + 200, text.c_str(), 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+
+            font.DrawDefaultText(startX, startY + 230, "↑↓：個数変更 Enter：決定 X：キャンセル", GetColor(150, 150, 150), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
         }
     }
+    // 個数編集フェーズ（Draw メソッド内の該当部分）- 修正版
+    if (currentPhase_ == 3)
+    {
+        // 選択中素材（右側に表示）
+        const int rightX = screenWidth - (screenWidth / 3);
+        const int offsetY = 50;
 
-    // 右側に選択中素材リスト（右寄せ）
-    const int screenWidth = 640;
-    const int rightX = screenWidth - 200;
+        auto material = selectedMaterials_[selectedMaterialEditIndex_].item;
+
+        // シンプルな表示（利用可能数は表示しない）
+        std::string text = material->GetName() + " 個数変更： " + std::to_string(currentAmount_) + " (0で削除)";
+        font.DrawDefaultText((rightX / 2) + offsetY * 6 , offsetY + static_cast<int>(selectedMaterials_.size() * 40), text.c_str(), GetColor(255, 200, 100), 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+
+        font.DrawDefaultText((rightX / 2) + offsetY * 6 , offsetY + static_cast<int>(selectedMaterials_.size() * 40) + 30, "↑↓：個数変更 Enter：決定 X：キャンセル", GetColor(150, 150, 150), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
+    }
+   
+
+    // 選択中素材（右側に表示）
+    const int rightX = screenWidth - (screenWidth / 3);
     const int offsetY = 50;
 
-    font.DrawDefaultText(rightX, offsetY, "選択中の素材：", 0xffffff);
+    font.DrawDefaultText((rightX / 2) + offsetY * 2, offsetY, "選択中の素材：", 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
 
     for (size_t i = 0; i < selectedMaterials_.size(); ++i)
     {
         std::string line = selectedMaterials_[i].item->GetName() + " x" + std::to_string(selectedMaterials_[i].amount);
-        font.DrawDefaultText(rightX + 10, offsetY + 20 + (int)(i * 20), line.c_str(), 0xffffff);
+        int textColor = 0xffffff;
+
+        // 編集モードで選択中の素材をハイライト
+        if (currentPhase_ == 2 && i == static_cast<size_t>(selectedMaterialEditIndex_))
+        {
+            textColor = GetColor(255, 255, 0); // 黄色でハイライト
+
+            // 背景を描画
+            int textWidth = font.GetDefaultTextWidth(line.c_str());
+            DrawBox(rightX + 5, offsetY + 35 + static_cast<int>(i * 40),
+                rightX + 15 + textWidth, offsetY + 65 + static_cast<int>(i * 40),
+                GetColor(50, 50, 0), true);
+        }
+
+        font.DrawDefaultText((rightX / 2) + offsetY * 2, offsetY + 40 + static_cast<int>(i * 40), line.c_str(), textColor, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
     }
 
-    // 補助説明
-    font.DrawDefaultText(startX, offsetY + 250, "２つ以上の素材を選択で錬金実行", 0xffffff);
+    // 錬金開始表示（素材リストの下）
+    int startTextY = offsetY + 60 + static_cast<int>(selectedMaterials_.size() * 40);
 
-    // 錬金結果メッセージがあれば画面下に表示
+    if (selectedMaterials_.size() >= 2)
+    {
+        // 錬金実行可能な場合
+        font.DrawDefaultText((rightX / 2) + offsetY * 2, startTextY, "Space: 錬金開始", GetColor(0, 255, 0), 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+    }
+    else
+    {
+        // 錬金実行不可能な場合
+        font.DrawDefaultText((rightX / 2) + offsetY * 2, startTextY, "2種類以上の素材を選択して錬金開始", GetColor(150, 150, 150), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
+    }    // フェーズ別の操作説明
+    std::string helpText;
+    switch (currentPhase_)
+    {
+    case 0:
+        helpText = "Enter：選択 Tab：編集 Space：錬金実行 X：閉じる";
+        break;
+    case 1:
+        helpText = "↑↓：個数変更 Enter：決定 X：キャンセル";
+        break;
+    case 2:
+        helpText = "↑↓：素材選択 Enter：個数変更 Del：削除 Tab/X：戻る";
+        break;
+    case 3:
+        helpText = "↑↓：個数変更 Enter：決定 X：キャンセル";
+        break;
+    }
+
+    int helpTextWidth = font.GetDefaultTextWidth(helpText.c_str());
+    font.DrawDefaultText((screenWidth - helpTextWidth) / 2, screenHeight - 60, helpText.c_str(), GetColor(150, 150, 150), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
+
+    // 結果メッセージ（画面下）
     if (resultMessageTimer_ > 0)
     {
-        font.DrawDefaultText(startX, 350, resultMessage_.c_str(), 0xffaa00);
+        int resultTextWidth = font.GetDefaultTextWidth(resultMessage_.c_str());
+        font.DrawDefaultText((screenWidth - resultTextWidth) / 2, (screenHeight / 2) + MAX_COLUMNS * 4, resultMessage_.c_str(), 0xffaa00, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+        resultMessageTimer_--;
     }
 }
 
@@ -319,7 +610,52 @@ void AlchemyManager::ExecuteAlchemy()
 
     for (const auto& recipe : recipes_)
     {
-        if (recipe.Match(selectedMap))
+        const auto& required = recipe.GetMaterials();
+
+        // 完璧一致の判定
+        bool perfectMatch = true;
+
+        // 1. 選択した素材の種類数とレシピの必要素材種類数が一致するかチェック
+        if (selectedMap.size() != required.size())
+        {
+            perfectMatch = false;
+        }
+        else
+        {
+            // 2. 各素材の名前と数量が完璧に一致するかチェック
+            for (const auto& [reqName, reqAmount] : required)
+            {
+                // 選択した素材にこの必要素材が含まれているかチェック
+                if (selectedMap.count(reqName) == 0)
+                {
+                    perfectMatch = false;
+                    break;
+                }
+
+                // 数量が完璧に一致するかチェック
+                if (selectedMap.at(reqName) != reqAmount)
+                {
+                    perfectMatch = false;
+                    break;
+                }
+            }
+
+            // 3. 選択した素材がすべてレシピに含まれているかチェック（不要な素材がないかチェック）
+            if (perfectMatch)
+            {
+                for (const auto& [selName, selAmount] : selectedMap)
+                {
+                    if (required.count(selName) == 0)
+                    {
+                        perfectMatch = false;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // 完璧一致の場合のみ成功
+        if (perfectMatch)
         {
             auto item = ItemManager::GetInstance().FindItemById(recipe.GetResult()->GetId());
             ItemManager::GetInstance().AddQuantity(item, 1);
@@ -343,16 +679,16 @@ void AlchemyManager::ExecuteAlchemy()
     auto garbage = ItemManager::GetInstance().FindItemById("Garbage");
     ItemManager::GetInstance().AddQuantity(garbage, 1);
 
+    // 素材を消費（失敗でも素材は消費される）
     for (const auto& m : selectedMaterials_)
     {
         ItemManager::GetInstance().SubtractQuantity(m.item, m.amount);
     }
 
-    selectedMaterials_.clear();
+    // 追加：差分メッセージ表示
+    ShowRecipeDifferenceMessage(selectedMap);
 
-    // ★ メッセージ設定（失敗）
-    resultMessage_ = "錬金に失敗し、ゴミができました…";
-    resultMessageTimer_ = 180;
+    selectedMaterials_.clear();
 }
 
 
@@ -365,4 +701,5 @@ void AlchemyManager::ResetSelection(void)
     selectedMaterialIndex_ = 0;
     resultMessage_.clear();
     resultMessageTimer_ = 0;
+    selectedMaterialEditIndex_ = 0;
 }
