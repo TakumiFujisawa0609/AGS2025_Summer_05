@@ -32,7 +32,28 @@ void AtelierStage::Init(void)
 	PrevInput = 0;
 	Catch = 0;
 
-	MV1SetScale(modelId_, STAGE_SCALEA);
+
+	// 鍋-------------------------------------------------------------------------
+	// 鍋の位置
+	modelIdPos_ = INIT_MODELID_POS;
+	// 座標をモデルに設定
+	MV1SetPosition(modelId_, modelIdPos_);
+	// 鍋の大きさ
+	MV1SetScale(modelId_, MODELID_SCALEA);
+	// 生存判定
+	isModelId_ = true;
+
+
+
+	// 薬-------------------------------------------------------------------------
+
+	// 薬の位置
+	kusuriPos_ = INIT_KUSURI_POS;
+	// 薬座標をモデルに設定
+	MV1SetPosition(kusuri_, kusuriPos_);
+	// 生存判定
+	isKusuri_ = true;
+	
 
 }
 
@@ -171,10 +192,30 @@ void AtelierStage::Draw(void)
 
 	DrawGraph(0, 0, workshop_, true);
 
-	// モデル描画
-	MV1DrawModel(modelId_);
 
-	MV1DrawModel(kusuri_);
+	// 鍋の描画
+	if (isModelId_)
+	{
+		MV1DrawModel(modelId_);
+
+		// 鍋の衝突判定確認用球体描画
+		DrawSphere3D(
+			modelIdPos_, RADIUS_MODELID, 10, 0x0000ff, 0x0000ff, false);
+	}
+	
+	
+
+	// 薬の描画
+	if (isKusuri_)
+	{
+		MV1DrawModel(kusuri_);
+
+		// 薬の衝突判定確認用球体描画
+		DrawSphere3D(
+			kusuriPos_, RADIUS_KUSURI, 10, 0x0000ff, 0xff0000, false);
+	}
+	
+	
 }
 
 //解放処理
