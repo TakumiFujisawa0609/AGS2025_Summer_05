@@ -1,5 +1,5 @@
 #pragma once
-
+#include "DxLib.h"
 #include<memory>
 
 #include"StageBase.h"
@@ -7,12 +7,8 @@
 class AtelierStage : public StageBase
 {
 public:
-	// 鍋のサイズ
-	static constexpr VECTOR MODEILD_ = { 0.5f, 0.5f, 0.5f };
 
-	// 薬のサイズ
-	static constexpr int KUSURI_X = 60;
-	static constexpr int KUSURI_Y = 60;
+	static constexpr VECTOR STAGE_SCALEA = { 5.0f,5.0f,5.0f };
 
 	//コンストラクタ
 	AtelierStage(void);
@@ -39,21 +35,15 @@ private:
 
 	//	鍋
 	int modelId_;
-	int modelId_X;
-	int modelId_Y;
 
 	//　薬
 	int kusuri_;
-	int kusuri_X;
-	int kusuri_Y;
 
-	// マウス座標
-	int mouseInput;
-	int mouseX;
-	int mouseY;
-	int offsetX;
-	int offsetY;
-
-	bool isModelId_;
+	int NowInput, EdgeInput, PrevInput;
+	int Catch;
+	int CatchMouseX, CatchMouseY;
+	VECTOR Catch3DModelPosition;
+	VECTOR Catch3DHitPosition;
+	VECTOR Catch2DHitPosition;
 };
 
