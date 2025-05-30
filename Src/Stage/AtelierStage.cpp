@@ -89,10 +89,10 @@ void AtelierStage::Update(void)
 			WorldPos2 = ConvScreenPosToWorldPos(ScreenPos2);
 
 			// モデルの当たり判定情報を更新
-			MV1RefreshCollInfo(modelId_, -1);
+			MV1RefreshCollInfo(kusuri_, -1);
 
 			// モデルと線分の当たり判定
-			MV1_COLL_RESULT_POLY Result = MV1CollCheck_Line(modelId_, -1, WorldPos1, WorldPos2);
+			MV1_COLL_RESULT_POLY Result = MV1CollCheck_Line(kusuri_, -1, WorldPos1, WorldPos2);
 
 			// 当たっていたら掴み状態にする
 			if (Result.HitFlag)
@@ -105,7 +105,7 @@ void AtelierStage::Update(void)
 				CatchMouseY = MouseY;
 
 				// 掴んだときのモデルのワールド座標を保存
-				Catch3DModelPosition = MV1GetPosition(modelId_);
+				Catch3DModelPosition = MV1GetPosition(kusuri_);
 
 				// 掴んだときのモデルと線分が当たった座標を保存( 座標をスクリーン座標に変換したものも保存しておく )
 				Catch3DHitPosition = Result.HitPosition;
@@ -145,12 +145,21 @@ void AtelierStage::Update(void)
 
 			// 掴んだときのモデルのワールド座標に『掴んだときのモデルと線分が当たった座標にマウスの移動分を足した座標をワールド座標に
 			// 変換した座標』と、『掴んだときのモデルと線分が当たった座標』との差分を加算
-			Now3DModelPosition.x = Catch3DModelPosition.x + NowCatch3DHitPosition.x - Catch3DHitPosition.x;
-			Now3DModelPosition.y = Catch3DModelPosition.y + NowCatch3DHitPosition.y - Catch3DHitPosition.y;
-			Now3DModelPosition.z = Catch3DModelPosition.z + NowCatch3DHitPosition.z - Catch3DHitPosition.z;
+			Now3DModelPosition.x = 
+				Catch3DModelPosition.x 
+				+ NowCatch3DHitPosition.x 
+				- Catch3DHitPosition.x;
+
+			Now3DModelPosition.y = Catch3DModelPosition.y 
+				+ NowCatch3DHitPosition.y 
+				- Catch3DHitPosition.y;
+
+			Now3DModelPosition.z = Catch3DModelPosition.z
+				+ NowCatch3DHitPosition.z 
+				- Catch3DHitPosition.z;
 
 			// ↑の計算で求まった新しい座標をモデルの座標としてセット
-			MV1SetPosition(modelId_, Now3DModelPosition);
+			MV1SetPosition(kusuri_, Now3DModelPosition);
 		}
 	}
 }

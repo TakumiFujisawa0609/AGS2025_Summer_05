@@ -8,6 +8,7 @@ class AtelierStage : public StageBase
 {
 public:
 
+	//	鍋の大きさ
 	static constexpr VECTOR STAGE_SCALEA = { 5.0f,5.0f,5.0f };
 
 	//コンストラクタ
@@ -42,6 +43,7 @@ private:
 	int NowInput, EdgeInput, PrevInput;
 	int Catch;
 	int CatchMouseX, CatchMouseY;
+
 	VECTOR Catch3DModelPosition;
 	VECTOR Catch3DHitPosition;
 	VECTOR Catch2DHitPosition;
