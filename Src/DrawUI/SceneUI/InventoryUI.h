@@ -5,13 +5,13 @@ class InventoryUI
 {
 public:
     // 横に並べる最大数
-    static constexpr int MAX_COLUMNS = 3;
+    static constexpr int MAX_COLUMNS = 5;
 
     // アイテムアイコンサイズ
     static constexpr int ICON_SIZE = 64;
 
     // 各アイテムの間隔
-    static constexpr int PADDING = 5;
+    static constexpr int PADDING = 20;
 
     // インベントリの表示タブ
     enum class TAB

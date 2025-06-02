@@ -1,7 +1,8 @@
 #pragma once
 #include<DxLib.h>
-
 #include "UnitBase.h"
+
+class AnimationController;
 
 class Player : public UnitBase
 {
@@ -26,6 +27,37 @@ public:
 	//解放
 	void Release(void) override;
 
+	//座標取得
+	VECTOR GetPos(void) const;
+
+	//座標設定
+	void SetPos(VECTOR pos);
+
+
+	// アニメーション種別
+	enum class ANIM_TYPE
+	{
+		DEATH,
+		DUCK,
+		HIT_REACT,
+		IDLE,
+		IDLE_ATTACK,
+		IDLE_HOLD,
+		JUMP,
+		JUMP_IDLE,
+		JUMP_LAND,
+		NO,
+		PUNCH,
+		RUN,
+		RUN_ATTACK,
+		RUN_HOLD,
+		WALK,
+		WALK_HOLD,
+		WAVE,
+		YES,
+		MAX,
+	};
+
 	// モデルの大きさ
 	static constexpr VECTOR SCALES = { 0.5f, 0.5f, 0.5f };
 
@@ -41,11 +73,16 @@ public:
 private:
 	// モデルID
 	int modelId_;
-	VECTOR angles_;
 	VECTOR scales_;
-
 	//カメラ
 	VECTOR axis_;
+	VECTOR angles_;
+
+	// 地面にいるかどうか
+	bool isOnGround_;
+
+	// アニメーション
+	AnimationController* animationController_;
 
 	// 行動制御
 	void ProcessMove(void);
