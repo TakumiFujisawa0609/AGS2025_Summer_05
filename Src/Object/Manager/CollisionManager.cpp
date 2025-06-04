@@ -55,5 +55,10 @@ void CollisionManager::CheckHitWithPlayer(const VECTOR playerPos, float PlayerRa
 	}
 }
 
+void CollisionManager::Destroy(void)
+{
+	delete instance_;
+}
+
 
 

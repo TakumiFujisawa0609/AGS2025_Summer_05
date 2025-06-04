@@ -27,6 +27,9 @@ public:
 	//プレイヤーとの当たり判定チェック(UI表示)
 	void CheckHitWithPlayer(const VECTOR playerPos, float PlayerRadus);
 
+	//リソースの解放
+	void Destroy(void);
+
 private:
 
 	//静的インスタンス
