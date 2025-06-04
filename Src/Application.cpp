@@ -9,6 +9,7 @@
 #include "Object/Manager/StageManager.h"
 #include "Object/Manager/ItemManager.h"
 #include "Object/Manager/AlchemyManager.h"
+#include "DrawUI/Font.h"
 #include "Fps/FpsControll.h"
 
 
@@ -88,6 +89,9 @@ void Application::Init(void)
 	//錬金システムの初期化
 	AlchemyManager::CreateInstance();
 
+	//フォントの初期化
+	Font::CreateInstance();
+
 	//FPS制御初期化
 	fps_->FpsControll_Initialize();
 }
@@ -150,6 +154,7 @@ void Application::Destroy(void)
 	StageManager::GetInstance().Destroy();
 	ItemManager::GetInstance().Destroy();
 	AlchemyManager::GetInstance().Destroy();
+	Font::GetInstance().Destroy();
 
 	//エフェクシアの終了
 	Effkseer_End();

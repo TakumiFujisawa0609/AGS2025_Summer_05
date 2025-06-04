@@ -12,6 +12,7 @@
 #include "ResourceManager.h"
 #include "../System/Collision.h"
 #include "../Decoration/SoundManager.h"
+#include "../../Object/Manager/CollisionManager.h"
 #include "Camera.h"
 
 SceneManager* SceneManager::instance_ = nullptr;
@@ -36,6 +37,7 @@ void SceneManager::Init(void)
 	//îªíËÇÃê∂ê¨
 	Collision::CreateInstance();
 	SoundManager::CreateInstance();
+	CollisionManager::CreateInstance();
 
 	sceneId_ = SCENE_ID::TITLE;
 	waitSceneId_ = SCENE_ID::NONE;
@@ -147,6 +149,8 @@ void SceneManager::Destroy(void)
 	delete scene_;
 
 	SoundManager::GetInstance().Destroy();
+
+	CollisionManager::GetInstance().Destroy();
 
 	delete instance_;
 }

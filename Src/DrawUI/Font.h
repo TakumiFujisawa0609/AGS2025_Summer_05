@@ -47,6 +47,12 @@ public:
 	//デフォルトフォントで描画
 	void DrawDefaultText(int x, int y, const char* text, int color, int fontSize = -1, int fontType = -1);
 
+	//文字の横幅を取得
+	int GetDefaultTextWidth(const std::string& text) const;
+
+	//解放
+	void Destroy(void);
+
 private:
 
 	//シングルトンインスタンス

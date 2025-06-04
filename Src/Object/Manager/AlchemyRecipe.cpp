@@ -25,4 +25,9 @@ std::shared_ptr<ProductItem> AlchemyRecipe::GetResult(void) const
 	return result_;
 }
 
+const std::map<std::string, int>& AlchemyRecipe::GetMaterials(void) const
+{
+	return requiredMaterials_;
+}
+
 
