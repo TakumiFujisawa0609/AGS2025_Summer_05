@@ -145,6 +145,12 @@ void Font::DrawDefaultText(int x, int y, const char* text, int color, int fontSi
 	DrawText(defaultFont_, x, y, text, color, fontSize, fontType);
 }
 
+//文字の横幅を取得
+int Font::GetDefaultTextWidth(const std::string& text) const
+{
+	return GetDrawStringWidth(text.c_str(), static_cast<int>(text.size()));
+}
+
 //一時的なフォントを取得または生成
 int Font::GetDynamicFontHandle(int fontSize, int fontWeight, int fontType)
 {
@@ -163,4 +169,14 @@ int Font::GetDynamicFontHandle(int fontSize, int fontWeight, int fontType)
 		dynamicFontHandles_[key] = fontHandle;
 	}
 	return fontHandle;
+}
+
+//解放処理
+void Font::Destroy(void)
+{
+	if (instance_ != nullptr)
+	{
+		delete instance_;       // デストラクタが呼ばれてフォントを解放
+		instance_ = nullptr;
+	}
 }
