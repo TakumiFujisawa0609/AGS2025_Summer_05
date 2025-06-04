@@ -59,10 +59,10 @@ public:
 	};
 
 	// モデルの大きさ
-	static constexpr VECTOR SCALES = { 0.5f, 0.5f, 0.5f };
+	static constexpr VECTOR SCALES = { 0.2f, 0.2f, 0.2f };
 
 	// 初期位置
-	static constexpr VECTOR DEFAULT_POS = { 300.0f, 10.0f, 300.0f };
+	static constexpr VECTOR DEFAULT_POS = { 300.0f, 20.0f, 300.0f };
 
 	// 標準の自己発光色
 	static constexpr COLOR_F COLOR_EMI_DEFAULT = { 0.5f, 0.5f, 0.5f, 0.5f };
