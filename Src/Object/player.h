@@ -70,6 +70,9 @@ public:
 	// 移動スピード
 	static constexpr float SPEED_MOVE = 10.0f;
 
+	//当たり判定の半径
+	static constexpr float RADIUS = 50.0f;
+
 private:
 	// モデルID
 	int modelId_;

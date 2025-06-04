@@ -37,6 +37,9 @@ void Player::Init(void)
 	scales_ = SCALES;
 	MV1SetScale(modelId_, scales_);
 
+	//当たり判定の半径
+	radius_ = RADIUS;
+
 	// 色の調整(自己発光)
 	MV1SetMaterialEmiColor(modelId_, 0, COLOR_EMI_DEFAULT);
 
@@ -67,7 +70,7 @@ void Player::Update(void)
 	animationController_->Update();
 
 	// プレイヤーの座標と半径を使って当たり判定
-	CollisionManager::GetInstance().CheckHitWithPlayer(playerPos, playerRadius);
+	CollisionManager::GetInstance().CheckHitWithPlayer(trans_.pos, radius_);
 
 }
 
