@@ -3,6 +3,7 @@
 #include "../Manager/Generic/InputManager.h"
 #include "../Manager/Generic/SceneManager.h"
 #include "../Object/Common/AnimationController.h"
+#include "../Object/Manager/CollisionManager.h"
 #include"player.h"
 
 Player::Player(void)
@@ -64,6 +65,10 @@ void Player::Update(void)
 	ProcessMove();
 
 	animationController_->Update();
+
+	// プレイヤーの座標と半径を使って当たり判定
+	CollisionManager::GetInstance().CheckHitWithPlayer(playerPos, playerRadius);
+
 }
 
 void Player::Draw(void)
