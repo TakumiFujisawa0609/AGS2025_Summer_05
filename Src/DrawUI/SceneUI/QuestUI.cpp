@@ -7,35 +7,35 @@
 
 DeliveryQuest::DeliveryQuest(void)
 {
-	id = -1;
+    id = -1;
 
-	requiredAmount = 0;
+    requiredAmount = 0;
 
-	currentAmount = 0;
+    currentAmount = 0;
 
-	isCompleted = false;
+    isCompleted = false;
 
-	isActive = false;
+    isActive = false;
 
 }
 
 DeliveryQuest::DeliveryQuest(int questId, const std::string& questTitle, const std::string& questDesc, const std::string& itemId, int required)
 {
-	id = questId;
+    id = questId;
 
-	title = questTitle;
+    title = questTitle;
 
-	description = questDesc;
+    description = questDesc;
 
-	targetItemId = itemId;
+    targetItemId = itemId;
 
-	requiredAmount = required;
+    requiredAmount = required;
 
-	currentAmount = 0;
+    currentAmount = 0;
 
-	isCompleted = false;
+    isCompleted = false;
 
-	isActive = false;
+    isActive = false;
 }
 
 //シングルトンインスタンスの初期化
@@ -44,54 +44,54 @@ QuestUI* QuestUI::instance_ = nullptr;
 //インスタンスの生成
 void QuestUI::CreateInstance(void)
 {
-	if (!instance_)
-	{
-		instance_ = new QuestUI();
-		instance_->Init();
-	}
+    if (!instance_)
+    {
+        instance_ = new QuestUI();
+        instance_->Init();
+    }
 }
 
 //インスタンスの取得
 QuestUI& QuestUI::GetInstance(void)
 {
-	return *instance_;
+    return *instance_;
 }
 
 //初期化処理
 void QuestUI::Init(void)
 {
-	availableQuests_.clear();
-	activeQuests_.clear();
-	isVisible_ = true;
+    availableQuests_.clear();
+    activeQuests_.clear();
+    isVisible_ = true;
 
-	InitializeQuests();
+    InitializeQuests();
 }
 
 // 納品依頼データ初期化
 void QuestUI::InitializeQuests(void)
 {
-	// 納品依頼データの初期化
-	availableQuests_.push_back(DeliveryQuest(0, "回復ポーソン納品", "回復ポーションを3こ納品",
-		"RecoveryPotion", 3));
-	availableQuests_.push_back(DeliveryQuest(1, "解毒ポーソン納品", "解毒ポーションを2こ納品",
-		"AntidotePotion", 2));
-	availableQuests_.push_back(DeliveryQuest(2, "魔法ポーソン納品", "魔法ポーションを1こ納品",
-		"MagicPotion", 1));
+    // 納品依頼データの初期化
+    availableQuests_.push_back(DeliveryQuest(0, "回復ポーソン納品", "回復ポーションを3こ納品",
+        "RecoveryPotion", 3));
+    availableQuests_.push_back(DeliveryQuest(1, "解毒ポーソン納品", "解毒ポーションを2こ納品",
+        "AntidotePotion", 2));
+    availableQuests_.push_back(DeliveryQuest(2, "魔法ポーソン納品", "魔法ポーションを1こ納品",
+        "MagicPotion", 1));
 }
 
 //更新処理
 void QuestUI::Update(void)
 {
-	if (!isVisible_) return;
+    if (!isVisible_) return;
 
-	// アクティブな依頼の進行状況を更新
-	for (auto& quest : activeQuests_)
-	{
-		if (!quest.isCompleted)
-		{
-			UpdateQuestProgress(quest);
-		}
-	}
+    // アクティブな依頼の進行状況を更新
+    for (auto& quest : activeQuests_)
+    {
+        if (!quest.isCompleted)
+        {
+            UpdateQuestProgress(quest);
+        }
+    }
 }
 
 // 個別依頼の進行状況更新
@@ -166,13 +166,20 @@ void QuestUI::DrawActiveQuests(void)
         yOffset += lineHeight;
     }
 
-    // デバッグ情報
-    DrawFormatString(0, 500, 0xffffff, "納品依頼数: %d", (int)activeQuests_.size());
+    //// デバッグ情報
+    //DrawFormatString(0, 500, 0xffffff, "納品依頼数: %d", (int)activeQuests_.size());
 }
 
 //依頼受注
 void QuestUI::AcceptQuest(int questId)
 {
+    // 既に依頼を受けている場合は新しい依頼を受けられない
+    if (!activeQuests_.empty())
+    {
+    Font::GetInstance().DrawDefaultText (0, 180, "既に依頼を受けています。完了してから新しい依頼を受けてください。", 0xff0000, 16);
+        return;
+    }
+
     // 利用可能な依頼から指定IDの依頼を探す
     for (auto& quest : availableQuests_)
     {
@@ -185,8 +192,8 @@ void QuestUI::AcceptQuest(int questId)
             // アクティブ依頼リストに追加
             activeQuests_.push_back(quest);
 
-            // デバッグ出力
-            DrawFormatString(0, 520, 0x00ff00, "依頼受注: %s", quest.title.c_str());
+            //// デバッグ出力
+            //DrawFormatString(0, 520, 0x00ff00, "依頼受注: %s", quest.title.c_str());
             break;
         }
     }
@@ -256,6 +263,12 @@ bool QuestUI::IsQuestCompleted(int questId) const
     return false;
 }
 
+//新しい依頼を受けられるかチェック
+bool QuestUI::CanAcceptNewQuest(void) const
+{
+    return activeQuests_.empty();
+}
+
 //UIの表示制御
 void QuestUI::SetVisible(bool visible)
 {
@@ -265,6 +278,15 @@ void QuestUI::SetVisible(bool visible)
 bool QuestUI::IsVisible() const
 {
     return isVisible_;
+}
+
+DeliveryQuest* QuestUI::GetActiveQuest(void)
+{
+    if (!activeQuests_.empty())
+    {
+        return &activeQuests_[0];  // 1件のみ受注の前提
+    }
+    return nullptr;
 }
 
 //リソースの解放

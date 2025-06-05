@@ -7,7 +7,8 @@
 #include "../Manager/CollisionManager.h"
 #include "../../DrawUI/Font.h"
 #include "../../Application.h"
-#include "./../../DrawUI/SceneUI/QuestUI.h"
+#include "../../DrawUI/SceneUI/QuestUI.h"
+#include "../../Application.h"
 
 BulletinBoard::BulletinBoard(void)
 {
@@ -98,52 +99,74 @@ void BulletinBoard::Update(void)
 
 void BulletinBoard::Draw(void)
 {
-
 	MV1DrawModel(trans_.modelId);
 
+#ifdef _DEBUG
+	const int screenWidth = Application::SCREEN_SIZE_X;
+	const int screenHeight = Application::SCREEN_SIZE_Y;
+#else
+	const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
+	const int screenHeight = Application::DEFA_SCREEN_SIZE_X;
+
+#endif // _DEBUG
+
+	
+
 	if (isShowUI_)
-	{
+	{ 
 		if (!isShowQuestList_)
 		{
-			// 基本UI表示
-			DrawBox(200, 200, 600, 280, GetColor(0, 0, 0), TRUE);
-			DrawBox(200, 200, 600, 280, GetColor(255, 255, 255), FALSE);
-			Font::GetInstance().DrawDefaultText(220, 230, "掲示板 - Enterキーで納品依頼一覧を表示", 0xffffff, 24);
+			// テキスト内容
+			const char* text = "依頼";
+			int fontSize = 14;
+			int textWidth = GetDrawStringWidth(text, strlen(text), -1);
+			int boxWidth = textWidth + 30; // 余白を加える
+			int boxHeight = 20;
+
+			int boxX = (screenWidth - boxWidth) / 2;
+			int boxY = boxY = (screenHeight / 4) + boxHeight;
+
+			// UI表示（中央）
+			DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(0, 0, 0), TRUE);
+			DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(255, 255, 255), FALSE);
+			Font::GetInstance().DrawDefaultText(boxX + 20, boxY + 5, text, 0xffffff, fontSize);
 		}
 		else
 		{
-			// 依頼リスト表示
-			DrawBox(150, 150, 650, 400, GetColor(0, 0, 0), TRUE);
-			DrawBox(150, 150, 650, 400, GetColor(255, 255, 255), FALSE);
+			// 依頼リストのボックスサイズ
+			const int boxWidth = 600;
+			const int boxHeight = 300;
+			const int boxX = (screenWidth - boxWidth) / 2;
+			const int boxY = 150;
 
-			// タイトル表示
-			Font::GetInstance().DrawDefaultText(170, 170, "===== 納品依頼一覧 =====", 0xffffff, 24);
+			DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(0, 0, 0), TRUE);
+			DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(255, 255, 255), FALSE);
 
-			// 依頼リスト表示
+			// タイトル
+			Font::GetInstance().DrawDefaultText(boxX + 20, boxY + 20, "===== 納品依頼一覧 =====", 0xffffff, 24);
+
+			// 依頼リスト描画
 			for (int i = 0; i < 3; i++)
 			{
-				int color = (i == selectedQuest_) ? 0xff00ff : 0xffffff; // 選択中の依頼をピンク色で表示
-				int yPos = 200 + (i * 30);
+				int color = (i == selectedQuest_) ? 0xff00ff : 0xffffff;
+				int yPos = boxY + 60 + (i * 30);
 
-				// 選択カーソル表示
 				if (i == selectedQuest_)
 				{
-					Font::GetInstance().DrawDefaultText(170, yPos, "→", 0xff00ff, 24);
+					Font::GetInstance().DrawDefaultText(boxX + 20, yPos, "→", 0xff00ff, 24);
 				}
 
-				Font::GetInstance().DrawDefaultText(200, yPos, questList_[i].c_str(), color, 20);
+				Font::GetInstance().DrawDefaultText(boxX + 50, yPos, questList_[i].c_str(), color, 20);
 			}
 
 			// 操作説明
-			Font::GetInstance().DrawDefaultText(170, 320, "↑↓キー: 選択  Enter: 決定  ESC: 戻る", 0xcccccc, 16);
+			Font::GetInstance().DrawDefaultText(boxX + 20, boxY + 230, "↑↓キー: 選択  Enter: 決定  X: 戻る", 0xcccccc, 16);
 		}
 	}
 
-	DrawSphere3D(trans_.pos, radius_, 16, 0xffffff, 0xffffff, false);
-	DrawFormatString(0, 80, 0xffffff, "表示判定 : %d", isShowUI_);
-	DrawFormatString(0, 100, 0xffffff, "依頼リスト表示 : %d", isShowQuestList_);
-	DrawFormatString(0, 120, 0xffffff, "選択中の依頼 : %d", selectedQuest_);
+	//DrawSphere3D(trans_.pos, radius_, 16, 0xffffff, 0xffffff, false);
 }
+
 
 void BulletinBoard::Release(void)
 {

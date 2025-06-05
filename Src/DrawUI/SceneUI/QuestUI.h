@@ -56,6 +56,9 @@ public:
     //進行状況更新
     void UpdateProgress(int questId);
 
+    //新しい依頼を受けられるかチェック
+    bool CanAcceptNewQuest(void) const;
+
     //依頼がアクティブかチェック
     bool IsQuestActive(int questId) const;
 
@@ -66,6 +69,10 @@ public:
     void SetVisible(bool visible);
 
     bool IsVisible() const;
+
+    // アクティブ依頼を取得（1件のみ受けている前提）
+    DeliveryQuest* GetActiveQuest(void);
+
 
 private:
     QuestUI() = default;

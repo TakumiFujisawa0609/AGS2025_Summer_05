@@ -24,6 +24,10 @@ void GuildStage::Init(void)
 	bulletinBoard_ = std::make_shared<BulletinBoard>();
 	bulletinBoard_->Init();
 	CollisionManager::GetInstance().Register(bulletinBoard_);
+
+	receptionist_ = std::make_shared<Receptionist>();
+	receptionist_->Init();
+	CollisionManager::GetInstance().Register(receptionist_);
 }
 
 //XVˆ—
@@ -39,6 +43,7 @@ void GuildStage::Update(void)
 	}
 
 	bulletinBoard_->Update();
+	receptionist_->Update();
 }
 
 //•`‰æˆ—
@@ -46,6 +51,7 @@ void GuildStage::Draw(void)
 {
 	DrawFormatString(0, 20, 0xffffff, "ƒMƒ‹ƒh");
 	bulletinBoard_->Draw();
+	receptionist_->Draw();
 }
 
 //‰ğ•úˆ—

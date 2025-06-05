@@ -5,6 +5,7 @@
 #include "StageBase.h"
 
 #include "../Object/GuildObject/BulletinBoard.h"
+#include "../Object/GuildObject/Receptionist.h"
 
 class GuildStage : public StageBase
 {
@@ -30,5 +31,6 @@ public:
 private:
 
 	std::shared_ptr<BulletinBoard> bulletinBoard_;
+	std::shared_ptr<Receptionist> receptionist_;
 };
 

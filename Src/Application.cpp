@@ -47,11 +47,14 @@ void Application::Init(void)
 	
 #ifdef _DEBUG
 	//ウィンドウのサイズ
-	SetGraphMode(SCREEN_SIZE_X, SCREEN_SIZE_Y, 32);
+	
 #else
-	//ウィンドウのサイズ
-	SetGraphMode(DEFA_SCREEN_SIZE_X, DEFA_SCREEN_SZIE_Y, 32);
+	
 #endif // _DEBUG
+	//ウィンドウのサイズ
+	//SetGraphMode(DEFA_SCREEN_SIZE_X, DEFA_SCREEN_SZIE_Y, 32);
+
+	SetGraphMode(SCREEN_SIZE_X, SCREEN_SIZE_Y, 32);
 	
 	ChangeWindowMode(true);
 

@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\GuildObject\Receptionist.cpp" />
     <ClCompile Include="Src\DrawUI\SceneUI\QuestUI.cpp" />
     <ClCompile Include="Src\Object\Interact\HitObject.cpp" />
     <ClCompile Include="Src\Object\NullHitObject.cpp" />
@@ -199,6 +200,7 @@
     <ClCompile Include="Src\Object\UnitBase.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\GuildObject\Receptionist.h" />
     <ClInclude Include="Src\DrawUI\SceneUI\QuestUI.h" />
     <ClInclude Include="Src\Object\Interact\HitObject.h" />
     <ClInclude Include="Src\Object\NullHitObject.h" />
