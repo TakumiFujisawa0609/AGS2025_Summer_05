@@ -70,6 +70,9 @@ void ResourceManager::InitGame(void)
 
 	// 敵関連リソースの初期化
 	ResourceEnemy();
+
+	//ギルドリソースの初期化
+	ResourceGuild();
 }
 
 // ゲームオーバーシーン用リソースの初期化
@@ -106,6 +109,16 @@ void ResourceManager::InitGameClear(void)
 	// 決定音を登録
 	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "");
 	resourcesMap_.emplace(SRC::SE_PUSH, res);
+}
+
+//ギルドで使うリソース
+void ResourceManager::ResourceGuild(void)
+{
+	Resource res;
+
+	//掲示板オブジェクト
+	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "/GuildObject/Iitem.mv1");
+	resourcesMap_.emplace(SRC::BULLETIN_BOARD, res);
 }
 
 // プレイヤー用リソース初期化（未実装）

@@ -29,6 +29,9 @@ public:
 		MAGIC_FLOWER,			//魔力草
 		WATER,					//水
 
+		//ギルド関係
+		BULLETIN_BOARD,			//掲示板
+
 		//ミニマップ関係
 		MAP_FRAME,				//ミニマップ枠
 		MAP_GROUND,				//ミニマップ枠内
@@ -67,6 +70,9 @@ public:
 
 	//ゲームクリアで使うリソース初期化
 	void InitGameClear(void);
+
+	//ギルドで使うリソース
+	void ResourceGuild(void);
 
 	//プレイヤーが使うリソース
 	void ResourcePlayer(void);

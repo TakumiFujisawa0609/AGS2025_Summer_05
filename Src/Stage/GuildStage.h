@@ -1,8 +1,10 @@
 #pragma once
 
-#include<memory>
+#include <memory>
 
-#include"StageBase.h"
+#include "StageBase.h"
+
+#include "../Object/GuildObject/BulletinBoard.h"
 
 class GuildStage : public StageBase
 {
@@ -27,5 +29,6 @@ public:
 
 private:
 
+	std::shared_ptr<BulletinBoard> bulletinBoard_;
 };
 

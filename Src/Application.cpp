@@ -9,6 +9,7 @@
 #include "Object/Manager/StageManager.h"
 #include "Object/Manager/ItemManager.h"
 #include "Object/Manager/AlchemyManager.h"
+#include "DrawUI/SceneUI/QuestUI.h"
 #include "DrawUI/Font.h"
 #include "Fps/FpsControll.h"
 
@@ -89,6 +90,9 @@ void Application::Init(void)
 	//錬金システムの初期化
 	AlchemyManager::CreateInstance();
 
+	//QuestUI初期化を追加
+	QuestUI::CreateInstance();
+
 	//フォントの初期化
 	Font::CreateInstance();
 
@@ -128,9 +132,13 @@ void Application::Run(void)
 		//更新処理
 		inputManager.Update();
 		sceneManager.Update();
+		// QuestUI更新
+		QuestUI::GetInstance().Update();
 		
 		//描画処理
 		sceneManager.Draw();
+		// QuestUI描画（最後に描画して他のUIより前面に表示）
+		QuestUI::GetInstance().Draw();
 
 		if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_TAB) == 1)
 		{
@@ -155,6 +163,8 @@ void Application::Destroy(void)
 	ItemManager::GetInstance().Destroy();
 	AlchemyManager::GetInstance().Destroy();
 	Font::GetInstance().Destroy();
+	// QuestUI終了処理
+	QuestUI::Destroy();
 
 	//エフェクシアの終了
 	Effkseer_End();

@@ -184,7 +184,7 @@ void Fader::CricleMask(void)
 		(ALPHA_MAX - alpha_) * 4,			//円の半径(アルファ値で変化)
 		0xffffff, true
 #else
-		(Application::DEFA_SCREEN_SIZE_X / 2) - (Application::DEFA_SCREEN_SIZE_X / 8),//リリース時の中心x
+		(Application::DEFA_SCREEN_SIZE_X / 2),//リリース時の中心x
 		Application::DEFA_SCREEN_SZIE_Y / 2,//リリース時の中心y
 		(ALPHA_MAX - alpha_) * 4,			//円の半径(アルファ値で変化)
 		0xffffff, true

@@ -1,21 +1,23 @@
 #include "SceneGame.h"
 
-#include<DxLib.h>
+#include <DxLib.h>
 
-#include"../Common/Easing.h"
-#include"../Manager/Generic/Camera.h"
-#include"../Manager/Generic/SceneManager.h"
-#include"../Manager/Generic/InputManager.h"
-#include"../Manager/Generic/Resource.h"
-#include"../Manager/Generic/ResourceManager.h"
-#include"../Manager/Decoration/SoundManager.h"
-#include"../Manager/System/Collision.h"
-#include"../Object/Manager/StageManager.h"
-#include"../Object/Manager/AlchemyManager.h"
-#include"../Object/Manager/ItemManager.h"
-#include"../Object/Grid.h"
-#include"../Object/player.h"
-#include"../DrawUI/SceneUI/InventoryUI.h"
+#include "../Common/Easing.h"
+#include "../Manager/Generic/Camera.h"
+#include "../Manager/Generic/SceneManager.h"
+#include "../Manager/Generic/InputManager.h"
+#include "../Manager/Generic/Resource.h"
+#include "../Manager/Generic/ResourceManager.h"
+#include "../Manager/Decoration/SoundManager.h"
+#include "../Manager/System/Collision.h"
+#include "../Object/Manager/StageManager.h"
+#include "../Object/Manager/AlchemyManager.h"
+#include "../Object/Manager/ItemManager.h"
+#include "../Object/Grid.h"
+#include "../Object/player.h"
+#include "../DrawUI/SceneUI/InventoryUI.h"
+
+
 
 SceneGame::SceneGame(void)
 {
@@ -40,6 +42,7 @@ void SceneGame::Init(void)
 	//プレイヤー
 	player_ = new Player();
 	player_->Init();
+
 
 	//カメラをプレイヤーに追従
 	camera->SetFollow(&player_->GetTransform());
@@ -101,10 +104,12 @@ void SceneGame::Update(void)
 	}
 
 
-	StageManager::GetInstance().Update();
-
 	//プレイヤー
 	player_->Update();
+
+	StageManager::GetInstance().Update();
+
+	
 }
 
 void SceneGame::Draw(void)

@@ -62,7 +62,7 @@ public:
 	static constexpr VECTOR SCALES = { 0.2f, 0.2f, 0.2f };
 
 	// 初期位置
-	static constexpr VECTOR DEFAULT_POS = { 300.0f, 20.0f, 300.0f };
+	static constexpr VECTOR DEFAULT_POS = { 0.0f, 0.0f, 0.0f };
 
 	// 標準の自己発光色
 	static constexpr COLOR_F COLOR_EMI_DEFAULT = { 0.5f, 0.5f, 0.5f, 0.5f };
@@ -71,7 +71,7 @@ public:
 	static constexpr float SPEED_MOVE = 10.0f;
 
 	//当たり判定の半径
-	static constexpr float RADIUS = 50.0f;
+	static constexpr float RADIUS = 40.0f;
 
 private:
 	// モデルID

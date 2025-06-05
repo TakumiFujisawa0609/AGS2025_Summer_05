@@ -141,7 +141,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\DrawUI\SceneUI\QuestUI.cpp" />
     <ClCompile Include="Src\Object\Interact\HitObject.cpp" />
+    <ClCompile Include="Src\Object\NullHitObject.cpp" />
+    <ClCompile Include="Src\Object\GuildObject\BulletinBoard.cpp" />
     <ClCompile Include="Src\Object\Manager\CollisionManager.cpp" />
     <ClCompile Include="Src\Manager\Generic\Camera.cpp" />
     <ClCompile Include="Src\Object\Item\Product\Garbage.cpp" />
@@ -196,7 +199,10 @@
     <ClCompile Include="Src\Object\UnitBase.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\DrawUI\SceneUI\QuestUI.h" />
     <ClInclude Include="Src\Object\Interact\HitObject.h" />
+    <ClInclude Include="Src\Object\NullHitObject.h" />
+    <ClInclude Include="Src\Object\GuildObject\BulletinBoard.h" />
     <ClInclude Include="Src\Object\Manager\CollisionManager.h" />
     <ClInclude Include="Src\Manager\Generic\Camera.h" />
     <ClInclude Include="Src\Object\Item\Product\Garbage.h" />

@@ -1,13 +1,14 @@
 #include "StageManager.h"
 
-#include<DxLib.h>
-#include<cassert>
+#include <DxLib.h>
+#include <cassert>
 
-#include"../../Stage/StageBase.h"
-#include"../../Stage/AtelierStage.h"
-#include"../../Stage/GardenStage.h"
-#include"../../Stage/GuildStage.h"
-#include"../../Stage/PrivateRoomStage.h"
+#include "../../Stage/StageBase.h"
+#include "../../Stage/AtelierStage.h"
+#include "../../Stage/GardenStage.h"
+#include "../../Stage/GuildStage.h"
+#include "../../Stage/PrivateRoomStage.h"
+#include "CollisionManager.h"
 
 StageManager* StageManager::instance_ = nullptr;
 
@@ -85,8 +86,6 @@ void StageManager::Update(void)
 //描画処理
 void StageManager::Draw(void)
 {
-	// 前フレームの内容を消去（重要）
-	ClearDrawScreen();
 	stage_->Draw();
 }
 
@@ -94,6 +93,9 @@ void StageManager::Draw(void)
 void StageManager::ChangeStage(STAGE_ID nextId)
 {
 	waitStageId_ = nextId;
+
+	// 既存のステージのオブジェクトをクリア
+	CollisionManager::GetInstance().Clear();
 
 	isStageChanging_ = true;
 }

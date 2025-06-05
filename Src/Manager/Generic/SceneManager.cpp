@@ -141,6 +141,9 @@ void SceneManager::Draw(void)
 
 	//ˆÃ“]E–¾“]
 	fader_->Draw();
+
+	//ƒJƒƒ‰À•W
+	camera_->Draw();
 }
 
 void SceneManager::Destroy(void)
