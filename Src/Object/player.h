@@ -62,7 +62,7 @@ public:
 	static constexpr VECTOR SCALES = { 0.2f, 0.2f, 0.2f };
 
 	// ‰ŠúˆÊ’u
-	static constexpr VECTOR DEFAULT_POS = { 0.0f, 0.0f, 0.0f };
+	static constexpr VECTOR DEFAULT_POS = { 0.0f, 20.0f, -200.0f };
 
 	// •W€‚Ì©ŒÈ”­ŒõF
 	static constexpr COLOR_F COLOR_EMI_DEFAULT = { 0.5f, 0.5f, 0.5f, 0.5f };

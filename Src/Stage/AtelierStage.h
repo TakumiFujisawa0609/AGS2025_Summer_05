@@ -2,8 +2,9 @@
 #include "DxLib.h"
 #include<memory>
 
-#include"StageBase.h"
-
+#include "StageBase.h"
+#include "../Object/AtelierObject/AlchemyPot.h"
+#include "../Object/AtelierObject/Teleport.h"
 
 class AtelierStage : public StageBase
 {
@@ -13,33 +14,33 @@ public:
 	static constexpr VECTOR MODELID_SCALEA = { 5.0f,5.0f,5.0f };
 
 	// 鍋の初期位置
-	static constexpr VECTOR INIT_MODELID_POS = { 100.0f, 60.0f, 0.0f };
+	static constexpr VECTOR INIT_MODELID_POS = { 0.0f, 0.0f, 0.0f };
 
 	//  鍋の衝突判定用半径
 	static constexpr float RADIUS_MODELID = 120.0f;
 
 
-	// 薬の初期位置
-	static constexpr VECTOR INIT_KUSURI_POS = { 100.0f, 70.0f, 0.0f };
+	//// 薬の初期位置
+	//static constexpr VECTOR INIT_KUSURI_POS = { 0.0f, 70.0f, 0.0f };
 
-	// 薬の衝突判定用半径
-	static constexpr float RADIUS_KUSURI = 80.0f;
+	//// 薬の衝突判定用半径
+	//static constexpr float RADIUS_KUSURI = 80.0f;
 
 
-	// 薬2の初期位置
-	static constexpr VECTOR INIT_KUSURI_POS2 = {250.0f, 70.0f, 0.0f };
+	//// 薬2の初期位置
+	//static constexpr VECTOR INIT_KUSURI_POS2 = {250.0f, 70.0f, 0.0f };
 
-	// 薬2の衝突判定用半径
-	static constexpr float RADIUS_KUSURI2 = 80.0f;
+	//// 薬2の衝突判定用半径
+	//static constexpr float RADIUS_KUSURI2 = 80.0f;
 
-	//	薬の種類
-	enum class KUSU
-	{
-		DEMON,
-		WIZARD,
-		GIANT,
-		MAX,
-	};
+	////	薬の種類
+	//enum class KUSU
+	//{
+	//	DEMON,
+	//	WIZARD,
+	//	GIANT,
+	//	MAX,
+	//};
 
 	//コンストラクタ
 	AtelierStage(void);
@@ -64,7 +65,7 @@ private:
 	// 球体位置
 	VECTOR spherePos = { 0.0f, 20.0f, 0.0f };
 
-	KUSU kusu_;
+	/*KUSU kusu_;*/
 
 	//	鍋
 	int modelId_;
@@ -73,17 +74,17 @@ private:
 	bool isModelId_;
 
 
-	//　薬
-	int kusuri_;
-	VECTOR kusuriPos_;
-	// 薬の生存判定
-	bool isKusuri_;
+	////　薬
+	//int kusuri_;
+	//VECTOR kusuriPos_;
+	//// 薬の生存判定
+	//bool isKusuri_;
 
-	//　薬
-	int kusuri2_;
-	VECTOR kusuriPos2_;
-	// 薬の生存判定
-	bool isKusuri2_;
+	////　薬
+	//int kusuri2_;
+	//VECTOR kusuriPos2_;
+	//// 薬の生存判定
+	//bool isKusuri2_;
 
 
 
@@ -104,5 +105,9 @@ private:
 	VECTOR Catch3DModelPosition2;
 	VECTOR Catch3DHitPosition2;
 	VECTOR Catch2DHitPosition2;
+
+	std::shared_ptr<AlchemyPot> alchemyPot_;
+	std::shared_ptr<Teleport> teleportt_;
+
 };
 

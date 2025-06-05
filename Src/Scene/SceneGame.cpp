@@ -16,12 +16,14 @@
 #include "../Object/Grid.h"
 #include "../Object/player.h"
 #include "../DrawUI/SceneUI/InventoryUI.h"
+#include "../DrawUI/Font.h"
 
 
 
 SceneGame::SceneGame(void)
 {
 	grid_ = nullptr;
+	isStartFont_ = true;
 }
 
 void SceneGame::Init(void)
@@ -61,6 +63,7 @@ void SceneGame::Init(void)
 
 	AlchemyManager::GetInstance().Init();
 
+
 }
 
 void SceneGame::Update(void)
@@ -88,20 +91,20 @@ void SceneGame::Update(void)
 	// インベントリUIの更新
 	inventoryUI_->Update();
 
-	// Rキーで錬金メニューの開閉
-	if (input.IsTrgDown(KEY_INPUT_R))
-	{
-		if (alchemy.IsOpen())
-			alchemy.Close();
-		else
-			alchemy.Open();
-	}
+	//// Rキーで錬金メニューの開閉
+	//if (input.IsTrgDown(KEY_INPUT_R))
+	//{
+	//	if (alchemy.IsOpen())
+	//		alchemy.Close();
+	//	else
+	//		alchemy.Open();
+	//}
 
-	// 錬金メニューが開いているときのみ更新
-	if (alchemy.IsOpen())
-	{
-		alchemy.Update();
-	}
+	//// 錬金メニューが開いているときのみ更新
+	//if (alchemy.IsOpen())
+	//{
+	//	alchemy.Update();
+	//}
 
 
 	//プレイヤー
@@ -116,19 +119,40 @@ void SceneGame::Draw(void)
 {
 	auto& alchemy = AlchemyManager::GetInstance();
 
+	//プレイヤーの描画
+	player_->Draw();
+
+	int x;
+	x = Application::DEFA_SCREEN_SIZE_X;
+
+	if (isStartFont_ == true)
+	{
+		Font::GetInstance().DrawDefaultText((x - (x / 2)) - 10, 200, "移動と表記が出ている場所でEneterキーを押して\nギルドに移動してそこで依頼を受けよう", 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+	}
+	else
+	{
+		Font::GetInstance().DrawDefaultText((x - (x / 2)) - 100, 200, "依頼を受けたらアトリエに戻って\n錬金と表記が出ている場所でEneterキーを押してアイテムを錬成しよう\nアイテムができたらギルドに戻ってアイテムを納品しよう", 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+	}
+
 	//ステージの描画
 	StageManager::GetInstance().Draw();
 
 	// インベントリUIの描画
 	inventoryUI_->Draw();
 
-	//プレイヤーの描画
-	player_->Draw();
+	if (InputManager::GetInstance().IsNew(KEY_INPUT_RETURN))
+	{
+		isStartFont_ = false;
+	}
 
-	if(alchemy.IsOpen())
+	
+
+	
+
+	/*if(alchemy.IsOpen())
 	{
 		alchemy.Draw();
-	}
+	}*/
 	
 
 #ifdef _DEBUG

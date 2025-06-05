@@ -28,6 +28,11 @@ void GuildStage::Init(void)
 	receptionist_ = std::make_shared<Receptionist>();
 	receptionist_->Init();
 	CollisionManager::GetInstance().Register(receptionist_);
+
+	teleportMovement_ = std::make_shared<TeleportMovement>();
+	teleportMovement_->Init();
+	CollisionManager::GetInstance().Register(teleportMovement_);
+
 }
 
 //XVˆ—
@@ -44,6 +49,7 @@ void GuildStage::Update(void)
 
 	bulletinBoard_->Update();
 	receptionist_->Update();
+	teleportMovement_->Update();
 }
 
 //•`‰æˆ—
@@ -52,6 +58,7 @@ void GuildStage::Draw(void)
 	DrawFormatString(0, 20, 0xffffff, "ƒMƒ‹ƒh");
 	bulletinBoard_->Draw();
 	receptionist_->Draw();
+	teleportMovement_->Draw();
 }
 
 //‰ğ•úˆ—

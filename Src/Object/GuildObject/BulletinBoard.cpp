@@ -8,7 +8,6 @@
 #include "../../DrawUI/Font.h"
 #include "../../Application.h"
 #include "../../DrawUI/SceneUI/QuestUI.h"
-#include "../../Application.h"
 
 BulletinBoard::BulletinBoard(void)
 {

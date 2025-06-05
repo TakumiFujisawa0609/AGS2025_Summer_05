@@ -48,6 +48,8 @@ private:
 	//インベントリUI
 	InventoryUI* inventoryUI_;
 
+	bool isStartFont_;
+
 	//描画(デバッグ)
 	void DrawDebug(void);
 

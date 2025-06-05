@@ -44,6 +44,7 @@ AlchemyManager::AlchemyManager(void)
     selectedMaterialIndex_ = 0;
     resultMessageTimer_ = 0;
 	isOpen_ = false;
+    start_ = false;
 }
 
 AlchemyManager::~AlchemyManager(void)
@@ -85,6 +86,7 @@ void AlchemyManager::Open(void)
 void AlchemyManager::Close(void)
 {
 	isOpen_ = false;
+    start_ = false;
 	ResetSelection();
 }
 
@@ -255,32 +257,43 @@ void AlchemyManager::Update()
             return;
         }
 
-        if (input.IsTrgDown(KEY_INPUT_RETURN))
+       
+
+        if (input.IsTrgUp(KEY_INPUT_RETURN))
         {
-            auto material = itemManager.GetMaterialItem(currentIndex_);
-            if (material && selectedMaterials_.size() < 3)
+            start_ = true;
+        }
+
+        if (start_)
+        {
+            if (input.IsTrgDown(KEY_INPUT_RETURN))
             {
-                // 選択済みの同じ素材の合計数を計算
-                int alreadySelectedAmount = 0;
-                for (const auto& selected : selectedMaterials_)
+                auto material = itemManager.GetMaterialItem(currentIndex_);
+                if (material && selectedMaterials_.size() < 3)
                 {
-                    if (selected.item->GetName() == material->GetName())
+                    // 選択済みの同じ素材の合計数を計算
+                    int alreadySelectedAmount = 0;
+                    for (const auto& selected : selectedMaterials_)
                     {
-                        alreadySelectedAmount += selected.amount;
+                        if (selected.item->GetName() == material->GetName())
+                        {
+                            alreadySelectedAmount += selected.amount;
+                        }
                     }
-                }
 
-                // 利用可能な残り個数を計算
-                int availableAmount = material->GetQuantity() - alreadySelectedAmount;
+                    // 利用可能な残り個数を計算
+                    int availableAmount = material->GetQuantity() - alreadySelectedAmount;
 
-                if (availableAmount > 0)
-                {
-                    selectedMaterialIndex_ = currentIndex_;
-                    currentPhase_ = 1;
-                    currentAmount_ = 1;
+                    if (availableAmount > 0)
+                    {
+                        selectedMaterialIndex_ = currentIndex_;
+                        currentPhase_ = 1;
+                        currentAmount_ = 1;
+                    }
                 }
             }
         }
+     
 
         if (input.IsTrgDown(KEY_INPUT_SPACE) && selectedMaterials_.size() >= 2)
         {

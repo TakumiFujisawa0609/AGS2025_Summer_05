@@ -247,7 +247,7 @@ void Camera::SetBeforeDrawShake(void)
 
 void Camera::Draw(void)
 {
-	DrawFormatString(0, 0, 0xffffff,"カメラ座標 = { %.2f, %.2f, %.2f}",pos_.x, pos_.y, pos_.z);
+	//DrawFormatString(0, 0, 0xffffff,"カメラ座標 = { %.2f, %.2f, %.2f}",pos_.x, pos_.y, pos_.z);
 }
 
 void Camera::Release(void)

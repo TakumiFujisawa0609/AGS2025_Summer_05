@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\AtelierObject\AlchemyPot.cpp" />
     <ClCompile Include="Src\Object\GuildObject\Receptionist.cpp" />
     <ClCompile Include="Src\DrawUI\SceneUI\QuestUI.cpp" />
     <ClCompile Include="Src\Object\Interact\HitObject.cpp" />
@@ -198,8 +199,11 @@
     <ClCompile Include="Src\Object\Manager\StageManager.cpp" />
     <ClCompile Include="Src\Object\Item\Material\Water.cpp" />
     <ClCompile Include="Src\Object\UnitBase.cpp" />
+    <ClCompile Include="Src\Object\AtelierObject\Teleport.cpp" />
+    <ClCompile Include="Src\Object\GuildObject\TeleportMovement.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\AtelierObject\AlchemyPot.h" />
     <ClInclude Include="Src\Object\GuildObject\Receptionist.h" />
     <ClInclude Include="Src\DrawUI\SceneUI\QuestUI.h" />
     <ClInclude Include="Src\Object\Interact\HitObject.h" />
@@ -257,6 +261,8 @@
     <ClInclude Include="Src\Object\Manager\StageManager.h" />
     <ClInclude Include="Src\Object\Item\Material\Water.h" />
     <ClInclude Include="Src\Object\UnitBase.h" />
+    <ClInclude Include="Src\Object\AtelierObject\Teleport.h" />
+    <ClInclude Include="Src\Object\GuildObject\TeleportMovement.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

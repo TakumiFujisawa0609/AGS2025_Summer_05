@@ -78,6 +78,8 @@ private:
 
 	static AlchemyManager* instance_;
 
+	bool start_;
+
 	// 生成結果のメッセージ
 	std::string resultMessage_;    
 
