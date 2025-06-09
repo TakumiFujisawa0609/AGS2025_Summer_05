@@ -45,17 +45,9 @@ void Application::Init(void)
 	//アプリケーションの初期設定
 	SetWindowText("アルケミストライフ");
 	
-#ifdef _DEBUG
 	//ウィンドウのサイズ
-	
-#else
-	
-#endif // _DEBUG
-	//ウィンドウのサイズ
-	//SetGraphMode(DEFA_SCREEN_SIZE_X, DEFA_SCREEN_SZIE_Y, 32);
+	SetGraphMode(DEFA_SCREEN_SIZE_X, DEFA_SCREEN_SZIE_Y, 32);
 
-	SetGraphMode(SCREEN_SIZE_X, SCREEN_SIZE_Y, 32);
-	
 	ChangeWindowMode(true);
 
 	//非アクティブ状態でも動作する

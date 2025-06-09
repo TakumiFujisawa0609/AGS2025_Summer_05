@@ -60,10 +60,10 @@ void ItemManager::Init()
     }
 
     // 初期所持数設定（例）
-    AddQuantity(FindItemById("Herb"), 5); // HerbのIDが0なら
-    AddQuantity(FindItemById("AntidoteHerb"), 5); // AntidoteHerbのIDが1なら
-    AddQuantity(FindItemById("MagicFlower"), 5); // MagicFlowerのIDが2なら
-    AddQuantity(FindItemById("Water"), 5); // WaterのIDが3なら
+    AddQuantity(FindItemById("Herb"), 50); // HerbのIDが0なら
+    AddQuantity(FindItemById("AntidoteHerb"), 50); // AntidoteHerbのIDが1なら
+    AddQuantity(FindItemById("MagicFlower"), 50); // MagicFlowerのIDが2なら
+    AddQuantity(FindItemById("Water"), 50); // WaterのIDが3なら
 
     // 完成品は0スタート
 }

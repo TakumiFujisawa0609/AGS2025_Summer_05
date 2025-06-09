@@ -100,14 +100,9 @@ void BulletinBoard::Draw(void)
 {
 	MV1DrawModel(trans_.modelId);
 
-#ifdef _DEBUG
-	const int screenWidth = Application::SCREEN_SIZE_X;
-	const int screenHeight = Application::SCREEN_SIZE_Y;
-#else
 	const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
 	const int screenHeight = Application::DEFA_SCREEN_SIZE_X;
 
-#endif // _DEBUG
 
 	
 
@@ -132,35 +127,50 @@ void BulletinBoard::Draw(void)
 		}
 		else
 		{
-			// 依頼リストのボックスサイズ
-			const int boxWidth = 600;
-			const int boxHeight = 300;
-			const int boxX = (screenWidth - boxWidth) / 2;
-			const int boxY = 150;
+			// 各依頼ボックスのサイズと位置
+			const int boxWidth = 150;     // 横幅を細く
+			const int boxHeight = 300;    // 高さを長く
+			const int spacing = 40;       // 横間隔
+			const int startX = (screenWidth - (3 * boxWidth + 2 * spacing)) / 2;
+			const int startY = 180;
+			
+			// 3つの依頼ボックスを囲む大きな四角形を描画
+			const int bigBoxX1 = startX - 20;  // 余白を持たせて少し左に
+			const int bigBoxY1 = startY - 20;  // 上も余白を持たせる
+			const int bigBoxX2 = startX + 3 * boxWidth + 2 * spacing + 20; // 右も余白をプラス
+			const int bigBoxY2 = startY + boxHeight + 20;  // 下も余白をプラス
 
-			DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(0, 0, 0), TRUE);
-			DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(255, 255, 255), FALSE);
+			// 色は薄いグレー、塗りつぶしあり
+			DrawBox(bigBoxX1, bigBoxY1, bigBoxX2, bigBoxY2, GetColor(50, 50, 50), TRUE);
+			// 枠線は白
+			DrawBox(bigBoxX1, bigBoxY1, bigBoxX2, bigBoxY2, GetColor(255, 255, 255), FALSE);
 
 			// タイトル
-			Font::GetInstance().DrawDefaultText(boxX + 20, boxY + 20, "===== 納品依頼一覧 =====", 0xffffff, 24);
+			Font::GetInstance().DrawDefaultText(startX, startY - 100, "===== 納品依頼一覧 =====", 0xffffff, 24);
 
-			// 依頼リスト描画
+			// 横に3つの依頼ボックスを並べる
 			for (int i = 0; i < 3; i++)
 			{
-				int color = (i == selectedQuest_) ? 0xff00ff : 0xffffff;
-				int yPos = boxY + 60 + (i * 30);
+				int xPos = startX + i * (boxWidth + spacing);
+				int boxColor = (i == selectedQuest_) ? GetColor(50, 50, 80) : GetColor(0, 0, 0);
+				int borderColor = (i == selectedQuest_) ? GetColor(255, 0, 255) : GetColor(255, 255, 255);
+				int textColor = (i == selectedQuest_) ? 0xff00ff : 0xffffff;
 
-				if (i == selectedQuest_)
-				{
-					Font::GetInstance().DrawDefaultText(boxX + 20, yPos, "→", 0xff00ff, 24);
-				}
+				// ボックスの背景と枠線
+				DrawBox(xPos, startY, xPos + boxWidth, startY + boxHeight, boxColor, TRUE);
+				DrawBox(xPos, startY, xPos + boxWidth, startY + boxHeight, borderColor, FALSE);
 
-				Font::GetInstance().DrawDefaultText(boxX + 50, yPos, questList_[i].c_str(), color, 20);
+				// テキストを中央寄せで描画（縦の中央に表示）
+				Font::GetInstance().DrawDefaultText(xPos + 10, startY + boxHeight / 2 - 10,
+					questList_[i].c_str(), textColor, 18);
 			}
 
 			// 操作説明
-			Font::GetInstance().DrawDefaultText(boxX + 20, boxY + 230, "↑↓キー: 選択  Enter: 決定  X: 戻る", 0xcccccc, 16);
+			Font::GetInstance().DrawDefaultText(startX, startY + boxHeight + 30,
+				"←→キー: 選択  Enter: 決定  X: 戻る", 0xcccccc, 16);
 		}
+
+
 	}
 
 	//DrawSphere3D(trans_.pos, radius_, 16, 0xffffff, 0xffffff, false);

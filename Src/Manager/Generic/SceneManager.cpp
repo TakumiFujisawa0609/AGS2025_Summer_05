@@ -247,6 +247,7 @@ void SceneManager::DoChangeScene(SCENE_ID sceneId)
 	}
 
 	scene_->Init();
+	
 
 	ResetDeltaTime();
 

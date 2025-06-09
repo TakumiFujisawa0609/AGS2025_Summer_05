@@ -9,7 +9,6 @@
 #include "../Object/Manager/CollisionManager.h"
 
 
-
 //コンストラクタ
 AtelierStage::AtelierStage(void)
 {

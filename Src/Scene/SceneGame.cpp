@@ -125,17 +125,17 @@ void SceneGame::Draw(void)
 	int x;
 	x = Application::DEFA_SCREEN_SIZE_X;
 
+	//ステージの描画
+	StageManager::GetInstance().Draw();
+
 	if (isStartFont_ == true)
 	{
-		Font::GetInstance().DrawDefaultText((x - (x / 2)) - 10, 200, "移動と表記が出ている場所でEneterキーを押して\nギルドに移動してそこで依頼を受けよう", 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+		Font::GetInstance().DrawDefaultText((x - (x / 2)) - 10, 0, "移動と表記が出ている場所でEneterキーを押して\nギルドに移動してそこで依頼を受けよう", 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
 	}
 	else
 	{
-		Font::GetInstance().DrawDefaultText((x - (x / 2)) - 100, 200, "依頼を受けたらアトリエに戻って\n錬金と表記が出ている場所でEneterキーを押してアイテムを錬成しよう\nアイテムができたらギルドに戻ってアイテムを納品しよう", 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+		Font::GetInstance().DrawDefaultText((x - (x / 2)) - 100, 0, "依頼を受けたらアトリエに戻って\n錬金と表記が出ている場所でEneterキーを押してアイテムを錬成しよう\nアイテムができたらギルドに戻ってアイテムを納品しよう", 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
 	}
-
-	//ステージの描画
-	StageManager::GetInstance().Draw();
 
 	// インベントリUIの描画
 	inventoryUI_->Draw();

@@ -6,16 +6,10 @@ class Fps;
 class Application
 {
 public:
-#ifdef _DEBUG //デバックスクリーンサイズ
-	static constexpr int SCREEN_SIZE_X = 1580;
-	static constexpr int SCREEN_SIZE_Y = 900;
-
-#else
 
 	//ウインドサイズ
 	static constexpr int SCREEN_SIZE_X = 1580;
 	static constexpr int SCREEN_SIZE_Y = 900;
-#endif // DEBUG
 
 	//フルスクリーンサイズ
 	static constexpr int DEFA_SCREEN_SIZE_X = 1580;

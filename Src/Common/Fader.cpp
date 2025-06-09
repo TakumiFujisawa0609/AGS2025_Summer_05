@@ -47,16 +47,9 @@ void Fader::Init(void)
 
 	//デバック時とリリース時で画面サイズを切り替える
 	tmpScene_ = MakeScreen(
-#ifdef _DEBUG
-		Application::SCREEN_SIZE_X,		//デバッグ時の横幅
-		Application::SCREEN_SIZE_Y,		//デバッグ時の縦幅
-		true
-
-#else
 		Application::DEFA_SCREEN_SIZE_X,	//リリース時の横幅
 		Application::DEFA_SCREEN_SZIE_Y,	//リリース時の縦幅
 		true
-#endif
 	);
 }
 
@@ -160,36 +153,19 @@ void Fader::CricleMask(void)
 
 	//画面全体を黒に塗る
 	DrawBox(
-#ifdef _DEBUG
-		0, 0,
-		Application::SCREEN_SIZE_X,		//デバッグ時の横幅
-		Application::SCREEN_SIZE_Y,		//デバッグ時の縦幅
-		0x000000, true
-#else
 		0, 0,
 		Application::DEFA_SCREEN_SIZE_X,//リリース時の横幅
 		Application::DEFA_SCREEN_SZIE_Y,//リリース時の縦幅
 		0x000000, true
-
-#endif // DEBUG
-
 	);
 
 	//白色の円を描画する
 	//alpha値を利用して大きさを制御
 	DrawCircle(
-#ifdef _DEBUG
-		Application::SCREEN_SIZE_X / 2,		//デバッグ時の中心x
-		Application::SCREEN_SIZE_Y / 2,		//デバッグ時の中心y
-		(ALPHA_MAX - alpha_) * 4,			//円の半径(アルファ値で変化)
-		0xffffff, true
-#else
 		(Application::DEFA_SCREEN_SIZE_X / 2),//リリース時の中心x
 		Application::DEFA_SCREEN_SZIE_Y / 2,//リリース時の中心y
 		(ALPHA_MAX - alpha_) * 4,			//円の半径(アルファ値で変化)
 		0xffffff, true
-#endif // _DEBUG
-
 	);
 	
 	//描画領域を元に戻す

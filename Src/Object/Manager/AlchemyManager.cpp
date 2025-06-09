@@ -438,13 +438,8 @@ void AlchemyManager::Draw(void)
     auto& itemManager = ItemManager::GetInstance();
 
     // 画面サイズを取得
-#ifdef _DEBUG
-    const int screenWidth = Application::SCREEN_SIZE_X;
-    const int screenHeight = Application::SCREEN_SIZE_Y;
-#else
     const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
     const int screenHeight = Application::DEFA_SCREEN_SZIE_Y;
-#endif
 
     // UI表示の基準位置
     const int startX = 100;

@@ -171,13 +171,8 @@ void Receptionist::Draw(void)
 {
     MV1DrawModel(trans_.modelId);
 
-#ifdef _DEBUG
-    const int screenWidth = Application::SCREEN_SIZE_X;
-    const int screenHeight = Application::SCREEN_SIZE_Y;
-#else
     const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
     const int screenHeight = Application::DEFA_SCREEN_SIZE_X;
-#endif // _DEBUG
 
     if (isShowUI_)
     {
