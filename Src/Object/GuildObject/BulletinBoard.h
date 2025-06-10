@@ -52,6 +52,10 @@ public:
 	bool IsValid(void) const override;
 
 private:
+	//掲示板の背景画像のID
+	int imageBoardId_;
+	
+	//表示UIの判定
 	bool isShowUI_;
 
 	//依頼リスト表示フラグ

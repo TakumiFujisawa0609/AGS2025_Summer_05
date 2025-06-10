@@ -1,13 +1,13 @@
 #include "BulletinBoard.h"
 
 #include "../../Manager/Generic/ResourceManager.h"
-#include "../../Manager/Generic/Resource.h"
 #include "../../Manager/Generic/InputManager.h"
 #include "../../Utility/Utility.h"
 #include "../Manager/CollisionManager.h"
 #include "../../DrawUI/Font.h"
 #include "../../Application.h"
 #include "../../DrawUI/SceneUI/QuestUI.h"
+#include "../../Application.h"
 
 BulletinBoard::BulletinBoard(void)
 {
@@ -19,6 +19,7 @@ BulletinBoard::BulletinBoard(void)
 	isShowUI_ = false;
 	isShowQuestList_ = false;
 	selectedQuest_ = 0;
+	imageBoardId_ = 0;
 }
 
 BulletinBoard::~BulletinBoard(void)
@@ -40,6 +41,9 @@ void BulletinBoard::Init(void)
 	isShowUI_ = false;
 	isShowQuestList_ = false;
 	selectedQuest_ = 0;
+
+	//掲示板の画像
+	imageBoardId_ = res.Load(ResourceManager::SRC::IMAGE_BOARD).handleId_;
 
 	// 依頼リストを初期化
 	questList_[0] = "依頼1: 回復ポーソンを3こ納品";
@@ -98,6 +102,7 @@ void BulletinBoard::Update(void)
 
 void BulletinBoard::Draw(void)
 {
+
 	MV1DrawModel(trans_.modelId);
 
 	const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
@@ -133,17 +138,8 @@ void BulletinBoard::Draw(void)
 			const int spacing = 40;       // 横間隔
 			const int startX = (screenWidth - (3 * boxWidth + 2 * spacing)) / 2;
 			const int startY = 180;
-			
-			// 3つの依頼ボックスを囲む大きな四角形を描画
-			const int bigBoxX1 = startX - 20;  // 余白を持たせて少し左に
-			const int bigBoxY1 = startY - 20;  // 上も余白を持たせる
-			const int bigBoxX2 = startX + 3 * boxWidth + 2 * spacing + 20; // 右も余白をプラス
-			const int bigBoxY2 = startY + boxHeight + 20;  // 下も余白をプラス
 
-			// 色は薄いグレー、塗りつぶしあり
-			DrawBox(bigBoxX1, bigBoxY1, bigBoxX2, bigBoxY2, GetColor(50, 50, 50), TRUE);
-			// 枠線は白
-			DrawBox(bigBoxX1, bigBoxY1, bigBoxX2, bigBoxY2, GetColor(255, 255, 255), FALSE);
+			DrawRotaGraph3(0, 0, 0, 0, 0.98f, 0.98f, 0, imageBoardId_, TRUE);
 
 			// タイトル
 			Font::GetInstance().DrawDefaultText(startX, startY - 100, "===== 納品依頼一覧 =====", 0xffffff, 24);

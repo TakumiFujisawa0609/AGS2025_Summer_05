@@ -31,6 +31,7 @@ public:
 
 		//ギルド関係
 		BULLETIN_BOARD,			//掲示板
+		IMAGE_BOARD,			//掲示板の画像
 
 		//ミニマップ関係
 		MAP_FRAME,				//ミニマップ枠

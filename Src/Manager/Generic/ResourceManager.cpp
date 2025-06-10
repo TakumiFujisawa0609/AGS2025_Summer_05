@@ -116,9 +116,13 @@ void ResourceManager::ResourceGuild(void)
 {
 	Resource res;
 
-	//掲示板オブジェクト
+	//掲示板オブジェクトの登録
 	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "/GuildObject/Iitem.mv1");
 	resourcesMap_.emplace(SRC::BULLETIN_BOARD, res);
+
+	//掲示板の画像の登録
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "/GuildStage/BulletinBoard.png");
+	resourcesMap_.emplace(SRC::IMAGE_BOARD, res);
 }
 
 // プレイヤー用リソース初期化（未実装）

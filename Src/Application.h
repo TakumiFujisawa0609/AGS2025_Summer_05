@@ -8,11 +8,11 @@ class Application
 public:
 
 	//ウインドサイズ
-	static constexpr int SCREEN_SIZE_X = 1580;
+	static constexpr int SCREEN_SIZE_X = 1540;
 	static constexpr int SCREEN_SIZE_Y = 900;
 
 	//フルスクリーンサイズ
-	static constexpr int DEFA_SCREEN_SIZE_X = 1580;
+	static constexpr int DEFA_SCREEN_SIZE_X = 1540;
 	static constexpr int DEFA_SCREEN_SZIE_Y = 900;
 
 	
