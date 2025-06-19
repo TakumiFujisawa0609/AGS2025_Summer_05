@@ -28,6 +28,10 @@ SceneGame::SceneGame(void)
 
 void SceneGame::Init(void)
 {
+	// ステージ管理初期
+	stageManager_ = new StageManager();
+	stageManager_->Init();
+
 	//カメラ
 	auto camera = SceneManager::GetInstance().GetCamera();
 
@@ -110,7 +114,7 @@ void SceneGame::Update(void)
 	//プレイヤー
 	player_->Update();
 
-	StageManager::GetInstance().Update();
+	stageManager_->Update();
 
 	
 }
@@ -122,11 +126,11 @@ void SceneGame::Draw(void)
 	//プレイヤーの描画
 	player_->Draw();
 
+	//ステージの描画
+	stageManager_->Draw();
+
 	int x;
 	x = Application::DEFA_SCREEN_SIZE_X;
-
-	//ステージの描画
-	StageManager::GetInstance().Draw();
 
 	if (isStartFont_ == true)
 	{
@@ -146,6 +150,7 @@ void SceneGame::Draw(void)
 	}
 
 	
+	
 
 	
 
@@ -163,6 +168,7 @@ void SceneGame::Draw(void)
 
 void SceneGame::Release(void)
 {
+
 	grid_->Release();
 	delete grid_;
 	grid_ = nullptr;
@@ -175,6 +181,12 @@ void SceneGame::Release(void)
 	//インベントリUIの解放
 	delete inventoryUI_;
 	inventoryUI_ = nullptr;
+
+	//ステージマネージャーの削除
+	stageManager_->Destroy();
+	delete stageManager_;
+
+	
 }
 
 void SceneGame::DrawDebug(void)

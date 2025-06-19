@@ -33,6 +33,10 @@ public:
 		BULLETIN_BOARD,			//掲示板
 		IMAGE_BOARD,			//掲示板の画像
 
+		//庭関係
+		BLOCK_DIRT,				//土ブロック
+		BLOCK_GFRASS,			//草ブロック
+
 		//ミニマップ関係
 		MAP_FRAME,				//ミニマップ枠
 		MAP_GROUND,				//ミニマップ枠内
@@ -74,6 +78,9 @@ public:
 
 	//ギルドで使うリソース
 	void ResourceGuild(void);
+
+	//庭で使うリソース
+	void ResourceGarden(void);
 
 	//プレイヤーが使うリソース
 	void ResourcePlayer(void);

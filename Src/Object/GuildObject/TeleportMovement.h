@@ -7,6 +7,8 @@
 #include "../Interact/HitObject.h"
 #include "../UnitBase.h"
 
+class StageManager;
+
 class TeleportMovement : public HitObject, public UnitBase
 {
 public:
@@ -21,7 +23,7 @@ public:
 	static constexpr VECTOR MODEL_POS = { 200.0f,20.0f, -500.0f };
 
 	//コンストラクタ
-	TeleportMovement(void);
+	TeleportMovement(StageManager* stageManager);
 
 	//デストラクタ
 	~TeleportMovement(void);
@@ -39,6 +41,8 @@ public:
 	void Release(void)override;
 
 	//HitObjectを継承
+	HIT_TYPE GetHitType(void) const override;
+
 	VECTOR GetHitPosition(void) const override;
 
 	float GetHitRadius(void) const override;
@@ -53,5 +57,5 @@ public:
 
 private:
 	bool isShowUI_;
+	StageManager* stageManager_;
 };
-

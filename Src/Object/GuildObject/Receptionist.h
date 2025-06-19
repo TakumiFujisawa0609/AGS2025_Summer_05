@@ -37,6 +37,8 @@ public:
     void Release(void) override;
 
     // HitObject‚ğŒp³
+    HIT_TYPE GetHitType(void) const override;
+
     VECTOR GetHitPosition(void) const override;
     float GetHitRadius(void) const override;
 

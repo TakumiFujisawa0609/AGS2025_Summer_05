@@ -10,9 +10,8 @@
 #include "../Object/GuildObject/BulletinBoard.h"
 #include "../Object/Manager/CollisionManager.h"
 
-
 //コンストラクタ
-GuildStage::GuildStage(void)
+GuildStage::GuildStage(StageManager* stageManager) : stageManager_(stageManager)
 {
 
 }
@@ -29,10 +28,9 @@ void GuildStage::Init(void)
 	receptionist_->Init();
 	CollisionManager::GetInstance().Register(receptionist_);
 
-	teleportMovement_ = std::make_shared<TeleportMovement>();
+	teleportMovement_ = std::make_shared<TeleportMovement>(stageManager_);
 	teleportMovement_->Init();
 	CollisionManager::GetInstance().Register(teleportMovement_);
-
 }
 
 //更新処理
@@ -44,7 +42,10 @@ void GuildStage::Update(void)
 	if (input.IsTrgDown(KEY_INPUT_P))
 	{
 		//ステージ遷移
-		StageManager::GetInstance().ChangeStage(StageManager::STAGE_ID::PRIVATE_ROOM);
+		if (stageManager_)
+		{
+			stageManager_->ChangeStage(StageManager::STAGE_ID::PRIVATE_ROOM);
+		}
 	}
 
 	bulletinBoard_->Update();
@@ -56,7 +57,7 @@ void GuildStage::Update(void)
 void GuildStage::Draw(void)
 {
 	DrawFormatString(0, 20, 0xffffff, "ギルド");
-	
+
 	receptionist_->Draw();
 	teleportMovement_->Draw();
 	bulletinBoard_->Draw();

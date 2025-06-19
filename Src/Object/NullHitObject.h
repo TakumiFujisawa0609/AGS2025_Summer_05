@@ -6,9 +6,15 @@
 
 class NullHitObject : public HitObject {
 public:
+    HIT_TYPE GetHitType(void) const override;
+    
     VECTOR GetHitPosition(void) const override;
 
-    float GetHitRadius(void) const override;
+	float GetHitRadius(void) const override;
+
+	VECTOR GetHitMin(void) const override;
+
+	VECTOR GetHitMax(void) const override;
     
     void ShowUI(void) override;
     

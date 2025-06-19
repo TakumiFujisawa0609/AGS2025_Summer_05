@@ -24,11 +24,11 @@ public:
 		PRIVATE_ROOM,
 	};
 
-	//インスタンスの生成
-	static void CreateInstance(void);
+	//コンストラクタ
+	StageManager(void);
 
-	//インスタンスの取得
-	static StageManager& GetInstance(void);
+	//デストラクタ
+	~StageManager(void);
 
 	//初期化処理
 	void Init(void);
@@ -53,9 +53,6 @@ public:
 
 private:
 
-	//シングルトンインスタンス
-	static StageManager* instance_;
-
 	//フェード
 	std::unique_ptr<Fader> fader_;
 
@@ -65,7 +62,7 @@ private:
 	//次のステージID
 	STAGE_ID waitStageId_;
 
-	//ステージ基底クラス
+	//ステージ管理クラス
 	StageBase* stage_;
 
 	//遷移中かどうか
@@ -75,14 +72,6 @@ private:
 	std::chrono::system_clock::time_point preTime_;
 	float deltaTime_;
 
-	//コンストラクタ
-	StageManager(void);
-
-	StageManager(const StageManager&) = delete;
-
-	//デストラクタ
-	~StageManager(void) = default;
-
 	//デルタタイムのリセット
 	void ResetDeltaTime(void);
 
@@ -90,4 +79,3 @@ private:
 	void DoChangeStage(STAGE_ID stageId);
 
 };
-

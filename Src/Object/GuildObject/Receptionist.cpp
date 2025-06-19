@@ -257,6 +257,11 @@ void Receptionist::Release(void)
 {
 }
 
+HitObject::HIT_TYPE Receptionist::GetHitType(void) const
+{
+    return HIT_TYPE::SPHERE;
+}
+
 VECTOR Receptionist::GetHitPosition(void) const
 {
     return trans_.pos;

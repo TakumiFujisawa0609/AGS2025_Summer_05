@@ -99,6 +99,11 @@ void AlchemyPot::Release(void)
 {
 }
 
+HitObject::HIT_TYPE AlchemyPot::GetHitType(void) const
+{
+	return HIT_TYPE::SPHERE;
+}
+
 VECTOR AlchemyPot::GetHitPosition(void) const
 {
 	return trans_.pos;

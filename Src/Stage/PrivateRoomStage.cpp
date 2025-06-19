@@ -22,13 +22,6 @@ void PrivateRoomStage::Init(void)
 void PrivateRoomStage::Update(void)
 {
 	auto& input = InputManager::GetInstance();
-
-	//ステージ遷移(デバッグ)
-	if (input.IsTrgDown(KEY_INPUT_P))
-	{
-		//ステージ遷移
-		StageManager::GetInstance().ChangeStage(StageManager::STAGE_ID::ATELIER);
-	}
 }
 
 //描画処理

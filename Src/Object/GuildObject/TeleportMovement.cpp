@@ -1,6 +1,5 @@
 #include "TeleportMovement.h"
 
-
 #include "../../Manager/Generic/ResourceManager.h"
 #include "../../Manager/Generic/Resource.h"
 #include "../../Manager/Generic/InputManager.h"
@@ -11,7 +10,7 @@
 #include "../../Application.h"
 #include"../../Object/Manager/StageManager.h"
 
-TeleportMovement::TeleportMovement(void)
+TeleportMovement::TeleportMovement(StageManager* stageManager) : stageManager_(stageManager)
 {
 	isShowUI_ = false;
 }
@@ -46,8 +45,10 @@ void TeleportMovement::Update(void)
 	if (isShowUI_ && input.IsTrgDown(KEY_INPUT_RETURN))
 	{
 		//ステージ遷移
-		StageManager::GetInstance().ChangeStage(StageManager::STAGE_ID::ATELIER);
-
+		if (stageManager_)
+		{
+			stageManager_->ChangeStage(StageManager::STAGE_ID::ATELIER);
+		}
 	}
 }
 
@@ -57,7 +58,6 @@ void TeleportMovement::Draw(void)
 
 	const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
 	const int screenHeight = Application::DEFA_SCREEN_SIZE_X;
-
 
 	if (isShowUI_)
 	{
@@ -80,6 +80,11 @@ void TeleportMovement::Draw(void)
 
 void TeleportMovement::Release(void)
 {
+}
+
+HitObject::HIT_TYPE TeleportMovement::GetHitType(void) const
+{
+	return HIT_TYPE::SPHERE;
 }
 
 VECTOR TeleportMovement::GetHitPosition(void) const
@@ -106,5 +111,3 @@ bool TeleportMovement::IsValid(void) const
 {
 	return true;
 }
-
-

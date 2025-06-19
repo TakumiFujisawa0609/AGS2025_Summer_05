@@ -10,26 +10,6 @@
 #include "../../Stage/PrivateRoomStage.h"
 #include "CollisionManager.h"
 
-StageManager* StageManager::instance_ = nullptr;
-
-//インスタンスの生成
-void StageManager::CreateInstance(void)
-{
-	if (instance_ == nullptr)
-	{
-		instance_ = new StageManager();
-		instance_->Init();
-	}
-}
-
-//インスタンスの取得
-StageManager& StageManager::GetInstance(void)
-{
-	assert(instance_);
-	return *instance_;
-}
-
-
 //コンストラクタ
 StageManager::StageManager(void)
 {
@@ -40,44 +20,50 @@ StageManager::StageManager(void)
 	deltaTime_ = 1.0f / 60.0f;
 }
 
+//デストラクタ
+StageManager::~StageManager(void)
+{
+	Destroy();
+}
+
 //初期化処理
 void StageManager::Init(void)
 {
 	stageId_ = STAGE_ID::NONE;
 	waitStageId_ = STAGE_ID::NONE;
-	stage_ = new AtelierStage();
-	stage_->Init();
-
+	stage_ = nullptr; 
 	DoChangeStage(STAGE_ID::ATELIER);
 }
 
 //破棄処理
 void StageManager::Destroy(void)
 {
-
-	stage_->Release();
-	delete stage_;
-	stage_ = nullptr;
-
-	delete instance_;
+	if (stage_ != nullptr)
+	{
+		stage_->Release();
+		delete stage_;
+		stage_ = nullptr;
+	}
 }
 
 //更新処理
 void StageManager::Update(void)
 {
-	//デルタタイムの計算
+	// デルタタイムの計算
 	auto nowTime = std::chrono::system_clock::now();
-
 	deltaTime_ = std::chrono::duration<float>(nowTime - preTime_).count();
-
 	preTime_ = nowTime;
 
+	// ステージ遷移フラグのチェックを先に行う
 	if (isStageChanging_)
 	{
 		DoChangeStage(waitStageId_);
 		isStageChanging_ = false;
+		return;  // 切り替え後は更新処理をスキップ
 	}
-	else if (stage_)
+
+	// 通常の更新処理
+	if (stage_)
 	{
 		stage_->Update();
 	}
@@ -86,7 +72,10 @@ void StageManager::Update(void)
 //描画処理
 void StageManager::Draw(void)
 {
-	stage_->Draw();
+	if (stage_)
+	{
+		stage_->Draw();
+	}
 }
 
 //ステージ遷移
@@ -103,26 +92,28 @@ void StageManager::ChangeStage(STAGE_ID nextId)
 //ステージ遷移本体
 void StageManager::DoChangeStage(STAGE_ID stageId)
 {
-	stageId_ = stageId;
-
+	// 既存のステージを削除
 	if (stage_ != nullptr)
 	{
 		stage_->Release();
 		delete stage_;
+		stage_ = nullptr;
 	}
-	
+
+	stageId_ = stageId;
+
 	switch (stageId_)
 	{
 	case StageManager::STAGE_ID::ATELIER:
-		stage_ = new AtelierStage();
+		stage_ = new AtelierStage(this);
 		break;
 
 	case StageManager::STAGE_ID::GARDEN:
-		stage_ = new GardenStage();
+		stage_ = new GardenStage(this);
 		break;
 
 	case StageManager::STAGE_ID::GUILD:
-		stage_ = new GuildStage();
+		stage_ = new GuildStage(this);
 		break;
 
 	case StageManager::STAGE_ID::PRIVATE_ROOM:
@@ -130,12 +121,14 @@ void StageManager::DoChangeStage(STAGE_ID stageId)
 		break;
 	}
 
-	stage_->Init();
+	if (stage_)
+	{
+		stage_->Init();
+	}
 
 	ResetDeltaTime();
 
 	waitStageId_ = STAGE_ID::NONE;
-
 }
 
 //デルタタイムのリセット

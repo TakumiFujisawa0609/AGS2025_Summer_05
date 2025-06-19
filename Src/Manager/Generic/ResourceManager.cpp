@@ -73,6 +73,9 @@ void ResourceManager::InitGame(void)
 
 	//ギルドリソースの初期化
 	ResourceGuild();
+
+	//庭のリソースを初期化
+	ResourceGarden();
 }
 
 // ゲームオーバーシーン用リソースの初期化
@@ -123,6 +126,17 @@ void ResourceManager::ResourceGuild(void)
 	//掲示板の画像の登録
 	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "/GuildStage/BulletinBoard.png");
 	resourcesMap_.emplace(SRC::IMAGE_BOARD, res);
+}
+
+void ResourceManager::ResourceGarden(void)
+{
+	Resource res;
+	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GardenObject/Block_Dirt.mv1");
+	resourcesMap_.emplace(SRC::BLOCK_DIRT, res);
+
+	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GardenObject/Block_Grass.mv1");
+	resourcesMap_.emplace(SRC::BLOCK_GFRASS, res);
+
 }
 
 // プレイヤー用リソース初期化（未実装）

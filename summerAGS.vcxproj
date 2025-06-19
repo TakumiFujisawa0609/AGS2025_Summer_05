@@ -141,6 +141,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\Manager\BlockManager.cpp" />
+    <ClCompile Include="Src\Object\GardenObject\Block.cpp" />
     <ClCompile Include="Src\Object\AtelierObject\AlchemyPot.cpp" />
     <ClCompile Include="Src\Object\GuildObject\Receptionist.cpp" />
     <ClCompile Include="Src\DrawUI\SceneUI\QuestUI.cpp" />
@@ -203,6 +205,8 @@
     <ClCompile Include="Src\Object\GuildObject\TeleportMovement.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\Manager\BlockManager.h" />
+    <ClInclude Include="Src\Object\GardenObject\Block.h" />
     <ClInclude Include="Src\Object\AtelierObject\AlchemyPot.h" />
     <ClInclude Include="Src\Object\GuildObject\Receptionist.h" />
     <ClInclude Include="Src\DrawUI\SceneUI\QuestUI.h" />

@@ -8,11 +8,13 @@
 #include "../Object/GuildObject/Receptionist.h"
 #include "../Object/GuildObject/TeleportMovement.h"
 
+class StageManager;
+
 class GuildStage : public StageBase
 {
 public:
 	//コンストラクタ
-	GuildStage(void);
+	GuildStage(StageManager* stageManager);
 
 	//デストラクタ
 	~GuildStage(void) = default;
@@ -34,5 +36,7 @@ private:
 	std::shared_ptr<BulletinBoard> bulletinBoard_;
 	std::shared_ptr<Receptionist> receptionist_;
 	std::shared_ptr<TeleportMovement> teleportMovement_;
-};
 
+	// StageManagerの参照
+	StageManager* stageManager_;
+};

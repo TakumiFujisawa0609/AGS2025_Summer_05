@@ -70,7 +70,7 @@ void Player::Update(void)
 	animationController_->Update();
 
 	// プレイヤーの座標と半径を使って当たり判定
-	CollisionManager::GetInstance().CheckHitWithPlayer(trans_.pos, radius_);
+	CollisionManager::GetInstance().CheckHitWithPlayer(trans_.pos, radius_, GetHitMin(), GetHitMax());
 
 }
 
@@ -105,6 +105,25 @@ void Player::SetPos(VECTOR pos)
 {
 	trans_.pos = pos;
 }
+
+VECTOR Player::GetHitMin() const
+{
+	return {
+		trans_.pos.x - radius_,
+		trans_.pos.y - radius_,
+		trans_.pos.z - radius_
+	};
+}
+
+VECTOR Player::GetHitMax() const
+{
+	return {
+		trans_.pos.x + radius_,
+		trans_.pos.y + radius_,
+		trans_.pos.z + radius_
+	};
+}
+
 
 void Player::ProcessMove(void)
 {

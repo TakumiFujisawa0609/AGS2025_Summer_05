@@ -8,6 +8,7 @@
 class Grid;
 class Player;
 class InventoryUI;
+class StageManager;
 
 class SceneGame : public SceneBase
 {
@@ -47,6 +48,9 @@ private:
 
 	//インベントリUI
 	InventoryUI* inventoryUI_;
+
+	//ステージマネージャー
+	StageManager* stageManager_;
 
 	bool isStartFont_;
 

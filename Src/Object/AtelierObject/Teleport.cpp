@@ -1,6 +1,5 @@
 #include "Teleport.h"
 
-
 #include "../../Manager/Generic/ResourceManager.h"
 #include "../../Manager/Generic/Resource.h"
 #include "../../Manager/Generic/InputManager.h"
@@ -11,10 +10,9 @@
 #include "../../Application.h"
 #include"../../Object/Manager/StageManager.h"
 
-Teleport::Teleport(void)
+Teleport::Teleport(StageManager* stageManager) : stageManager_(stageManager)
 {
 	isShowUI_ = false;
-	
 }
 
 Teleport::~Teleport(void)
@@ -42,12 +40,15 @@ void Teleport::Update(void)
 	auto& input = InputManager::GetInstance();
 
 	trans_.Update();
-	
+
 	// エンターキーが押された時の処理
 	if (isShowUI_ && input.IsTrgDown(KEY_INPUT_RETURN))
 	{
 		//ステージ遷移
-		StageManager::GetInstance().ChangeStage(StageManager::STAGE_ID::GUILD);
+		if (stageManager_)
+		{
+			stageManager_->ChangeStage(StageManager::STAGE_ID::GUILD);
+		}
 	}
 }
 
@@ -57,7 +58,6 @@ void Teleport::Draw(void)
 
 	const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
 	const int screenHeight = Application::DEFA_SCREEN_SIZE_X;
-
 
 	if (isShowUI_)
 	{
@@ -76,11 +76,15 @@ void Teleport::Draw(void)
 		DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(255, 255, 255), FALSE);
 		Font::GetInstance().DrawDefaultText(boxX + 20, boxY + 5, text, 0xffffff, fontSize);
 	}
-
 }
 
 void Teleport::Release(void)
 {
+}
+
+HitObject::HIT_TYPE Teleport::GetHitType(void) const
+{
+	return HIT_TYPE::SPHERE;
 }
 
 VECTOR Teleport::GetHitPosition(void) const
@@ -107,5 +111,3 @@ bool Teleport::IsValid(void) const
 {
 	return true;
 }
-
-

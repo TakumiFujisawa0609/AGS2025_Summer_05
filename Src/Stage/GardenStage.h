@@ -1,14 +1,17 @@
 #pragma once
 
-#include<memory>
+#include <memory>
 
-#include"StageBase.h"
+#include "StageBase.h"
+
+class BlockManager;
+class StageManager;
 
 class GardenStage : public StageBase
 {
 public:
 	//コンストラクタ
-	GardenStage(void);
+	GardenStage(StageManager* stageManager);
 
 	//デストラクタ
 	~GardenStage(void) = default;
@@ -26,5 +29,8 @@ public:
 	void Release(void) override;
 
 private:
-};
+	BlockManager* blockManager_;
 
+	// StageManagerの参照
+	StageManager* stageManager_;
+};

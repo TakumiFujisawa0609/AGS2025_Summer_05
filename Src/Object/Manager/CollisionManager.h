@@ -33,7 +33,7 @@ public:
 	void Clear(void);
 
 	// プレイヤーとの当たり判定チェック(UI表示)
-	void CheckHitWithPlayer(VECTOR& playerPos, float playerRadius);
+	void CheckHitWithPlayer(VECTOR& playerPos, float playerRadius, const VECTOR& plyerMin, const VECTOR& playerMax);
 
 
 	// リソースの解放
@@ -54,5 +54,23 @@ private:
 
 	NullHitObject nullObject_;
 
+	VECTOR objPos_;
+
+	float objRadius_;
+
+	VECTOR objMin_;
+
+	VECTOR objMax_;
+
+	float objSizeX_;
+	
+	float objSizeZ_;
+
+	VECTOR diff_;
+
 	HitObject* SafeGet(HitObject* obj);
+
+	//判定方式別の処理
+	void CheckHitSphere(std::shared_ptr<HitObject> obj, VECTOR& playerPos, float playerRadius);
+	void CheckHitAABB(std::shared_ptr<HitObject> obj,VECTOR& playerPos, const VECTOR& playerMin, const VECTOR& playerMax);
 };

@@ -6,7 +6,6 @@
 #include "Manager/Generic/ResourceManager.h"
 #include "Manager/Generic/InputManager.h"
 #include "Manager/Generic/SceneManager.h"
-#include "Object/Manager/StageManager.h"
 #include "Object/Manager/ItemManager.h"
 #include "Object/Manager/AlchemyManager.h"
 #include "DrawUI/SceneUI/QuestUI.h"
@@ -25,6 +24,7 @@ const std::string Application::PATH_TEXT = "Data/Text/";
 const std::string Application::PATH_FONT = "Data/Font/";
 const std::string Application::PATH_BGM = "Data/Sound/BGM/";
 const std::string Application::PATH_SE = "Data/Sound/SE/";
+const std::string Application::PATH_MAP_DATA = "Data/MapData/MapData.csv";
 
 void Application::CreateInstance(void)
 {
@@ -75,9 +75,6 @@ void Application::Init(void)
 
 	// シーン管理初期化
 	SceneManager::CreateInstance();
-
-	// ステージ管理初期化
-	StageManager::CreateInstance();
 
 	//アイテムマネージャー初期化
 	ItemManager::CreateInstance();
@@ -154,7 +151,6 @@ void Application::Destroy(void)
 	InputManager::GetInstance().Destroy();
 	ResourceManager::GetInstance().Destroy();
 	SceneManager::GetInstance().Destroy();
-	StageManager::GetInstance().Destroy();
 	ItemManager::GetInstance().Destroy();
 	AlchemyManager::GetInstance().Destroy();
 	Font::GetInstance().Destroy();

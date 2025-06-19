@@ -33,6 +33,12 @@ public:
 	//座標設定
 	void SetPos(VECTOR pos);
 
+	// プレイヤーのAABB最小点を取得
+	VECTOR GetHitMin(void) const;
+
+	// プレイヤーのAABB最大点を取得
+	VECTOR GetHitMax(void) const;
+
 
 	// アニメーション種別
 	enum class ANIM_TYPE

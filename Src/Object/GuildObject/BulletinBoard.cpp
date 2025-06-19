@@ -178,6 +178,11 @@ void BulletinBoard::Release(void)
 
 }
 
+HitObject::HIT_TYPE BulletinBoard::GetHitType(void) const
+{
+	return HIT_TYPE::SPHERE;
+}
+
 VECTOR BulletinBoard::GetHitPosition() const
 {
 	return trans_.pos;
