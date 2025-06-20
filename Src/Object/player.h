@@ -39,6 +39,12 @@ public:
 	// プレイヤーのAABB最大点を取得
 	VECTOR GetHitMax(void) const;
 
+	//プレイヤーの所持金を取得
+	int GetMoney(void) const;
+
+	//プレイヤーの所持金を設定
+	void SetMoney(int money);
+
 
 	// アニメーション種別
 	enum class ANIM_TYPE
@@ -89,6 +95,9 @@ private:
 
 	// 地面にいるかどうか
 	bool isOnGround_;
+
+	//所持金
+	int money_;
 
 	// アニメーション
 	AnimationController* animationController_;

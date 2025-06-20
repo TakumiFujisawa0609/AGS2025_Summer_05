@@ -11,6 +11,9 @@ Player::Player(void)
 	//ƒ‚ƒfƒ‹
 	modelId_ = 0;
 
+	//Š‹à
+	money_ = 0;
+
 	//Šp“x
 	angles_ = VECTOR();
 
@@ -58,6 +61,9 @@ void Player::Init(void)
 	animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
 	//ƒJƒƒ‰•ûŒü‰Šú‰»
 	axis_ = { 0.0f,0.0f,0.0f };
+
+	//Š‹à‚Ì‰Šú‰»
+	money_ = 0;
 }
 
 void Player::Update(void)
@@ -122,6 +128,16 @@ VECTOR Player::GetHitMax() const
 		trans_.pos.y + radius_,
 		trans_.pos.z + radius_
 	};
+}
+
+int Player::GetMoney(void) const
+{
+	return money_;
+}
+
+void Player::SetMoney(int money)
+{
+	money_ = money;
 }
 
 
