@@ -141,6 +141,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Manager\System\DateTimeManager.cpp" />
+    <ClCompile Include="Src\Manager\System\TimeManager.cpp" />
     <ClCompile Include="Src\Object\Manager\BlockManager.cpp" />
     <ClCompile Include="Src\Object\GardenObject\Block.cpp" />
     <ClCompile Include="Src\Object\AtelierObject\AlchemyPot.cpp" />
@@ -205,6 +207,8 @@
     <ClCompile Include="Src\Object\GuildObject\TeleportMovement.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Manager\System\DateTimeManager.h" />
+    <ClInclude Include="Src\Manager\System\TimeManager.h" />
     <ClInclude Include="Src\Object\Manager\BlockManager.h" />
     <ClInclude Include="Src\Object\GardenObject\Block.h" />
     <ClInclude Include="Src\Object\AtelierObject\AlchemyPot.h" />

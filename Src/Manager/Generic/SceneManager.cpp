@@ -13,6 +13,7 @@
 #include "../System/Collision.h"
 #include "../Decoration/SoundManager.h"
 #include "../../Object/Manager/CollisionManager.h"
+#include "../System/TimeManager.h"
 #include "Camera.h"
 
 SceneManager* SceneManager::instance_ = nullptr;
@@ -37,6 +38,7 @@ void SceneManager::Init(void)
 	//îªíËÇÃê∂ê¨
 	Collision::CreateInstance();
 	SoundManager::CreateInstance();
+	TimeManager::CreateInstance();
 	CollisionManager::CreateInstance();
 
 	sceneId_ = SCENE_ID::TITLE;
@@ -100,6 +102,8 @@ void SceneManager::Init3D(void)
 
 void SceneManager::Update(void)
 {
+	TimeManager::GetInstance().Update();
+
 	if (scene_ == nullptr)
 	{
 		return;
@@ -154,6 +158,8 @@ void SceneManager::Destroy(void)
 	SoundManager::GetInstance().Destroy();
 
 	CollisionManager::GetInstance().Destroy();
+
+	TimeManager::GetInstance().Destroy();
 
 	delete instance_;
 }

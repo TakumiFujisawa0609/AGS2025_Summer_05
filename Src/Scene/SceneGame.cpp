@@ -17,6 +17,7 @@
 #include "../Object/player.h"
 #include "../DrawUI/SceneUI/InventoryUI.h"
 #include "../DrawUI/Font.h"
+#include "../Manager/System/DateTimeManager.h"
 
 
 
@@ -40,6 +41,10 @@ void SceneGame::Init(void)
 
 	//アイテムマネージャー
 	auto itemManager_ = &ItemManager::GetInstance();
+
+	//日数
+	dateTimeManager_ = new DateTimeManager();
+	dateTimeManager_->Init();
 
 	//グリッド線
 	grid_ = new Grid();
@@ -91,6 +96,9 @@ void SceneGame::Update(void)
 	//	//処理終了
 	//	return;
 	//}
+
+	//日数
+	dateTimeManager_->Update();
 
 	// インベントリUIの更新
 	inventoryUI_->Update();
@@ -193,5 +201,20 @@ void SceneGame::DrawDebug(void)
 {
 	grid_->Draw();
 
+	int day = dateTimeManager_->GetDay();
+
+	// 時間帯を文字列に変換
+	const char* timeZoneStr = nullptr;
+	switch (dateTimeManager_->GetTimeZone())
+	{
+	case DateTimeManager::TIME_ZONE::MORNING: timeZoneStr = "朝"; break;
+	case DateTimeManager::TIME_ZONE::DAY:     timeZoneStr = "昼"; break;
+	case DateTimeManager::TIME_ZONE::EVENING: timeZoneStr = "夕方"; break;
+	case DateTimeManager::TIME_ZONE::NIGHT:   timeZoneStr = "夜"; break;
+	}
+
+	// 表示用（画面左上）
+	DrawFormatString(20, 100, GetColor(255, 255, 255), "日付: %d日目", day);
+	DrawFormatString(20, 120, GetColor(255, 255, 255), "時間帯: %s", timeZoneStr);
 }
 

@@ -9,6 +9,7 @@ class Grid;
 class Player;
 class InventoryUI;
 class StageManager;
+class DateTimeManager;
 
 class SceneGame : public SceneBase
 {
@@ -52,13 +53,13 @@ private:
 	//ステージマネージャー
 	StageManager* stageManager_;
 
+	//日数
+	DateTimeManager* dateTimeManager_;
+
 	bool isStartFont_;
 
 	//描画(デバッグ)
 	void DrawDebug(void);
-
-	//当たり判定
-	void Collision(void);
 
 };
 
