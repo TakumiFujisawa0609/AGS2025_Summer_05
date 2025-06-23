@@ -18,6 +18,7 @@
 #include "../DrawUI/SceneUI/InventoryUI.h"
 #include "../DrawUI/Font.h"
 #include "../Manager/System/DateTimeManager.h"
+#include "../Manager/System/TimeManager.h"
 
 
 
@@ -214,7 +215,10 @@ void SceneGame::DrawDebug(void)
 	}
 
 	// 表示用（画面左上）
-	DrawFormatString(20, 100, GetColor(255, 255, 255), "日付: %d日目", day);
-	DrawFormatString(20, 120, GetColor(255, 255, 255), "時間帯: %s", timeZoneStr);
+	DrawFormatString(20, 100, GetColor(255, 255, 255), "日付: %d日目", dateTimeManager_->GetDay());
+	DrawFormatString(20, 80, GetColor(0, 255, 0), "時刻: %02d:%02d:%02d",
+		TimeManager::GetInstance().GetGameHour(),
+		TimeManager::GetInstance().GetGameMinute(),
+		TimeManager::GetInstance().GetGameSecond());
 }
 

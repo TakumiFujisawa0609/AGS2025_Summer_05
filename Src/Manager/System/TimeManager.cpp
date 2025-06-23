@@ -37,7 +37,7 @@ void TimeManager::Reset(void)
 void TimeManager::Init(void)
 {
 	gameTime_ = 0.0f;
-	gameSpeed_ = 48.0f;
+	gameSpeed_ = 144.0f;
 	timers_.clear();
 
 	prevTime_ = std::chrono::steady_clock::now();
@@ -78,6 +78,16 @@ int TimeManager::GetGameHour(void) const
 int TimeManager::GetGameMinute(void) const
 {
 	return (static_cast<int>(gameTime_) / 60) % 60;
+}
+
+int TimeManager::GetGameSecond(void) const
+{
+	return static_cast<int>(gameTime_) % 60;
+}
+
+void TimeManager::SetGameTime(float time)
+{
+	gameTime_ = time;
 }
 
 void TimeManager::StartTimer(const std::string& id, float duration)

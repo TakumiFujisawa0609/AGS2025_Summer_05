@@ -12,6 +12,9 @@ public:
 		NIGHT,
 	};
 
+	//24時間
+	static constexpr float HOURS_IN_DAY = 86400.0f;
+
 	//コンストラクタ
 	DateTimeManager(void);
 

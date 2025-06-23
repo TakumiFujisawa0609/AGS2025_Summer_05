@@ -23,7 +23,13 @@ void DateTimeManager::Update(void)
 	//日付チェック
 	if (lastRecordedHour_ > nowHour)
 	{
-		currentDay_++;
+		currentDay_ += 1;
+
+		float newTime = TimeManager::GetInstance().GetGameTime() - HOURS_IN_DAY;
+
+		if (newTime < 0.0f) newTime = 0.0f;
+
+		TimeManager::GetInstance().SetGameTime(newTime);
 	}
 
 	lastRecordedHour_ = nowHour;

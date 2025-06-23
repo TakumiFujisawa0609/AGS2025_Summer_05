@@ -28,7 +28,10 @@ public:
 	//ゲームない時間
 	float GetGameTime(void) const;
 	int GetGameHour(void) const;
-	int GetGameMinute(void)const;
+	int GetGameMinute(void) const;
+	int GetGameSecond(void) const;
+
+	void SetGameTime(float time);
 
 	//タイマー管理
 	void StartTimer(const std::string& id, float duration);
