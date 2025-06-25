@@ -19,6 +19,7 @@
 #include "../DrawUI/Font.h"
 #include "../Manager/System/DateTimeManager.h"
 #include "../Manager/System/TimeManager.h"
+#include "../DrawUI/SceneUI/QuestUI.h"
 
 
 
@@ -46,6 +47,9 @@ void SceneGame::Init(void)
 	//日数
 	dateTimeManager_ = new DateTimeManager();
 	dateTimeManager_->Init();
+
+	//クエストがデータを受け取る
+	QuestUI::GetInstance().SetDateTimeManager(dateTimeManager_);
 
 	//グリッド線
 	grid_ = new Grid();

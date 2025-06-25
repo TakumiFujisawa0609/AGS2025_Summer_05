@@ -4,6 +4,8 @@
 #include <vector>
 #include <memory>
 
+class DateTimeManager;
+
 //納品依頼情報を格納する構造体
 struct DeliveryQuest
 {
@@ -35,6 +37,9 @@ public:
     static void Destroy(void);
 
     ~QuestUI(void) = default;
+
+	// 日数マネージャーの設定
+    void SetDateTimeManager(DateTimeManager* dtManager);
 
     //初期化処理
     void Init(void);
@@ -87,10 +92,16 @@ private:
     std::vector<DeliveryQuest> availableQuests_;
 
     // アクティブな納品依頼リスト
-    std::vector<DeliveryQuest> activeQuests_;     
+    std::vector<DeliveryQuest> activeQuests_;   
+
+    //日数
+    DateTimeManager* dateTimeManager_;
     
     // UI表示フラグ
-    bool isVisible_;                              
+    bool isVisible_;  
+
+    //前回ゲーム内日数
+    int lastDay_;
 
     // 内部メソッド
    

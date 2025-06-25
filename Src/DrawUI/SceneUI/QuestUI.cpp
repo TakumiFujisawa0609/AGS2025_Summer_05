@@ -4,6 +4,7 @@
 
 #include "../../Object/Manager/ItemManager.h"
 #include "../../DrawUI/Font.h"
+#include "../../Manager/System/DateTimeManager.h"
 
 DeliveryQuest::DeliveryQuest(void)
 {
@@ -16,7 +17,6 @@ DeliveryQuest::DeliveryQuest(void)
     isCompleted = false;
 
     isActive = false;
-
 }
 
 DeliveryQuest::DeliveryQuest(int questId, const std::string& questTitle, const std::string& questDesc, const std::string& itemId, int required)
@@ -57,12 +57,19 @@ QuestUI& QuestUI::GetInstance(void)
     return *instance_;
 }
 
+void QuestUI::SetDateTimeManager(DateTimeManager* dtManager)
+{
+    dateTimeManager_ = dtManager;
+}
+
 //初期化処理
 void QuestUI::Init(void)
 {
     availableQuests_.clear();
     activeQuests_.clear();
     isVisible_ = true;
+
+    lastDay_ = -1;
 
     InitializeQuests();
 }
@@ -71,18 +78,41 @@ void QuestUI::Init(void)
 void QuestUI::InitializeQuests(void)
 {
     // 納品依頼データの初期化
-    availableQuests_.push_back(DeliveryQuest(0, "回復ポーソン納品", "回復ポーションを3こ納品",
+    availableQuests_.push_back(DeliveryQuest(0, "回復ポーソン納品", "回復ポーションを納品",
         "RecoveryPotion", 3));
-    availableQuests_.push_back(DeliveryQuest(1, "解毒ポーソン納品", "解毒ポーションを2こ納品",
+    availableQuests_.push_back(DeliveryQuest(1, "解毒ポーソン納品", "解毒ポーションを納品",
         "AntidotePotion", 2));
-    availableQuests_.push_back(DeliveryQuest(2, "魔法ポーソン納品", "魔法ポーションを1こ納品",
+    availableQuests_.push_back(DeliveryQuest(2, "魔法ポーソン納品", "魔法ポーションを納品",
         "MagicPotion", 1));
+    availableQuests_.push_back(DeliveryQuest(3, "失敗した作品納品", "失敗した作品を納品",
+        "Garbage", 1));
 }
 
 //更新処理
 void QuestUI::Update(void)
 {
     if (!isVisible_) return;
+
+    if (dateTimeManager_)
+    {
+        int currentDay = dateTimeManager_->GetDay();
+
+        if (lastDay_ != currentDay)
+        {
+            lastDay_ = currentDay;
+
+            for (auto& quest : availableQuests_)
+            {
+                //ランダムな個数に更新
+                quest.requiredAmount = GetRand(2) + 1;
+                quest.currentAmount = 0;
+                quest.isCompleted = false;
+                quest.isActive = false;
+            }
+
+            activeQuests_.clear();
+        }
+    }
 
     // アクティブな依頼の進行状況を更新
     for (auto& quest : activeQuests_)

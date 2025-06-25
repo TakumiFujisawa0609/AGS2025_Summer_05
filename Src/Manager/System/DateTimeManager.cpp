@@ -18,21 +18,13 @@ void DateTimeManager::Init(void)
 
 void DateTimeManager::Update(void)
 {
-	int nowHour = TimeManager::GetInstance().GetGameHour();
+	auto& time = TimeManager::GetInstance();
 
-	//日付チェック
-	if (lastRecordedHour_ > nowHour)
+	while (time.GetGameTime() >= HOURS_IN_DAY)
 	{
-		currentDay_ += 1;
-
-		float newTime = TimeManager::GetInstance().GetGameTime() - HOURS_IN_DAY;
-
-		if (newTime < 0.0f) newTime = 0.0f;
-
-		TimeManager::GetInstance().SetGameTime(newTime);
+		currentDay_++;
+		time.SetGameTime(time.GetGameTime() - HOURS_IN_DAY);
 	}
-
-	lastRecordedHour_ = nowHour;
 }
 
 void DateTimeManager::Reset(void)

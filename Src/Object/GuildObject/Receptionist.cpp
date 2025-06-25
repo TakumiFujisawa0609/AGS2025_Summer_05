@@ -346,12 +346,6 @@ bool Receptionist::DeliverItem(ItemType itemType, int quantity)
     if (activeQuest->isCompleted)
     {
         questUI.CompleteQuest(activeQuest->id);
-
-        // Ÿ‚ÌˆË—Š‚ğ©“®ó’
-        if (questUI.CanAcceptNewQuest())
-        {
-            questUI.AcceptQuest(activeQuest->id + 1); // Ÿ‚ÌˆË—ŠIDi‰¼j
-        }
     }
 
     return true;
