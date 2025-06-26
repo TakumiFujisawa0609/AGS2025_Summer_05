@@ -51,7 +51,7 @@ public:
     bool IsValid(void) const override;
 
     // アイテム関連
-    bool DeliverItem(IETEM_TYPE itemType, int quantity);
+    bool DeliverItem(IETEM_TYPE itemType);
     void SetItemCount(IETEM_TYPE itemType, int count);
     int GetItemCount(IETEM_TYPE itemType) const;
     int GetMaxDeliveryQuantity() const;
