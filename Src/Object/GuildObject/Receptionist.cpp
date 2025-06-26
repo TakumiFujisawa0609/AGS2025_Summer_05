@@ -367,15 +367,12 @@ bool Receptionist::DeliverItem(IETEM_TYPE itemType, int quantity)
         return false;
     }
 
-    // 所持数チェック（納品する数量が所持数以下か）
+    // --- 所持アイテムチェック ---
     auto item = itemManager.FindItemById(itemId);
     if (!item || item->GetQuantity() < quantity)
     {
-        lastDeliveryMessage_ = "アイテムが足りません！";
-        deliveryMessageTimer_ = 120;
         return false;
     }
-
 
     // 納品処理
     itemManager.SubtractQuantity(item, quantity);
