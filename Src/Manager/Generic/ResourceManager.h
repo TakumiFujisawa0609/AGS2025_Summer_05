@@ -29,6 +29,9 @@ public:
 		MAGIC_FLOWER,			//–‚—Í‘
 		WATER,					//…
 
+		//ŽíŽq
+		SEED,					//Ží
+
 		//ƒMƒ‹ƒhŠÖŒW
 		BULLETIN_BOARD,			//ŒfŽ¦”Â
 		IMAGE_BOARD,			//ŒfŽ¦”Â‚Ì‰æ‘œ

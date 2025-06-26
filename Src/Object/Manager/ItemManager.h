@@ -1,12 +1,13 @@
 #pragma once
 
-#include<vector>
-#include<memory>
-#include<unordered_map>
+#include <vector>
+#include <memory>
+#include <unordered_map>
 
-#include"../../Object/Item/ItemBase.h"
-#include"../../Object/Item/Material/MaterialItem.h"
-#include"../../Object/Item/Product/ProductItem.h"
+#include "../../Object/Item/ItemBase.h"
+#include "../../Object/Item/Material/MaterialItem.h"
+#include "../../Object/Item/Product/ProductItem.h"
+#include "../../Object/Item/Seed/SeedItem.h"
 
 class ItemManager
 {
@@ -28,10 +29,12 @@ public:
 	// アイテム取得
 	std::shared_ptr<MaterialItem> GetMaterialItem(int index) const;
 	std::shared_ptr<ProductItem> GetProductItem(int index) const;
+	std::shared_ptr<SeedItem> GetSeedItem(int index) const;
 
 	// アイテム数取得
 	int GetMaterialItemCount(void) const;
 	int GetProductItemCount(void) const;
+	int GetSeedItemCount(void) const;
 
 	// 所持数操作
 	void AddQuantity(std::shared_ptr<ItemBase> item, int amount);
@@ -55,6 +58,7 @@ private:
 
 	static ItemManager* instance_;
 
+	std::vector < std::shared_ptr<SeedItem>> seedItems_;
 	std::vector<std::shared_ptr<MaterialItem>> materialItems_;
 	std::vector<std::shared_ptr<ProductItem>> productItems_;
 	std::vector<std::shared_ptr<ItemBase>> allItems_;

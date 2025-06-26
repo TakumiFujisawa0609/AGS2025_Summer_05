@@ -8,6 +8,7 @@
 #include "../Item/Product/AntidotePotion.h"
 #include "../Item/Product/MagicPotion.h"
 #include "../Item/Product/Garbage.h"
+#include "../Item/Seed/RandomSeed.h"
 
 
 // シングルトンインスタンスの初期化
@@ -46,6 +47,10 @@ void ItemManager::Init()
     Register(std::make_shared<MagicPotion>());
     Register(std::make_shared<Garbage>());
 
+    //アイテム生成＆登録(種子)
+    Register(std::make_shared<RandomSeed>());
+
+
     // allItems_に登録されたアイテムからカテゴリ別に振り分け
     for (auto& item : allItems_)
     {
@@ -56,6 +61,10 @@ void ItemManager::Init()
         else if (auto product = std::dynamic_pointer_cast<ProductItem>(item))
         {
             productItems_.push_back(product);
+        }
+        else if (auto seed = std::dynamic_pointer_cast<SeedItem>(item))
+        {
+            seedItems_.push_back(seed);
         }
     }
 
@@ -87,6 +96,13 @@ std::shared_ptr<ProductItem> ItemManager::GetProductItem(int index) const
     return nullptr;
 }
 
+std::shared_ptr<SeedItem> ItemManager::GetSeedItem(int index) const
+{
+    if (index >= 0 && index < (int)seedItems_.size())
+        return seedItems_[index];
+    return nullptr;
+}
+
 int ItemManager::GetMaterialItemCount(void) const
 {
     return static_cast<int>(materialItems_.size());
@@ -95,6 +111,11 @@ int ItemManager::GetMaterialItemCount(void) const
 int ItemManager::GetProductItemCount(void) const
 {
     return static_cast<int>(productItems_.size());
+}
+
+int ItemManager::GetSeedItemCount(void) const
+{
+    return static_cast<int>(seedItems_.size());
 }
 
 void ItemManager::AddQuantity(std::shared_ptr<ItemBase> item, int amount)
