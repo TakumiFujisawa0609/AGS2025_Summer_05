@@ -43,7 +43,7 @@ public:
 	int GetMoney(void) const;
 
 	//プレイヤーの所持金を設定
-	void SetMoney(int money);
+	void AddMoney(int money);
 
 
 	// アニメーション種別

@@ -1,4 +1,8 @@
+#define NOMINMAX
 #include "Receptionist.h"
+
+#include <algorithm>
+
 #include "../../Manager/Generic/ResourceManager.h"
 #include "../../Manager/Generic/Resource.h"
 #include "../../Manager/Generic/InputManager.h"
@@ -8,6 +12,7 @@
 #include "../../Application.h"
 #include "./../../DrawUI/SceneUI/QuestUI.h"
 #include "../Manager/ItemManager.h"
+#include "../../Object/player.h"
 
 Receptionist::Receptionist(void)
 {
@@ -26,9 +31,9 @@ Receptionist::Receptionist(void)
     lastDeliveryMessage_ = "";
 
     // アイテムIDを初期化
-    itemIds_[static_cast<int>(ItemType::HEALTH_POTION)] = "RecoveryPotion";
-    itemIds_[static_cast<int>(ItemType::ANTIDOTE_POTION)] = "AntidotePotion";
-    itemIds_[static_cast<int>(ItemType::MAGIC_POTION)] = "MagicPotion";
+    itemIds_[static_cast<int>(IETEM_TYPE::HEALTH_POTION)] = "RecoveryPotion";
+    itemIds_[static_cast<int>(IETEM_TYPE::ANTIDOTE_POTION)] = "AntidotePotion";
+    itemIds_[static_cast<int>(IETEM_TYPE::MAGIC_POTION)] = "MagicPotion";
 }
 
 Receptionist::~Receptionist(void)
@@ -38,6 +43,7 @@ Receptionist::~Receptionist(void)
 void Receptionist::Init(void)
 {
     auto& res = ResourceManager::GetInstance();
+
     // モデル（箱系のモデルを使用想定）
     trans_.SetModel(res.LoadModelDuplicate(ResourceManager::SRC::BULLETIN_BOARD));
     trans_.quaRot = Quaternion();
@@ -57,14 +63,14 @@ void Receptionist::Init(void)
     lastDeliveryMessage_ = "";
 
     // アイテム名を初期化
-    itemNames_[static_cast<int>(ItemType::HEALTH_POTION)] = "回復ポーション";
-    itemNames_[static_cast<int>(ItemType::ANTIDOTE_POTION)] = "解毒ポーション";
-    itemNames_[static_cast<int>(ItemType::MAGIC_POTION)] = "魔法ポーション";
+    itemNames_[static_cast<int>(IETEM_TYPE::HEALTH_POTION)] = "回復ポーション";
+    itemNames_[static_cast<int>(IETEM_TYPE::ANTIDOTE_POTION)] = "解毒ポーション";
+    itemNames_[static_cast<int>(IETEM_TYPE::MAGIC_POTION)] = "魔法ポーション";
 
     // アイテムIDを初期化
-    itemIds_[static_cast<int>(ItemType::HEALTH_POTION)] = "RecoveryPotion";
-    itemIds_[static_cast<int>(ItemType::ANTIDOTE_POTION)] = "AntidotePotion";
-    itemIds_[static_cast<int>(ItemType::MAGIC_POTION)] = "MagicPotion";
+    itemIds_[static_cast<int>(IETEM_TYPE::HEALTH_POTION)] = "RecoveryPotion";
+    itemIds_[static_cast<int>(IETEM_TYPE::ANTIDOTE_POTION)] = "AntidotePotion";
+    itemIds_[static_cast<int>(IETEM_TYPE::MAGIC_POTION)] = "MagicPotion";
 
     // モデル制御
     trans_.Update();
@@ -97,7 +103,7 @@ void Receptionist::Update(void)
         else if (!isSelectingQuantity_)
         {
             // アイテムが選択された場合、数量選択に移行
-            if (GetMaxDeliveryQuantity() > 0)
+            if (!deliverableItems_.empty() && GetMaxDeliveryQuantity() > 0)
             {
                 isSelectingQuantity_ = true;
                 selectedQuantity_ = 1;
@@ -105,15 +111,16 @@ void Receptionist::Update(void)
         }
         else
         {
-            // 数量が決定された場合、納品実行
-            ItemType itemType = static_cast<ItemType>(selectedItem_);
+            if (selectedItem_ < 0 || selectedItem_ >= static_cast<int>(deliverableItems_.size()))
+                return;
+
+            IETEM_TYPE itemType = deliverableItems_[selectedItem_];
             if (DeliverItem(itemType, selectedQuantity_))
             {
                 // 納品成功
-                lastDeliveryMessage_ = GetItemName(itemType) + std::string(" x") + std::to_string(selectedQuantity_) + std::string(" を納品しました！");
-                deliveryMessageTimer_ = 120; // 2秒間表示
+                lastDeliveryMessage_ = std::string(GetItemName(itemType)) + " x" + std::to_string(selectedQuantity_) + " を納品しました！";
+                deliveryMessageTimer_ = 120;
 
-                // メニューを閉じる
                 isShowDeliveryMenu_ = false;
                 isSelectingQuantity_ = false;
             }
@@ -123,36 +130,34 @@ void Receptionist::Update(void)
     // 納品メニュー表示中の処理
     if (isShowDeliveryMenu_)
     {
-        if (!isSelectingQuantity_)
+        if (!isSelectingQuantity_ && !deliverableItems_.empty())
         {
-            // アイテム選択中
+            int itemCount = static_cast<int>(deliverableItems_.size());
             if (input.IsTrgDown(KEY_INPUT_UP))
             {
-                selectedItem_ = (selectedItem_ - 1 + static_cast<int>(ItemType::ITEM_COUNT)) % static_cast<int>(ItemType::ITEM_COUNT);
+                selectedItem_ = (selectedItem_ - 1 + itemCount) % itemCount;
             }
             else if (input.IsTrgDown(KEY_INPUT_DOWN))
             {
-                selectedItem_ = (selectedItem_ + 1) % static_cast<int>(ItemType::ITEM_COUNT);
+                selectedItem_ = (selectedItem_ + 1) % itemCount;
             }
         }
-        else
+        else if (isSelectingQuantity_)
         {
-            // 数量選択中
             int maxQuantity = GetMaxDeliveryQuantity();
             if (maxQuantity > 0)
             {
                 if (input.IsTrgDown(KEY_INPUT_UP))
                 {
-                    selectedQuantity_ = min(selectedQuantity_ + 1, maxQuantity);
+                    selectedQuantity_ = std::min(selectedQuantity_ + 1, maxQuantity);
                 }
                 else if (input.IsTrgDown(KEY_INPUT_DOWN))
                 {
-                    selectedQuantity_ = max(selectedQuantity_ - 1, 1);
+                    selectedQuantity_ = std::max(selectedQuantity_ - 1, 1);
                 }
             }
         }
 
-        // ESCキー（またはXキー）で戻る/閉じる
         if (input.IsTrgDown(KEY_INPUT_ESCAPE) || input.IsTrgDown(KEY_INPUT_X))
         {
             if (isSelectingQuantity_)
@@ -166,6 +171,7 @@ void Receptionist::Update(void)
         }
     }
 }
+
 
 void Receptionist::Draw(void)
 {
@@ -181,7 +187,7 @@ void Receptionist::Draw(void)
             const char* text = "納品";
             int fontSize = 14;
             int textWidth = GetDrawStringWidth(text, strlen(text), -1);
-            int boxWidth = textWidth + 30;  // 余白
+            int boxWidth = textWidth + 30;
             int boxHeight = 20;
 
             int boxX = (screenWidth - boxWidth) / 2;
@@ -206,8 +212,9 @@ void Receptionist::Draw(void)
                 Font::GetInstance().DrawDefaultText(boxX + 20, boxY + 20, "===== 納品メニュー =====", 0xffffff, 24);
                 Font::GetInstance().DrawDefaultText(boxX + 20, boxY + 50, "納品するアイテムを選択してください", 0xcccccc, 18);
 
-                for (int i = 0; i < static_cast<int>(ItemType::ITEM_COUNT); i++)
+                for (int i = 0; i < (int)deliverableItems_.size(); i++)
                 {
+                    IETEM_TYPE itemType = deliverableItems_[i];
                     int color = (i == selectedItem_) ? 0xff00ff : 0xffffff;
                     int yPos = boxY + 80 + (i * 30);
 
@@ -216,8 +223,8 @@ void Receptionist::Draw(void)
                         Font::GetInstance().DrawDefaultText(boxX + 20, yPos, "→", 0xff00ff, 24);
                     }
 
-                    int itemCount = GetItemCount(static_cast<ItemType>(i));
-                    std::string itemInfo = itemNames_[i] + " (所持数: " + std::to_string(itemCount) + ")";
+                    int itemCount = GetItemCount(itemType);
+                    std::string itemInfo = std::string(GetItemName(itemType)) + " (所持数: " + std::to_string(itemCount) + ")";
                     Font::GetInstance().DrawDefaultText(boxX + 50, yPos, itemInfo.c_str(), color, 20);
                 }
 
@@ -225,10 +232,14 @@ void Receptionist::Draw(void)
             }
             else
             {
-                Font::GetInstance().DrawDefaultText(boxX + 20, boxY + 20, "===== 納品数量選択 =====", 0xffffff, 24);
-                Font::GetInstance().DrawDefaultText(boxX + 20, boxY + 60, ("アイテム: " + itemNames_[selectedItem_]).c_str(), 0xffffff, 18);
+                IETEM_TYPE itemType = deliverableItems_[selectedItem_];
 
-                int itemCount = GetItemCount(static_cast<ItemType>(selectedItem_));
+                Font::GetInstance().DrawDefaultText(boxX + 20, boxY + 20, "===== 納品数量選択 =====", 0xffffff, 24);
+                std::string itemText = std::string("アイテム: ") + GetItemName(itemType);
+                Font::GetInstance().DrawDefaultText(boxX + 20, boxY + 60, itemText.c_str(), 0xffffff, 18);
+
+
+                int itemCount = GetItemCount(itemType);
                 Font::GetInstance().DrawDefaultText(boxX + 20, boxY + 90, ("所持数: " + std::to_string(itemCount)).c_str(), 0xffffff, 18);
 
                 std::string quantityText = "納品数量: " + std::to_string(selectedQuantity_);
@@ -277,7 +288,29 @@ void Receptionist::ShowUI(void)
     isShowUI_ = true;
     isShowDeliveryMenu_ = false;
     isSelectingQuantity_ = false;
+
+    // アクティブな依頼に基づいて納品可能アイテムを絞る
+    deliverableItems_.clear();
+
+    auto& activeQuests = QuestUI::GetInstance().GetActiveQuests();
+    for (const auto& quest : activeQuests)
+    {
+        const std::string& targetId = quest.targetItemId;
+
+        // ItemTypeとIDを照合
+        for (int i = 0; i < static_cast<int>(IETEM_TYPE::ITEM_COUNT); ++i)
+        {
+            if (GetItemId(static_cast<IETEM_TYPE>(i)) == targetId)
+            {
+                deliverableItems_.push_back(static_cast<IETEM_TYPE>(i));
+                break;
+            }
+        }
+    }
+
+    selectedItem_ = 0;
 }
+
 
 void Receptionist::HideUI(void)
 {
@@ -291,67 +324,87 @@ bool Receptionist::IsValid(void) const
     return true;
 }
 
-bool Receptionist::DeliverItem(ItemType itemType, int quantity)
+bool Receptionist::DeliverItem(IETEM_TYPE itemType, int quantity)
 {
     auto& itemManager = ItemManager::GetInstance();
     std::string itemId = GetItemId(itemType);
 
-    // --- 依頼との照合を追加 ---
     auto& questUI = QuestUI::GetInstance();
 
-    bool matchedQuestFound = false;
-    int questId = -1;
-
-    // アクティブな依頼の中から一致するアイテムIDを探す
-    for (int i = 0; i < 3; ++i) // 仮に3つの依頼までと仮定（可変なら修正）
+    // アクティブな依頼から対象を探す
+    DeliveryQuest* matchedQuest = nullptr;
+    for (auto& quest : questUI.GetActiveQuests())
     {
-        if (questUI.IsQuestActive(i))
+        if (quest.targetItemId == itemId)
         {
-            const auto& quests = questUI; // 直接アクセスできないならQuestUIにgetterを追加する
-            if (questUI.IsQuestCompleted(i)) continue;
-
-            // アイテムID一致確認（内部的に一つだけアクティブな仕様前提）
-            const auto& quest = questUI; // QuestUI側に GetActiveQuest() を追加するのが理想
-            // ここではQuestUIに helper 関数がないので仮実装とします（後述）
+            matchedQuest = &quest;
+            break;
         }
     }
 
-    // 照合関数がないと無理なので、QuestUI側に次を追加：
-    DeliveryQuest* activeQuest = questUI.GetActiveQuest(); // ←追加関数
-    if (!activeQuest || activeQuest->targetItemId != itemId)
+    if (!matchedQuest)
     {
         lastDeliveryMessage_ = "このアイテムは依頼対象ではありません！";
         deliveryMessageTimer_ = 120;
         return false;
     }
 
-    // --- 所持アイテムチェック ---
-    auto item = itemManager.FindItemById(itemId);
-    if (!item || item->GetQuantity() < quantity)
+   
+
+    // 必要な残り納品数
+    int remain = GetRemainingDeliveryAmount(itemType);
+
+    // quantity が remain を超えていたら、remain に丸め（依頼分だけ納品する）
+    if (quantity > remain)
     {
+        quantity = remain;
+    }
+
+    if (quantity != remain)
+    {
+        lastDeliveryMessage_ = "納品数が一致していません！";
+        deliveryMessageTimer_ = 120;
         return false;
     }
 
-    // --- アイテム納品処理 ---
-    itemManager.SubtractQuantity(item, quantity);
-
-    // --- 進行数加算・更新 ---
-    activeQuest->currentAmount += quantity;
-    activeQuest->isCompleted = (activeQuest->currentAmount >= activeQuest->requiredAmount);
-
-    lastDeliveryMessage_ = std::string(GetItemName(itemType)) + " x" + std::to_string(quantity) + " を納品しました！";
-    deliveryMessageTimer_ = 120;
-
-    // --- 依頼完了処理 ---
-    if (activeQuest->isCompleted)
+    // 所持数チェック（納品する数量が所持数以下か）
+    auto item = itemManager.FindItemById(itemId);
+    if (!item || item->GetQuantity() < quantity)
     {
-        questUI.CompleteQuest(activeQuest->id);
+        lastDeliveryMessage_ = "アイテムが足りません！";
+        deliveryMessageTimer_ = 120;
+        return false;
     }
+
+
+    // 納品処理
+    itemManager.SubtractQuantity(item, quantity);
+    matchedQuest->currentAmount += quantity;
+
+    // 依頼完了判定
+    if (matchedQuest->currentAmount >= matchedQuest->requiredAmount)
+    {
+        matchedQuest->isCompleted = true;
+        questUI.CompleteQuest(matchedQuest->id);
+
+        if (player_)
+        {
+            player_->AddMoney(matchedQuest->rewardMoney);
+        }
+
+        lastDeliveryMessage_ = std::string(GetItemName(itemType)) + " x" + std::to_string(quantity) + " を納品しました！依頼完了です！";
+    }
+    else
+    {
+        lastDeliveryMessage_ = std::string(GetItemName(itemType)) + " x" + std::to_string(quantity) + " を納品しました！";
+    }
+    deliveryMessageTimer_ = 120;
 
     return true;
 }
 
-void Receptionist::SetItemCount(ItemType itemType, int count)
+
+void Receptionist::SetItemCount(IETEM_TYPE itemType, int count)
 {
     auto& itemManager = ItemManager::GetInstance();
     std::string itemId = GetItemId(itemType);
@@ -372,7 +425,7 @@ void Receptionist::SetItemCount(ItemType itemType, int count)
     }
 }
 
-int Receptionist::GetItemCount(ItemType itemType) const
+int Receptionist::GetItemCount(IETEM_TYPE itemType) const
 {
     auto& itemManager = ItemManager::GetInstance();
     std::string itemId = GetItemId(itemType);
@@ -387,25 +440,40 @@ int Receptionist::GetItemCount(ItemType itemType) const
 
 int Receptionist::GetMaxDeliveryQuantity() const
 {
-    return GetItemCount(static_cast<ItemType>(selectedItem_));
+    return GetItemCount(static_cast<IETEM_TYPE>(selectedItem_));
 }
 
-const char* Receptionist::GetItemName(ItemType itemType) const
+const char* Receptionist::GetItemName(IETEM_TYPE itemType) const
 {
     int itemIndex = static_cast<int>(itemType);
-    if (itemIndex >= 0 && itemIndex < static_cast<int>(ItemType::ITEM_COUNT))
+    if (itemIndex >= 0 && itemIndex < static_cast<int>(IETEM_TYPE::ITEM_COUNT))
     {
         return itemNames_[itemIndex].c_str();
     }
     return "不明なアイテム";
 }
 
-std::string Receptionist::GetItemId(ItemType itemType) const
+std::string Receptionist::GetItemId(IETEM_TYPE itemType) const
 {
     int itemIndex = static_cast<int>(itemType);
-    if (itemIndex >= 0 && itemIndex < static_cast<int>(ItemType::ITEM_COUNT))
+    if (itemIndex >= 0 && itemIndex < static_cast<int>(IETEM_TYPE::ITEM_COUNT))
     {
         return itemIds_[itemIndex];
     }
     return "";
+}
+
+void Receptionist::SetPlayer(std::shared_ptr<Player> player)
+{
+    player_ = player;
+}
+
+int Receptionist::GetRemainingDeliveryAmount(IETEM_TYPE itemType) const
+{
+    for (const auto& quest : QuestUI::GetInstance().GetActiveQuests())
+    {
+        return quest.requiredAmount - quest.currentAmount;
+    }
+
+    return 0;
 }

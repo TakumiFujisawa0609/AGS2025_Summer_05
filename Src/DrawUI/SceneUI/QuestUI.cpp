@@ -1,6 +1,8 @@
-#include "QuestUI.h"
+ï»¿#include "QuestUI.h"
 
 #include <DxLib.h>
+#include <algorithm>
+#include <random>
 
 #include "../../Object/Manager/ItemManager.h"
 #include "../../DrawUI/Font.h"
@@ -14,12 +16,14 @@ DeliveryQuest::DeliveryQuest(void)
 
     currentAmount = 0;
 
+    rewardMoney = 0;
+
     isCompleted = false;
 
     isActive = false;
 }
 
-DeliveryQuest::DeliveryQuest(int questId, const std::string& questTitle, const std::string& questDesc, const std::string& itemId, int required)
+DeliveryQuest::DeliveryQuest(int questId, const std::string& questTitle, const std::string& questDesc, const std::string& itemId, int required , int money)
 {
     id = questId;
 
@@ -33,15 +37,17 @@ DeliveryQuest::DeliveryQuest(int questId, const std::string& questTitle, const s
 
     currentAmount = 0;
 
+    rewardMoney = money;
+
     isCompleted = false;
 
     isActive = false;
 }
 
-//ƒVƒ“ƒOƒ‹ƒgƒ“ƒCƒ“ƒXƒ^ƒ“ƒX‚Ì‰Šú‰»
+//ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®åˆæœŸåŒ–
 QuestUI* QuestUI::instance_ = nullptr;
 
-//ƒCƒ“ƒXƒ^ƒ“ƒX‚Ì¶¬
+//ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®ç”Ÿæˆ
 void QuestUI::CreateInstance(void)
 {
     if (!instance_)
@@ -51,7 +57,7 @@ void QuestUI::CreateInstance(void)
     }
 }
 
-//ƒCƒ“ƒXƒ^ƒ“ƒX‚Ìæ“¾
+//ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®å–å¾—
 QuestUI& QuestUI::GetInstance(void)
 {
     return *instance_;
@@ -62,7 +68,7 @@ void QuestUI::SetDateTimeManager(DateTimeManager* dtManager)
     dateTimeManager_ = dtManager;
 }
 
-//‰Šú‰»ˆ—
+//åˆæœŸåŒ–å‡¦ç†
 void QuestUI::Init(void)
 {
     availableQuests_.clear();
@@ -74,21 +80,24 @@ void QuestUI::Init(void)
     InitializeQuests();
 }
 
-// ”[•iˆË—Šƒf[ƒ^‰Šú‰»
+// ç´å“ä¾é ¼ãƒ‡ãƒ¼ã‚¿åˆæœŸåŒ–
 void QuestUI::InitializeQuests(void)
 {
-    // ”[•iˆË—Šƒf[ƒ^‚Ì‰Šú‰»
-    availableQuests_.push_back(DeliveryQuest(0, "‰ñ•œƒ|[ƒ\ƒ“”[•i", "‰ñ•œƒ|[ƒVƒ‡ƒ“‚ğ”[•i",
-        "RecoveryPotion", 3));
-    availableQuests_.push_back(DeliveryQuest(1, "‰ğ“Åƒ|[ƒ\ƒ“”[•i", "‰ğ“Åƒ|[ƒVƒ‡ƒ“‚ğ”[•i",
-        "AntidotePotion", 2));
-    availableQuests_.push_back(DeliveryQuest(2, "–‚–@ƒ|[ƒ\ƒ“”[•i", "–‚–@ƒ|[ƒVƒ‡ƒ“‚ğ”[•i",
-        "MagicPotion", 1));
-    availableQuests_.push_back(DeliveryQuest(3, "¸”s‚µ‚½ì•i”[•i", "¸”s‚µ‚½ì•i‚ğ”[•i",
-        "Garbage", 1));
+	// åˆ©ç”¨å¯èƒ½ãªç´å“ä¾é ¼ãƒªã‚¹ãƒˆã‚’ã‚¯ãƒªã‚¢
+    availableQuests_.clear();
+
+    // ç´å“ä¾é ¼ãƒ‡ãƒ¼ã‚¿ã®åˆæœŸåŒ–
+    availableQuests_.push_back(DeliveryQuest(0, "å›å¾©ãƒãƒ¼ã‚½ãƒ³ç´å“", "å›å¾©ãƒãƒ¼ã‚·ãƒ§ãƒ³ã‚’ç´å“",
+        "RecoveryPotion", 3, 300));
+    availableQuests_.push_back(DeliveryQuest(1, "è§£æ¯’ãƒãƒ¼ã‚½ãƒ³ç´å“", "è§£æ¯’ãƒãƒ¼ã‚·ãƒ§ãƒ³ã‚’ç´å“",
+        "AntidotePotion", 2 ,400));
+    availableQuests_.push_back(DeliveryQuest(2, "é­”æ³•ãƒãƒ¼ã‚½ãƒ³ç´å“", "é­”æ³•ãƒãƒ¼ã‚·ãƒ§ãƒ³ã‚’ç´å“",
+        "MagicPotion", 1, 500));
+    availableQuests_.push_back(DeliveryQuest(3, "å¤±æ•—ã—ãŸä½œå“ç´å“", "å¤±æ•—ã—ãŸä½œå“ã‚’ç´å“",
+        "Garbage", 1, 1000));
 }
 
-//XVˆ—
+//æ›´æ–°å‡¦ç†
 void QuestUI::Update(void)
 {
     if (!isVisible_) return;
@@ -101,20 +110,44 @@ void QuestUI::Update(void)
         {
             lastDay_ = currentDay;
 
-            for (auto& quest : availableQuests_)
-            {
-                //ƒ‰ƒ“ƒ_ƒ€‚ÈŒÂ”‚ÉXV
-                quest.requiredAmount = GetRand(2) + 1;
-                quest.currentAmount = 0;
-                quest.isCompleted = false;
-                quest.isActive = false;
-            }
+            std::vector<DeliveryQuest> questPool;
 
-            activeQuests_.clear();
+           /* for (auto& quest : availableQuests_)
+            {
+                if (quest.targetItemId == "Garbage")
+                {
+                    if (GetRand(100) < 100)
+                    {
+                        questPool.push_back(quest);
+                    }
+                }
+                else
+                {
+                    questPool.push_back(quest);
+                }
+            }*/
+
+
+            //ãƒ©ãƒ³ãƒ€ãƒ ã§æœ€å¤§3ä»¶æŠ½é¸
+            std::random_device rd;
+            std::mt19937 rng(rd());
+            std::shuffle(questPool.begin(), questPool.end(), rng);
+
+            selectedQuests_.clear();
+            for (int i = 0; i < 3 && i < (int)questPool.size(); i++)
+            {
+                DeliveryQuest q = questPool[i];
+                q.requiredAmount = GetRand(2) + 1;
+                q.currentAmount = 0;
+                q.isCompleted = false;
+                q.isActive = false;
+
+                selectedQuests_.push_back(q);
+            }
         }
     }
 
-    // ƒAƒNƒeƒBƒu‚ÈˆË—Š‚Ìisó‹µ‚ğXV
+    // ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãªä¾é ¼ã®é€²è¡ŒçŠ¶æ³ã‚’æ›´æ–°
     for (auto& quest : activeQuests_)
     {
         if (!quest.isCompleted)
@@ -124,16 +157,16 @@ void QuestUI::Update(void)
     }
 }
 
-// ŒÂ•ÊˆË—Š‚Ìisó‹µXV
+// å€‹åˆ¥ä¾é ¼ã®é€²è¡ŒçŠ¶æ³æ›´æ–°
 void QuestUI::UpdateQuestProgress(DeliveryQuest& quest)
 {
-    // ”[•iˆË—ŠFƒAƒCƒeƒ€”‚ğƒ`ƒFƒbƒN
+    // ç´å“ä¾é ¼ï¼šã‚¢ã‚¤ãƒ†ãƒ æ•°ã‚’ãƒã‚§ãƒƒã‚¯
     int currentCount = GetCurrentItemCount(quest.targetItemId);
     quest.currentAmount = currentCount;
     quest.isCompleted = (quest.currentAmount >= quest.requiredAmount);
 }
 
-// ƒAƒCƒeƒ€Œ»İ”æ“¾
+// ã‚¢ã‚¤ãƒ†ãƒ ç¾åœ¨æ•°å–å¾—
 int QuestUI::GetCurrentItemCount(const std::string& itemId)
 {
     auto& itemManager = ItemManager::GetInstance();
@@ -147,7 +180,7 @@ int QuestUI::GetCurrentItemCount(const std::string& itemId)
     return 0;
 }
 
-//•`‰æˆ—
+//æç”»å‡¦ç†
 void QuestUI::Draw(void)
 {
     if (!isVisible_ || activeQuests_.empty()) return;
@@ -155,62 +188,62 @@ void QuestUI::Draw(void)
     DrawActiveQuests();
 }
 
-// ƒAƒNƒeƒBƒuˆË—Š•`‰æ
+// ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ä¾é ¼æç”»
 void QuestUI::DrawActiveQuests(void)
 {
     int yOffset = 10;
     int lineHeight = 25;
 
-    // ”wŒi•`‰æ
+    // èƒŒæ™¯æç”»
     int bgWidth = 350;
     int bgHeight = 30 + (activeQuests_.size() * lineHeight);
     DrawBox(10, 5, 10 + bgWidth, 5 + bgHeight, GetColor(0, 0, 0), TRUE);
     DrawBox(10, 5, 10 + bgWidth, 5 + bgHeight, GetColor(255, 255, 255), FALSE);
 
-    // ƒ^ƒCƒgƒ‹•`‰æ
-    Font::GetInstance().DrawDefaultText(15, yOffset, "y”[•iˆË—Šz", 0xffff00, 20);
+    // ã‚¿ã‚¤ãƒˆãƒ«æç”»
+    Font::GetInstance().DrawDefaultText(15, yOffset, "ã€ç´å“ä¾é ¼ã€‘", 0xffff00, 20);
     yOffset += lineHeight;
 
-    // ƒAƒNƒeƒBƒuˆË—ŠƒŠƒXƒg•`‰æ
+    // ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ä¾é ¼ãƒªã‚¹ãƒˆæç”»
     for (const auto& quest : activeQuests_)
     {
-        // ˆË—Šƒ^ƒCƒgƒ‹
+        // ä¾é ¼ã‚¿ã‚¤ãƒˆãƒ«
         unsigned int titleColor = quest.isCompleted ? 0x00ff00 : 0xffffff;
         Font::GetInstance().DrawDefaultText(20, yOffset, quest.title.c_str(), titleColor, 16);
 
-        // ”[•iisó‹µ•\¦
-        std::string progressText = "”[•i: " + std::to_string(quest.currentAmount) + "/" + std::to_string(quest.requiredAmount);
+        // ç´å“é€²è¡ŒçŠ¶æ³è¡¨ç¤º
+        std::string progressText = "ç´å“: " + std::to_string(quest.currentAmount) + "/" + std::to_string(quest.requiredAmount);
 
-        // isó‹µ‚ÌF•ª‚¯
+        // é€²è¡ŒçŠ¶æ³ã®è‰²åˆ†ã‘
         unsigned int progressColor = quest.isCompleted ? 0x00ff00 :
             (quest.currentAmount > 0 ? 0xffff00 : 0xffffff);
 
         Font::GetInstance().DrawDefaultText(220, yOffset, progressText.c_str(), progressColor, 16);
 
-        // Š®—¹ƒ}[ƒN
+        // å®Œäº†ãƒãƒ¼ã‚¯
         if (quest.isCompleted)
         {
-            Font::GetInstance().DrawDefaultText(320, yOffset, "Š®—¹!", 0x00ff00, 16);
+            Font::GetInstance().DrawDefaultText(320, yOffset, "å®Œäº†!", 0x00ff00, 16);
         }
 
         yOffset += lineHeight;
     }
 
-    //// ƒfƒoƒbƒOî•ñ
-    //DrawFormatString(0, 500, 0xffffff, "”[•iˆË—Š”: %d", (int)activeQuests_.size());
+    //// ãƒ‡ãƒãƒƒã‚°æƒ…å ±
+    //DrawFormatString(0, 500, 0xffffff, "ç´å“ä¾é ¼æ•°: %d", (int)activeQuests_.size());
 }
 
-//ˆË—Šó’
+//ä¾é ¼å—æ³¨
 void QuestUI::AcceptQuest(int questId)
 {
-    // Šù‚ÉˆË—Š‚ğó‚¯‚Ä‚¢‚éê‡‚ÍV‚µ‚¢ˆË—Š‚ğó‚¯‚ç‚ê‚È‚¢
+    // æ—¢ã«ä¾é ¼ã‚’å—ã‘ã¦ã„ã‚‹å ´åˆã¯æ–°ã—ã„ä¾é ¼ã‚’å—ã‘ã‚‰ã‚Œãªã„
     if (!activeQuests_.empty())
     {
-    Font::GetInstance().DrawDefaultText (0, 180, "Šù‚ÉˆË—Š‚ğó‚¯‚Ä‚¢‚Ü‚·BŠ®—¹‚µ‚Ä‚©‚çV‚µ‚¢ˆË—Š‚ğó‚¯‚Ä‚­‚¾‚³‚¢B", 0xff0000, 16);
+    Font::GetInstance().DrawDefaultText (0, 180, "æ—¢ã«ä¾é ¼ã‚’å—ã‘ã¦ã„ã¾ã™ã€‚å®Œäº†ã—ã¦ã‹ã‚‰æ–°ã—ã„ä¾é ¼ã‚’å—ã‘ã¦ãã ã•ã„ã€‚", 0xff0000, 16);
         return;
     }
 
-    // —˜—p‰Â”\‚ÈˆË—Š‚©‚çw’èID‚ÌˆË—Š‚ğ’T‚·
+    // åˆ©ç”¨å¯èƒ½ãªä¾é ¼ã‹ã‚‰æŒ‡å®šIDã®ä¾é ¼ã‚’æ¢ã™
     for (auto& quest : availableQuests_)
     {
         if (quest.id == questId && !quest.isActive)
@@ -219,28 +252,28 @@ void QuestUI::AcceptQuest(int questId)
             quest.currentAmount = 0;
             quest.isCompleted = false;
 
-            // ƒAƒNƒeƒBƒuˆË—ŠƒŠƒXƒg‚É’Ç‰Á
+            // ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ä¾é ¼ãƒªã‚¹ãƒˆã«è¿½åŠ 
             activeQuests_.push_back(quest);
 
-            //// ƒfƒoƒbƒOo—Í
-            //DrawFormatString(0, 520, 0x00ff00, "ˆË—Šó’: %s", quest.title.c_str());
+            //// ãƒ‡ãƒãƒƒã‚°å‡ºåŠ›
+            //DrawFormatString(0, 520, 0x00ff00, "ä¾é ¼å—æ³¨: %s", quest.title.c_str());
             break;
         }
     }
 }
 
-//ˆË—ŠŠ®—¹
+//ä¾é ¼å®Œäº†
 void QuestUI::CompleteQuest(int questId)
 {
-    // ƒAƒNƒeƒBƒuˆË—Š‚©‚çŠ®—¹ˆË—Š‚ğíœ
+    // ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ä¾é ¼ã‹ã‚‰å®Œäº†ä¾é ¼ã‚’å‰Šé™¤
     for (auto it = activeQuests_.begin(); it != activeQuests_.end(); ++it)
     {
         if (it->id == questId && it->isCompleted)
         {
-            // •ñVˆ—‚È‚Ç‚ğ‚±‚±‚É’Ç‰Á‰Â”\
+            // å ±é…¬å‡¦ç†ãªã©ã‚’ã“ã“ã«è¿½åŠ å¯èƒ½
             activeQuests_.erase(it);
 
-            // —˜—p‰Â”\ˆË—ŠƒŠƒXƒg‚Å‚à”ñƒAƒNƒeƒBƒu‚É
+            // åˆ©ç”¨å¯èƒ½ä¾é ¼ãƒªã‚¹ãƒˆã§ã‚‚éã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã«
             for (auto& quest : availableQuests_)
             {
                 if (quest.id == questId)
@@ -254,7 +287,7 @@ void QuestUI::CompleteQuest(int questId)
     }
 }
 
-//isó‹µXV
+//é€²è¡ŒçŠ¶æ³æ›´æ–°
 void QuestUI::UpdateProgress(int questId)
 {
     for (auto& quest : activeQuests_)
@@ -267,7 +300,7 @@ void QuestUI::UpdateProgress(int questId)
     }
 }
 
-//ˆË—Š‚ªƒAƒNƒeƒBƒu‚©ƒ`ƒFƒbƒN
+//ä¾é ¼ãŒã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã‹ãƒã‚§ãƒƒã‚¯
 bool QuestUI::IsQuestActive(int questId) const
 {
     for (const auto& quest : activeQuests_)
@@ -280,7 +313,7 @@ bool QuestUI::IsQuestActive(int questId) const
     return false;
 }
 
-//ˆË—Š‚ªŠ®—¹Ï‚İ‚©ƒ`ƒFƒbƒN
+//ä¾é ¼ãŒå®Œäº†æ¸ˆã¿ã‹ãƒã‚§ãƒƒã‚¯
 bool QuestUI::IsQuestCompleted(int questId) const
 {
     for (const auto& quest : activeQuests_)
@@ -293,19 +326,19 @@ bool QuestUI::IsQuestCompleted(int questId) const
     return false;
 }
 
-//V‚µ‚¢ˆË—Š‚ğó‚¯‚ç‚ê‚é‚©ƒ`ƒFƒbƒN
+//æ–°ã—ã„ä¾é ¼ã‚’å—ã‘ã‚‰ã‚Œã‚‹ã‹ãƒã‚§ãƒƒã‚¯
 bool QuestUI::CanAcceptNewQuest(void) const
 {
     return activeQuests_.empty();
 }
 
-//UI‚Ì•\¦§Œä
+//UIã®è¡¨ç¤ºåˆ¶å¾¡
 void QuestUI::SetVisible(bool visible)
 {
     isVisible_ = visible;
 }
 
-bool QuestUI::IsVisible() const
+bool QuestUI::IsVisible(void) const
 {
     return isVisible_;
 }
@@ -314,12 +347,17 @@ DeliveryQuest* QuestUI::GetActiveQuest(void)
 {
     if (!activeQuests_.empty())
     {
-        return &activeQuests_[0];  // 1Œ‚Ì‚İó’‚Ì‘O’ñ
+        return &activeQuests_[0];  // 1ä»¶ã®ã¿å—æ³¨ã®å‰æ
     }
     return nullptr;
 }
 
-//ƒŠƒ\[ƒX‚Ì‰ğ•ú
+std::vector<DeliveryQuest>& QuestUI::GetActiveQuests(void)
+{
+    return activeQuests_;
+}
+
+//ãƒªã‚½ãƒ¼ã‚¹ã®è§£æ”¾
 void QuestUI::Destroy(void)
 {
     delete instance_;

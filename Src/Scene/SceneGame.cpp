@@ -31,9 +31,6 @@ SceneGame::SceneGame(void)
 
 void SceneGame::Init(void)
 {
-	// ステージ管理初期
-	stageManager_ = new StageManager();
-	stageManager_->Init();
 
 	//カメラ
 	auto camera = SceneManager::GetInstance().GetCamera();
@@ -56,12 +53,16 @@ void SceneGame::Init(void)
 	grid_->Init();
 
 	//プレイヤー
-	player_ = new Player();
+	player_ = std::make_shared<Player>();
 	player_->Init();
 
 
 	//カメラをプレイヤーに追従
 	camera->SetFollow(&player_->GetTransform());
+
+	// ステージ管理初期
+	stageManager_ = new StageManager();
+	stageManager_->Init(player_);
 
 	//サウンド
 	auto& sound = SoundManager::GetInstance();
@@ -188,8 +189,6 @@ void SceneGame::Release(void)
 
 	//プレイヤーの解放
 	player_->Release();
-	delete player_;
-	player_ = nullptr;
 
 	//インベントリUIの解放
 	delete inventoryUI_;

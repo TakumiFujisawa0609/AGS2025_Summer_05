@@ -9,6 +9,7 @@
 
 class StageBase;
 class Fader;
+class Player;
 
 class StageManager
 {
@@ -31,7 +32,7 @@ public:
 	~StageManager(void);
 
 	//初期化処理
-	void Init(void);
+	void Init(std::shared_ptr<Player> player);
 
 	//破棄処理
 	void Destroy(void);
@@ -50,6 +51,8 @@ public:
 
 	//デルタタイム取得
 	float GetDeltaTime(void) const;
+
+	std::shared_ptr<Player> GetPlayer(void) const;
 
 private:
 
@@ -71,6 +74,9 @@ private:
 	//デルタタイム
 	std::chrono::system_clock::time_point preTime_;
 	float deltaTime_;
+
+	//プレイヤー
+	std::shared_ptr<Player> player_;
 
 	//デルタタイムのリセット
 	void ResetDeltaTime(void);

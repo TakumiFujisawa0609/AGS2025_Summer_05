@@ -7,6 +7,9 @@
 /// </summary>
 enum class ITEM_TYPE
 {
+    //éÌéq
+    SEED,
+
     //ëfçﬁ
     MATERIAL,
 

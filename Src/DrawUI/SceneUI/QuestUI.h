@@ -15,12 +15,13 @@ struct DeliveryQuest
     std::string targetItemId;    // 対象アイテムID
     int requiredAmount;          // 必要数量
     int currentAmount;           // 現在の進行数
+	int rewardMoney;             // 報酬金
     bool isCompleted;            // 完了フラグ
     bool isActive;               // アクティブフラグ
 
     DeliveryQuest(void);
 
-    DeliveryQuest(int questId, const std::string& questTitle, const std::string& questDesc, const std::string& itemId, int required);
+    DeliveryQuest(int questId, const std::string& questTitle, const std::string& questDesc, const std::string& itemId, int required, int money);
 };
 
 class QuestUI
@@ -73,10 +74,12 @@ public:
     // UI表示制御
     void SetVisible(bool visible);
 
-    bool IsVisible() const;
+    bool IsVisible(void) const;
 
     // アクティブ依頼を取得（1件のみ受けている前提）
     DeliveryQuest* GetActiveQuest(void);
+
+    std::vector<DeliveryQuest>& GetActiveQuests(void);
 
 
 private:
@@ -92,7 +95,10 @@ private:
     std::vector<DeliveryQuest> availableQuests_;
 
     // アクティブな納品依頼リスト
-    std::vector<DeliveryQuest> activeQuests_;   
+    std::vector<DeliveryQuest> activeQuests_; 
+
+    //依頼候補
+    std::vector<DeliveryQuest> selectedQuests_;
 
     //日数
     DateTimeManager* dateTimeManager_;

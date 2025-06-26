@@ -42,7 +42,7 @@ private:
 
 	
 	//プレイヤー
-	Player* player_;
+	std::shared_ptr<Player> player_;
 
 	//グリッド線
 	Grid* grid_;

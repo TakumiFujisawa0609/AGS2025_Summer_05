@@ -70,7 +70,7 @@ void ItemManager::Init()
 
 void ItemManager::AddItem(std::shared_ptr<ItemBase> item)
 {
-    // IDŠÇ—‚É‘Î‰‚µ‚Ä‚¢‚é‚È‚ç’Ç‰Á•s—v‚©‚à‚µ‚ê‚Ü‚¹‚ñ‚ªc‚·
+
 }
 
 std::shared_ptr<MaterialItem> ItemManager::GetMaterialItem(int index) const

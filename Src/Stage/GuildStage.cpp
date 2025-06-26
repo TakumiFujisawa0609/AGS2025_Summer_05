@@ -26,6 +26,7 @@ void GuildStage::Init(void)
 
 	receptionist_ = std::make_shared<Receptionist>();
 	receptionist_->Init();
+	receptionist_->SetPlayer(stageManager_->GetPlayer());
 	CollisionManager::GetInstance().Register(receptionist_);
 
 	teleportMovement_ = std::make_shared<TeleportMovement>(stageManager_);

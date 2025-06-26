@@ -27,8 +27,9 @@ StageManager::~StageManager(void)
 }
 
 //‰Šú‰»ˆ—
-void StageManager::Init(void)
+void StageManager::Init(std::shared_ptr<Player> player)
 {
+	player_ = player;
 	stageId_ = STAGE_ID::NONE;
 	waitStageId_ = STAGE_ID::NONE;
 	stage_ = nullptr; 
@@ -148,4 +149,9 @@ StageManager::STAGE_ID StageManager::GetStageID() const
 float StageManager::GetDeltaTime(void) const
 {
 	return deltaTime_;
+}
+
+std::shared_ptr<Player> StageManager::GetPlayer(void) const
+{
+	return player_;
 }

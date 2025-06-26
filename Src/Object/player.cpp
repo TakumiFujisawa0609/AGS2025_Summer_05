@@ -88,6 +88,7 @@ void Player::Draw(void)
 	// プレイヤー座標
 	DrawFormatString(0, 40, 0xffffff, "プレイヤー座標:(%.2f, %.2f, %.2f)", trans_.pos.x, trans_.pos.y, trans_.pos.z);
 	DrawSphere3D(trans_.pos, radius_, 16, 0xffffff, 0xffffff, false);
+	DrawFormatString(0, 120, 0xffffff,"所持金 :%d", money_);
 	
 #endif //_DEBUG
 }
@@ -135,9 +136,9 @@ int Player::GetMoney(void) const
 	return money_;
 }
 
-void Player::SetMoney(int money)
+void Player::AddMoney(int money)
 {
-	money_ = money;
+	money_ += money;
 }
 
 
