@@ -111,3 +111,13 @@ bool TeleportMovement::IsValid(void) const
 {
 	return true;
 }
+
+void TeleportMovement::OnPlayerHit(void)
+{
+	ShowUI();
+}
+
+void TeleportMovement::OnPlayerExit(void)
+{
+	HideUI();
+}

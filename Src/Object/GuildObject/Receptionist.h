@@ -5,6 +5,8 @@
 #include "../Interact/HitObject.h"
 #include "../UnitBase.h"
 
+class Shop;
+
 class Player;
 
 // ItemTypeの定義
@@ -50,6 +52,21 @@ public:
     void HideUI(void) override;
     bool IsValid(void) const override;
 
+    void OnPlayerHit(void) override;
+    void OnPlayerExit(void) override;
+
+    void UpdateMainMenu(void);
+    void UpdateShopMenu(void);
+
+    //納品機能
+    void UpdateDeliveryMenu(void);
+    void UpdateDeliverableItems(void);
+    bool DeliverSelectedQuantity(void);
+
+    //描画
+    void DrawMainMenu(void);
+    void DrawDeliveryMenu(void);
+
     // アイテム関連
     bool DeliverItem(IETEM_TYPE itemType);
     void SetItemCount(IETEM_TYPE itemType, int count);
@@ -65,6 +82,18 @@ public:
     int GetRemainingDeliveryAmount(IETEM_TYPE itemType) const;
 
 private:
+
+    enum class MENU_MODE
+    {
+        NONE,
+        MAIN_SELECT,
+        DELIVERY_MENU,
+        SHOP_MENU
+    };
+
+    MENU_MODE currentMode_;
+    int mainMenuSelected_;
+
     // UI制御
     bool isShowUI_;
     bool isShowDeliveryMenu_;
@@ -83,4 +112,7 @@ private:
 
     //プレイヤー情報
     std::shared_ptr<Player> player_;
+
+    //ショップ機能
+    std::shared_ptr<Shop> shop_;
 };

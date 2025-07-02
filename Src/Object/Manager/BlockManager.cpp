@@ -12,10 +12,10 @@ BlockManager::~BlockManager(void)
 
 void BlockManager::Init(const std::string& csvFilePath)
 {
-    auto mapData = LoadCSV(csvFilePath);
+    mapData_ = LoadCSV(csvFilePath);
 
-    int rows = static_cast<int>(mapData.size());
-    int cols = mapData.empty() ? 0 : static_cast<int>(mapData[0].size());
+    int rows = static_cast<int>(mapData_.size());
+    int cols = mapData_.empty() ? 0 : static_cast<int>(mapData_[0].size());
 
     // 原点を中央にずらすためのオフセット
     float offsetX = -(cols * blockSize_) / 2.0f;
@@ -25,7 +25,7 @@ void BlockManager::Init(const std::string& csvFilePath)
     {
         for (int x = 0; x < cols; ++x)
         {
-            int cell = mapData[z][x];
+            int cell = mapData_[z][x];
 
             // オフセットを加味した位置
             VECTOR pos = VGet(x * blockSize_ + offsetX, -50.0f, z * blockSize_ + offsetZ);
@@ -67,6 +67,11 @@ void BlockManager::Draw()
 void BlockManager::Release()
 {
     blocks_.clear();
+}
+
+const std::vector<std::vector<int>>& BlockManager::GetMapData(void) const
+{
+    return mapData_;
 }
 
 std::vector<std::vector<int>> BlockManager::LoadCSV(const std::string& filePath)

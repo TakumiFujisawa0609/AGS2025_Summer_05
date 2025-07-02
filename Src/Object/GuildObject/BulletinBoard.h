@@ -10,6 +10,12 @@
 class BulletinBoard : public HitObject, public UnitBase
 {
 public:
+	static constexpr int UI_ENTER_DELAY_FRAME = 10; // “ü—Í–³‹ƒtƒŒ[ƒ€”
+
+	static constexpr int UI_SHOW_DELAY_MAX = 30;  // UI‘±—P—\‚ÌÅ‘åƒtƒŒ[ƒ€”i“K‹X’²®j
+
+	static constexpr float UI_CLOSE_DISTANCE = 100.0f;
+
 
 	//”¼Œa
 	static constexpr float RADIUS = 50.0f;
@@ -38,6 +44,10 @@ public:
 	//‰ğ•ú
 	void Release(void)override;
 
+	VECTOR GetHitMin(void) const;
+
+	VECTOR GetHitMax(void) const;
+
 	//HitObject‚ğŒp³
 	HIT_TYPE GetHitType(void) const override;
 
@@ -53,9 +63,19 @@ public:
 
 	bool IsValid(void) const override;
 
+	void OnPlayerHit(void) override;
+
+	void OnPlayerExit(void) override;
+
+	void UpdateUIVisibility(bool isHit) override;
+
 private:
 	//Œf¦”Â‚Ì”wŒi‰æ‘œ‚ÌID
 	int imageBoardId_;
+
+	int uiOpenWaitFrame_; // UI‚ğŠJ‚¢‚½‚ ‚Æ‚Ì—P—\ŠÔ
+
+	int uiShowUIDelayFrames_;
 	
 	//•\¦UI‚Ì”»’è
 	bool isShowUI_;

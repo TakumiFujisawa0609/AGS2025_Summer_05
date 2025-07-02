@@ -7,6 +7,7 @@
 #include "../../Object/Manager/ItemManager.h"
 #include "../../DrawUI/Font.h"
 #include "../../Manager/System/DateTimeManager.h"
+#include "../../Manager/Generic/InputManager.h"
 
 DeliveryQuest::DeliveryQuest(void)
 {
@@ -109,41 +110,7 @@ void QuestUI::Update(void)
         if (lastDay_ != currentDay)
         {
             lastDay_ = currentDay;
-
-            std::vector<DeliveryQuest> questPool;
-
-           /* for (auto& quest : availableQuests_)
-            {
-                if (quest.targetItemId == "Garbage")
-                {
-                    if (GetRand(100) < 100)
-                    {
-                        questPool.push_back(quest);
-                    }
-                }
-                else
-                {
-                    questPool.push_back(quest);
-                }
-            }*/
-
-
-            //ランダムで最大3件抽選
-            std::random_device rd;
-            std::mt19937 rng(rd());
-            std::shuffle(questPool.begin(), questPool.end(), rng);
-
-            selectedQuests_.clear();
-            for (int i = 0; i < 3 && i < (int)questPool.size(); i++)
-            {
-                DeliveryQuest q = questPool[i];
-                q.requiredAmount = GetRand(2) + 1;
-                q.currentAmount = 0;
-                q.isCompleted = false;
-                q.isActive = false;
-
-                selectedQuests_.push_back(q);
-            }
+            RefreshDailyQuests();
         }
     }
 
@@ -156,6 +123,7 @@ void QuestUI::Update(void)
         }
     }
 }
+
 
 // 個別依頼の進行状況更新
 void QuestUI::UpdateQuestProgress(DeliveryQuest& quest)
@@ -363,3 +331,58 @@ void QuestUI::Destroy(void)
     delete instance_;
     instance_ = nullptr;
 }
+
+// 日替わり
+void QuestUI::RefreshDailyQuests(void)
+{
+    std::vector<DeliveryQuest> questPool;
+
+    for (auto& quest : availableQuests_)
+    {
+        if (quest.targetItemId == "Garbage")
+        {
+            if (GetRand(100) < 10)
+            {
+                questPool.push_back(quest);
+            }
+        }
+        else
+        {
+            questPool.push_back(quest);
+        }
+    }
+
+    std::random_device rd;
+    std::mt19937 rng(rd());
+    std::shuffle(questPool.begin(), questPool.end(), rng);
+
+    selectedQuests_.clear();
+
+    int logY = 400; // ログ描画の開始Y位置
+    DrawBox(0, logY - 5, 640, logY + 100, GetColor(0, 0, 0), TRUE); // 背景
+
+    DrawFormatString(0, logY, GetColor(255, 255, 0), "【新しく抽選されたクエスト】");
+    logY += 20;
+
+    for (int i = 0; i < 3 && i < (int)questPool.size(); i++)
+    {
+        DeliveryQuest q = questPool[i];
+        q.requiredAmount = GetRand(2) + 1;
+        q.currentAmount = 0;
+        q.isCompleted = false;
+        q.isActive = false;
+
+        selectedQuests_.push_back(q);
+
+        // 抽選結果を表示
+        DrawFormatString(0, logY, GetColor(255, 255, 255), "- %s x%d", q.title.c_str(), q.requiredAmount);
+        logY += 20;
+    }
+}
+
+const std::vector<DeliveryQuest>& QuestUI::GetSelectedQuests(void) const
+{
+    return selectedQuests_;
+}
+
+

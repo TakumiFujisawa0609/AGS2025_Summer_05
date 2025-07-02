@@ -39,11 +39,20 @@ public:
 	// プレイヤーのAABB最大点を取得
 	VECTOR GetHitMax(void) const;
 
+	//当たり判定の半径
+	float GetRadius(void) const;
+
 	//プレイヤーの所持金を取得
 	int GetMoney(void) const;
 
 	//プレイヤーの所持金を設定
 	void AddMoney(int money);
+
+	void SetBlockedDirX(int dir);
+
+	void SetBlockedDirZ(int dir);
+
+	void ResetBlockDirs(void);
 
 
 	// アニメーション種別
@@ -98,6 +107,10 @@ private:
 
 	//所持金
 	int money_;
+
+	int blockedDirX_;
+
+	int blockedDirZ_;
 
 	// アニメーション
 	AnimationController* animationController_;

@@ -1,6 +1,7 @@
 #include "DateTimeManager.h"
 
 #include "TimeManager.h"
+#include "../../Manager/Generic/InputManager.h"
 
 DateTimeManager::DateTimeManager(void)
 {
@@ -20,6 +21,10 @@ void DateTimeManager::Update(void)
 {
 	auto& time = TimeManager::GetInstance();
 
+	if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_R))
+	{
+		currentDay_++;
+	}
 	while (time.GetGameTime() >= HOURS_IN_DAY)
 	{
 		currentDay_++;

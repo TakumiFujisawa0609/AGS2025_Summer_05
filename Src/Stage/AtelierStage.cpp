@@ -31,6 +31,7 @@ void AtelierStage::Init(void)
 
 	alchemyPot_ = std::make_shared<AlchemyPot>();
 	alchemyPot_->Init();
+	alchemyPot_->SetPlayer(stageManager_->GetPlayer());
 	CollisionManager::GetInstance().Register(alchemyPot_);
 
 	teleportt_ = std::make_shared<Teleport>(stageManager_);

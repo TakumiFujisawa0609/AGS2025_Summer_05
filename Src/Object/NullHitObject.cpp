@@ -38,3 +38,12 @@ bool NullHitObject::IsValid(void) const
 {
     return false;
 }
+
+void NullHitObject::OnPlayerHit(void)
+{
+
+}
+
+void NullHitObject::OnPlayerExit(void)
+{
+}

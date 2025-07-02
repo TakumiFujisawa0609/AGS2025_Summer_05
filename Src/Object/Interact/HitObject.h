@@ -1,8 +1,11 @@
 #pragma once
 
 #include <DxLib.h>
+#include <memory>
+
 #include "../../Common/Vector2.h"
 
+class Player;
 /// <summary>
 /// インタラクトUIの表示対象オブジェクト基底クラス
 /// </summary>
@@ -57,10 +60,25 @@ public:
     /// </summary>
     virtual void HideUI(void) = 0;
 
+    virtual void OnPlayerHitAABB(Player* player, VECTOR& playerPos, const VECTOR& playerMin, const VECTOR& playerMax);
+
+    virtual void OnPlayerHitSphere(VECTOR& playerPos, float playerRadius);
+
+    virtual void OnPlayerHit(void) = 0;
+
+    virtual void OnPlayerExit(void) = 0;
+
     virtual bool IsValid(void) const { return true; }
+
+    virtual void UpdateUIVisibility(bool isHit);
 
 protected:
     int stageID_ = -1;
+
+    bool uiVisible_ = false;
+    int uiHideDelayFrames_ = 0; // UI消すまでの猶予フレーム数
+    static constexpr int UI_HIDE_DELAY_MAX = 30; // 例えば30フレーム(0.5秒程度)
+
 };
 
 

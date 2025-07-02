@@ -141,6 +141,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\Manager\PlantManager.cpp" />
+    <ClCompile Include="Src\Object\GardenObject\PlantObject.cpp" />
+    <ClCompile Include="Src\Object\GuildObject\Shop.cpp" />
     <ClCompile Include="Src\Object\Item\Seed\RandomSeed.cpp" />
     <ClCompile Include="Src\Object\Item\Seed\SeedItem.cpp" />
     <ClCompile Include="Src\Manager\System\DateTimeManager.cpp" />
@@ -209,6 +212,9 @@
     <ClCompile Include="Src\Object\GuildObject\TeleportMovement.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\Manager\PlantManager.h" />
+    <ClInclude Include="Src\Object\GardenObject\PlantObject.h" />
+    <ClInclude Include="Src\Object\GuildObject\Shop.h" />
     <ClInclude Include="Src\Object\Item\Seed\RandomSeed.h" />
     <ClInclude Include="Src\Object\Item\Seed\SeedItem.h" />
     <ClInclude Include="Src\Manager\System\DateTimeManager.h" />

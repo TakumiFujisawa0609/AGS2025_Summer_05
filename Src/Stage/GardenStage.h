@@ -6,6 +6,7 @@
 
 class BlockManager;
 class StageManager;
+class PlantManager;
 
 class GardenStage : public StageBase
 {
@@ -33,4 +34,6 @@ private:
 
 	// StageManager‚ÌQÆ
 	StageManager* stageManager_;
+
+	PlantManager* plantManager_;
 };

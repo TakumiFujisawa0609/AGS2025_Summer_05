@@ -8,12 +8,16 @@
 #include "../Manager/Generic/InputManager.h"
 #include "../Object/Manager/StageManager.h"
 #include "../Object/Manager/BlockManager.h"
+#include "../Object/Manager/PlantManager.h"
+#include "../Object/Manager/CollisionManager.h"
 
 // コンストラクタ
 GardenStage::GardenStage(StageManager* stageManager)
 	: stageManager_(stageManager)
 {
 	blockManager_ = new BlockManager();
+	plantManager_ = new PlantManager();
+	
 }
 
 // 初期化処理
@@ -21,6 +25,17 @@ void GardenStage::Init(void)
 {
 	// CSVファイルからブロック読み込み
 	blockManager_->Init(Application::PATH_MAP_DATA);
+
+	// CSVデータ再取得
+	auto mapData = blockManager_->GetMapData();
+
+	// 植物初期化
+	plantManager_->Init(mapData, 50.0f);
+
+	for (const auto& plant : plantManager_->GetPlantObjects())
+	{
+		CollisionManager::GetInstance().Register(plant);
+	}
 }
 
 // 更新処理
@@ -34,18 +49,27 @@ void GardenStage::Update(void)
 	}
 
 	blockManager_->Update();
+	plantManager_->Update();
 }
 
 // 描画処理
 void GardenStage::Draw(void)
 {
-	DrawFormatString(0, 20, 0xffffff, "ガーデン");
 	blockManager_->Draw();
+	plantManager_->Draw();
+
 }
 
 // 解放処理
 void GardenStage::Release(void)
 {
+	if (plantManager_ != nullptr)
+	{
+		plantManager_->Release();
+		delete plantManager_;
+		plantManager_ = nullptr;
+	}
+
 	if (blockManager_ != nullptr)
 	{
 		blockManager_->Release();

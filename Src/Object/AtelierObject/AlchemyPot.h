@@ -7,6 +7,8 @@
 #include "../Interact/HitObject.h"
 #include "../UnitBase.h"
 
+class Player;
+
 
 class AlchemyPot : public HitObject, public UnitBase
 {
@@ -25,6 +27,8 @@ public:
 
 	//デストラクタ
 	~AlchemyPot(void);
+
+	void SetPlayer(std::shared_ptr<Player> player);
 
 	//初期化処理
 	void Init(void);
@@ -53,7 +57,13 @@ public:
 
 	bool IsValid(void) const override;
 
+	void OnPlayerHit(void) override;
+
+	void OnPlayerExit(void) override;
+
 private:
 	bool isShowUI_;
+
+	std::shared_ptr<Player> player_;
 };
 

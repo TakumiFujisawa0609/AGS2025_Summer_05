@@ -55,6 +55,10 @@ public:
 
 	bool IsValid(void) const override;
 
+	void OnPlayerHit(void) override;
+
+	void OnPlayerExit(void) override;
+
 private:
 	bool isShowUI_;
 	StageManager* stageManager_;

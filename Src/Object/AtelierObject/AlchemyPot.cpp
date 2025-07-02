@@ -8,6 +8,7 @@
 #include "../../Object/Manager/AlchemyManager.h"
 #include "../../DrawUI/Font.h"
 #include "../../Application.h"
+#include "../player.h"
 
 AlchemyPot::AlchemyPot(void)
 {
@@ -16,6 +17,11 @@ AlchemyPot::AlchemyPot(void)
 
 AlchemyPot::~AlchemyPot(void)
 {
+}
+
+void AlchemyPot::SetPlayer(std::shared_ptr<Player> player)
+{
+	player_ = player;
 }
 
 void AlchemyPot::Init(void)
@@ -128,4 +134,15 @@ void AlchemyPot::HideUI(void)
 bool AlchemyPot::IsValid(void) const
 {
 	return true;
+}
+
+void AlchemyPot::OnPlayerHit(void)  
+{  
+   ShowUI();  
+   VECTOR playerPos = player_->GetPos();
+}
+
+void AlchemyPot::OnPlayerExit(void)
+{
+	HideUI();
 }

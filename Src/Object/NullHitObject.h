@@ -21,6 +21,10 @@ public:
     void HideUI(void) override;
     
     bool IsValid(void) const override;
+
+    void OnPlayerHit(void) override;
+
+    void OnPlayerExit(void) override;
 };
 
 

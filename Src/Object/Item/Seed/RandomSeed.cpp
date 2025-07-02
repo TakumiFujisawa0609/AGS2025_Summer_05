@@ -10,7 +10,8 @@ RandomSeed::RandomSeed(void)
 		"ŽíŽq",
 		"“ÁŽê‚ÈŽíŽq‚È‚É‚ªŽæ‚ê‚é‚©‚Í‰^‚µ‚¾‚¢",
 		0,
-		ResourceManager::GetInstance().Load(ResourceManager::SRC::SEED).handleId_
+		ResourceManager::GetInstance().Load(ResourceManager::SRC::SEED).handleId_,
+		100
 	)
 {
 }

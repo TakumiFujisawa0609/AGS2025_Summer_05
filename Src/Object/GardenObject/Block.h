@@ -36,6 +36,9 @@ public:
 	// UIを非表示にする処理
 	void HideUI(void) override;
 
+	void OnPlayerHit(void) override;
+
+	void OnPlayerExit(void) override;
 private:
 	
 	//モデルのハンドル

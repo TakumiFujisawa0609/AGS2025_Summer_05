@@ -62,3 +62,11 @@ void Block::ShowUI(void)
 void Block::HideUI(void)
 {
 }
+
+void Block::OnPlayerHit(void)
+{
+}
+
+void Block::OnPlayerExit(void)
+{
+}

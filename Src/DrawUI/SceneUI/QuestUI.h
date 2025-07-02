@@ -81,6 +81,10 @@ public:
 
     std::vector<DeliveryQuest>& GetActiveQuests(void);
 
+    void RefreshDailyQuests(void);
+
+    const std::vector<DeliveryQuest>& GetSelectedQuests(void) const;
+
 
 private:
     QuestUI() = default;

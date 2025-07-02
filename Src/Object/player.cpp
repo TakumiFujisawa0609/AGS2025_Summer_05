@@ -14,6 +14,10 @@ Player::Player(void)
 	//所持金
 	money_ = 0;
 
+	blockedDirX_ = 0;
+
+	blockedDirZ_ = 0;
+
 	//角度
 	angles_ = VECTOR();
 
@@ -76,7 +80,7 @@ void Player::Update(void)
 	animationController_->Update();
 
 	// プレイヤーの座標と半径を使って当たり判定
-	CollisionManager::GetInstance().CheckHitWithPlayer(trans_.pos, radius_, GetHitMin(), GetHitMax());
+	CollisionManager::GetInstance().CheckHitWithPlayer(this, trans_.pos, radius_, GetHitMin(), GetHitMax());
 
 }
 
@@ -113,7 +117,7 @@ void Player::SetPos(VECTOR pos)
 	trans_.pos = pos;
 }
 
-VECTOR Player::GetHitMin() const
+VECTOR Player::GetHitMin(void) const
 {
 	return {
 		trans_.pos.x - radius_,
@@ -122,13 +126,18 @@ VECTOR Player::GetHitMin() const
 	};
 }
 
-VECTOR Player::GetHitMax() const
+VECTOR Player::GetHitMax(void) const
 {
 	return {
 		trans_.pos.x + radius_,
 		trans_.pos.y + radius_,
 		trans_.pos.z + radius_
 	};
+}
+
+float Player::GetRadius(void) const
+{
+	return radius_;
 }
 
 int Player::GetMoney(void) const
@@ -141,46 +150,62 @@ void Player::AddMoney(int money)
 	money_ += money;
 }
 
+void Player::SetBlockedDirX(int dir)
+{
+	blockedDirX_ = dir;
+}
+
+void Player::SetBlockedDirZ(int dir)
+{
+	blockedDirZ_ = dir;
+}
+
+void Player::ResetBlockDirs(void)
+{
+	blockedDirX_ = 0;
+	blockedDirZ_ = 0;
+}
+
 
 void Player::ProcessMove(void)
 {
 	InputManager& ins = InputManager::GetInstance();
 
+	ResetBlockDirs(); // 毎フレームリセット
+
 	// 移動方向を決める
 	VECTOR moveDir = Utility::VECTOR_ZERO;
-	if (ins.IsNew(KEY_INPUT_W)) { moveDir = VAdd(moveDir, Utility::DIR_F); }
-	if (ins.IsNew(KEY_INPUT_S)) { moveDir = VAdd(moveDir, Utility::DIR_B); }
-	if (ins.IsNew(KEY_INPUT_A)) { moveDir = VAdd(moveDir, Utility::DIR_L); }
-	if (ins.IsNew(KEY_INPUT_D)) { moveDir = VAdd(moveDir, Utility::DIR_R); }
+
+	// Z方向（前後）
+	if (ins.IsNew(KEY_INPUT_W) && blockedDirZ_ != 1) // 前方ブロックされてないなら前進OK
+		moveDir = VAdd(moveDir, Utility::DIR_F);
+
+	if (ins.IsNew(KEY_INPUT_S) && blockedDirZ_ != -1) // 後方ブロックされてないなら後退OK
+		moveDir = VAdd(moveDir, Utility::DIR_B);
+
+	// X方向（左右）
+	if (ins.IsNew(KEY_INPUT_A) && blockedDirX_ != 1) // 左ブロックされてない
+		moveDir = VAdd(moveDir, Utility::DIR_L);
+
+	if (ins.IsNew(KEY_INPUT_D) && blockedDirX_ != -1) // 右ブロックされてない
+		moveDir = VAdd(moveDir, Utility::DIR_R);
 
 	if (!Utility::EqualsVZero(moveDir))
 	{
-		// 正規化
 		moveDir = VNorm(moveDir);
-
-		// 移動量を計算する(方向×スピード)
 		VECTOR movePow = VScale(moveDir, SPEED_MOVE);
 
-		// 移動処理(座標＋移動量)
 		trans_.pos = VAdd(trans_.pos, movePow);
 
-		// 方向がある時のみに角度を更新する
 		if (Utility::SqrMagnitudeF(moveDir) > 0.0f)
 		{
-			// Y軸の向きだけ変更(XZ平面の向き)
 			angles_.y = atan2f(moveDir.x, moveDir.z) + DX_PI_F;
 		}
 
-		// モデルに座標を設定する
 		MV1SetPosition(modelId_, trans_.pos);
 
-		// 方向から角度(ラジアン)に変換する
 		angles_.y = atan2(moveDir.x, moveDir.z);
-
-		// モデルの方向が正の負の方向を向いているので、補正する
 		angles_.y += Utility::Deg2RadF(180.0f);
-		
-		// モデルに回転を設定する
 		MV1SetRotationXYZ(modelId_, angles_);
 	}
-}  
+}

@@ -7,6 +7,8 @@
 #include "../Interact/HitObject.h"
 #include "../NullHitObject.h"
 
+class Player;
+
 class CollisionManager
 {
 public:
@@ -33,7 +35,8 @@ public:
 	void Clear(void);
 
 	// プレイヤーとの当たり判定チェック(UI表示)
-	void CheckHitWithPlayer(VECTOR& playerPos, float playerRadius, const VECTOR& plyerMin, const VECTOR& playerMax);
+	void CheckHitWithPlayer(Player* player, VECTOR& playerPos, float playerRadius, const VECTOR& playerMin, const VECTOR& playerMax);
+
 
 
 	// リソースの解放
@@ -72,5 +75,5 @@ private:
 
 	//判定方式別の処理
 	void CheckHitSphere(std::shared_ptr<HitObject> obj, VECTOR& playerPos, float playerRadius);
-	void CheckHitAABB(std::shared_ptr<HitObject> obj,VECTOR& playerPos, const VECTOR& playerMin, const VECTOR& playerMax);
+	void CheckHitAABB(std::shared_ptr<HitObject> obj, Player* player, VECTOR& playerPos, const VECTOR& playerMin, const VECTOR& playerMax);
 };
