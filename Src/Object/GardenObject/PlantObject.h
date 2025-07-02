@@ -68,6 +68,8 @@ private:
 
 	bool isUIVisible_;
 
+	bool hasPlant_;
+
 	float growthStartTime_;
 
 	int sproutModelId_;

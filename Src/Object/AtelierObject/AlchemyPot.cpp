@@ -86,18 +86,18 @@ void AlchemyPot::Draw(void)
 	{
 		// テキスト内容
 		const char* text = "錬金";
-		int fontSize = 14;
+		int fontSize = 18;
 		int textWidth = GetDrawStringWidth(text, strlen(text), -1);
 		int boxWidth = textWidth + 30; // 余白を加える
-		int boxHeight = 20;
+		int boxHeight = 30;
 
 		int boxX = (screenWidth - boxWidth) / 2;
-		int boxY = boxY = (screenHeight / 4) + boxHeight;
+		int boxY = boxY = (screenHeight / 4) + 150;
 
 		// UI表示（中央）
 		DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(0, 0, 0), TRUE);
 		DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(255, 255, 255), FALSE);
-		Font::GetInstance().DrawDefaultText(boxX + 20, boxY + 5, text, 0xffffff, fontSize);
+		Font::GetInstance().DrawDefaultText(boxX + 15, boxY + 5, text, 0xffffff, fontSize);
 	}
 }
 

@@ -410,38 +410,35 @@ bool Receptionist::DeliverSelectedQuantity(void)
 
 void Receptionist::DrawMainMenu()
 {
-    const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
-    const int screenHeight = Application::DEFA_SCREEN_SZIE_Y;
+    const int screenWidth = Application::SCREEN_SIZE_X;
+    const int screenHeight = Application::SCREEN_SIZE_Y;
 
     const char* menuItems[] = { "納品", "購入" };
     const int menuCount = sizeof(menuItems) / sizeof(menuItems[0]);
-    const int fontSize = 14;
-    const int boxHeight = 20;
+    const int fontSize = 18;
+    const int boxHeight = 30;
 
-    int startY = (screenHeight / 4) + boxHeight;
+    int startY = screenHeight / 2 + 100;
 
     for (int i = 0; i < menuCount; i++)
     {
         const char* text = menuItems[i];
-        int textWidth = GetDrawStringWidth(text, strlen(text), -1);
+        int textWidth = GetDrawStringWidth(text, strlen(text), fontSize);
         int boxWidth = textWidth + 30;
         int boxX = (screenWidth - boxWidth) / 2;
         int boxY = startY + i * (boxHeight + 10);
 
-        // 選択中は指定の表示スタイルに
         if (i == mainMenuSelected_)
         {
-            // あなたの指定の選択時UI表示コードをそのまま適用
             DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(0, 0, 0), TRUE);
             DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(255, 255, 255), FALSE);
-            Font::GetInstance().DrawDefaultText(boxX + 20, boxY + 5, text, 0xffffff, fontSize);
+            Font::GetInstance().DrawDefaultText(boxX + 15, boxY + 5, text, GetColor(255, 255, 255), fontSize);
         }
         else
         {
-            // 選択されていないメニューは少し薄めの背景で表示
             DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(64, 64, 64), TRUE);
             DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(128, 128, 128), FALSE);
-            Font::GetInstance().DrawDefaultText(boxX + 20, boxY + 5, text, 0xffffff, fontSize);
+            Font::GetInstance().DrawDefaultText(boxX + 15, boxY + 5, text, GetColor(255, 255, 255), fontSize);
         }
     }
 }

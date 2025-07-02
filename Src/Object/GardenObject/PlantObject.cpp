@@ -7,6 +7,7 @@
 #include "../../Manager/Generic/InputManager.h"
 #include "../Item/Seed/RandomSeed.h"
 #include "../../DrawUI/Font.h"
+#include "../../Application.h"
 
 // コンストラクタ
 PlantObject::PlantObject(void)
@@ -14,6 +15,7 @@ PlantObject::PlantObject(void)
     growthStage_ = GROW_STAGE::Sprout;
     isActive_ = true;
     isUIVisible_ = false;
+    hasPlant_ = false;
     growthStartTime_ = 0.0f;
     sproutModelId_ = -1;
     midGrowthModelId_ = -1;
@@ -31,6 +33,7 @@ void PlantObject::Init(void)
 {
     isActive_ = true;
     isUIVisible_ = false;
+    hasPlant_ = false;
     growthStage_ = GROW_STAGE::Sprout;
 
     growthStartTime_ = TimeManager::GetInstance().GetGameTime();
@@ -45,7 +48,7 @@ void PlantObject::Init(void)
     trans_.scl = VGet(1, 1, 1);
     trans_.rot = VGet(0, 0, 0);
 
-    radius_ = 50.0f;
+    radius_ = 5.0f;
 }
 
 // 解放
@@ -71,12 +74,12 @@ void PlantObject::Update(void)
 
     if (isUIVisible_ && (input.IsTrgDown(KEY_INPUT_RETURN) || input.IsTrgDown(KEY_INPUT_NUMPADENTER)))
     {
-        if (!isActive_)
+        if (!hasPlant_)
         {
-            // 植えてないなら植える処理
+            // 植えていないなら植える処理
             TryPlant();
         }
-        else if (growthStage_ == GROW_STAGE::Mature)
+        else if (CanHarvest())
         {
             // 成長完了なら収穫処理
             TryHarvest();
@@ -85,7 +88,7 @@ void PlantObject::Update(void)
 
     if (!isActive_)
     {
-        // 植えていないなら成長処理は不要
+        // 成長中でなければ成長処理不要
         return;
     }
 
@@ -140,12 +143,12 @@ void PlantObject::ChangeModelForStage(GROW_STAGE stage)
         break;
     }
 
-    /*if (trans_.modelId >= 0)
+    if (trans_.modelId >= 0)
     {
         MV1SetPosition(trans_.modelId, trans_.pos);
         MV1SetScale(trans_.modelId, trans_.scl);
         MV1SetRotationXYZ(trans_.modelId, trans_.rot);
-    }*/
+    }
 }
 
 // 描画
@@ -160,37 +163,33 @@ void PlantObject::Draw(void)
     {
         const char* text = nullptr;
 
-        if (!isActive_) {
+        if (!hasPlant_) {
             text = "植える";
         }
         else if (CanHarvest()) {
             text = "収穫";
         }
 
-       if (text)
-	{
-		VECTOR screenPos;
-		if (ConvWorldPosToScreenPos(trans_.pos, &screenPos) == FALSE)
-		{
-			// 変換失敗したら描画しない
-			return;
-		}
+        if (text)
+        {
+            const int screenWidth = Application::SCREEN_SIZE_X;
+            const int screenHeight = Application::SCREEN_SIZE_Y;
 
-		SetUseZBuffer3D(FALSE); // UIはZバッファを無視して描画
+            int fontSize = 18;
+            int textWidth = GetDrawStringWidth(text, strlen(text), fontSize);
+            int boxWidth = textWidth + 30;
+            int boxHeight = 30;
 
-		int fontSize = 18;
-		int textWidth = GetDrawStringWidth(text, strlen(text), fontSize);
-		int boxWidth = textWidth + 30;
-		int boxHeight = 20;
-		int boxX = static_cast<int>(screenPos.x) - boxWidth / 2;
-		int boxY = static_cast<int>(screenPos.y) - 60;
+            int boxX = screenWidth / 2 - boxWidth / 2;
+            int boxY = screenHeight / 2 + 100;
 
-		DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(0, 0, 0), TRUE);
-		DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(255, 255, 255), FALSE);
-		Font::GetInstance().DrawDefaultText(boxX + 15, boxY + 5, text, GetColor(255, 255, 255), fontSize);
+            DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(0, 0, 0), TRUE);
+            DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(255, 255, 255), FALSE);
 
-		SetUseZBuffer3D(TRUE);
-	}
+            Font::GetInstance().DrawDefaultText(boxX + 15, boxY + 5, text, GetColor(255, 255, 255), fontSize);
+        }
+    }
+
 
     // デバッグ用の当たり判定表示はそのまま
 #ifdef _DEBUG
@@ -198,7 +197,6 @@ void PlantObject::Draw(void)
 #endif
 }
 
-// ヒット判定系
 PlantObject::HIT_TYPE PlantObject::GetHitType(void) const
 {
     return HIT_TYPE::SPHERE;
@@ -211,6 +209,8 @@ VECTOR PlantObject::GetHitPosition(void) const
 
 float PlantObject::GetHitRadius(void) const
 {
+    // 判定は植えているときだけ有効
+    if (!hasPlant_) return 0.0f;
     return radius_;
 }
 
@@ -242,7 +242,7 @@ void PlantObject::OnPlayerExit(void)
 
 bool PlantObject::CanHarvest(void) const
 {
-    return growthStage_ == GROW_STAGE::Mature;
+    return hasPlant_ && growthStage_ == GROW_STAGE::Mature;
 }
 
 PlantObject::GROW_STAGE PlantObject::GetGrowthStage(void) const
@@ -252,29 +252,30 @@ PlantObject::GROW_STAGE PlantObject::GetGrowthStage(void) const
 
 void PlantObject::TryPlant(void)
 {
-    // すでに植えてある or 無効状態なら何もしない
-    if (isActive_) return;
+    if (hasPlant_) return; // 既に植わっているなら植えない
 
-    // RandomSeed の所持数チェック
     auto seedItem = std::dynamic_pointer_cast<SeedItem>(
         ItemManager::GetInstance().FindItemById("RandomSeed")
     );
 
     if (!seedItem || seedItem->GetQuantity() <= 0)
     {
-        // 所持してないなら無視
         return;
     }
 
-    // 植える処理
-    ItemManager::GetInstance().SubtractQuantity(seedItem, 1); // 種を1つ減らす
-    Init();                      // 成長スタート（モデル非表示ならInit内容に注意）
-    HideUI();                    // UI非表示
+    ItemManager::GetInstance().SubtractQuantity(seedItem, 1);
+
+    hasPlant_ = true;
+    isActive_ = true;
+    growthStage_ = GROW_STAGE::Sprout;
+    growthStartTime_ = TimeManager::GetInstance().GetGameTime();
+    HideUI();
 }
 
 void PlantObject::TryHarvest()
 {
-    // Herbを1つ加算
+    if (!hasPlant_ || growthStage_ != GROW_STAGE::Mature) return;
+
     auto herb = std::dynamic_pointer_cast<MaterialItem>(
         ItemManager::GetInstance().FindItemById("Herb")
     );
@@ -283,7 +284,6 @@ void PlantObject::TryHarvest()
         ItemManager::GetInstance().AddQuantity(herb, 1);
     }
 
-    // ランダム素材加算
     std::vector<std::string> extraMaterials = {
         "AntidoteHerb",
         "MagicFlower",
@@ -297,17 +297,13 @@ void PlantObject::TryHarvest()
         ItemManager::GetInstance().AddQuantity(extra, 1);
     }
 
-    // 植え直し可能にする準備（非アクティブ化）
-    SetActive(false);       // 成長処理は止める
+    // 植物は収穫したので成長停止＆植えていない状態に
+    hasPlant_ = false;
+    isActive_ = false;
     growthStage_ = GROW_STAGE::Sprout;
     growthStartTime_ = 0.0f;
 
-    // モデル切り替え・非表示（必要なら）
-    trans_.modelId = -1;
-    // → MV1DeleteModel はコメント化中なので呼ばなくてOK
-
-    // UIは再度出せるように（触れたら「植える」と出る）
-    ShowUI();
+    HideUI();
 }
 
 void PlantObject::SetActive(bool active)

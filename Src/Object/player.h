@@ -92,7 +92,7 @@ public:
 	static constexpr float SPEED_MOVE = 10.0f;
 
 	//“–‚½‚è”»’è‚Ì”¼Œa
-	static constexpr float RADIUS = 40.0f;
+	static constexpr float RADIUS = 30.0f;
 
 private:
 	// ƒ‚ƒfƒ‹ID

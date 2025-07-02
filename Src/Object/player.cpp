@@ -67,7 +67,7 @@ void Player::Init(void)
 	axis_ = { 0.0f,0.0f,0.0f };
 
 	//Š‹à‚Ì‰Šú‰»
-	money_ = 0;
+	money_ = 300;
 }
 
 void Player::Update(void)
