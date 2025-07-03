@@ -9,6 +9,8 @@
 #include "../../DrawUI/Font.h"
 #include "../../Application.h"
 #include"../../Object/Manager/StageManager.h"
+#include "../../DrawUI/SceneUI/TeleportUI.h"
+
 
 TeleportMovement::TeleportMovement(StageManager* stageManager) : stageManager_(stageManager)
 {
@@ -33,21 +35,26 @@ void TeleportMovement::Init(void)
 	speed_ = 0.0f;
 	isShowUI_ = false;
 	trans_.pos = MODEL_POS;
+
+	teleportUI_ = std::make_unique<TeleportUI>(stageManager_, stageManager_->GetPlayer().get());
+	teleportUI_->Init();
 }
 
 void TeleportMovement::Update(void)
 {
 	auto& input = InputManager::GetInstance();
-
 	trans_.Update();
 
-	// エンターキーが押された時の処理
+	if (teleportUI_)
+	{
+		teleportUI_->Update();
+	}
+
 	if (isShowUI_ && input.IsTrgDown(KEY_INPUT_RETURN))
 	{
-		//ステージ遷移
-		if (stageManager_)
+		if (teleportUI_)
 		{
-			stageManager_->ChangeStage(StageManager::STAGE_ID::ATELIER);
+			teleportUI_->Show();  // UI呼び出し
 		}
 	}
 }
@@ -75,6 +82,11 @@ void TeleportMovement::Draw(void)
 		DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(0, 0, 0), TRUE);
 		DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(255, 255, 255), FALSE);
 		Font::GetInstance().DrawDefaultText(boxX + 20, boxY + 5, text, 0xffffff, fontSize);
+	}
+
+	if (teleportUI_)
+	{
+		teleportUI_->Draw();
 	}
 }
 

@@ -11,6 +11,8 @@
 #include "../Object/Manager/PlantManager.h"
 #include "../Object/Manager/CollisionManager.h"
 #include "../Object/Manager/OreMnanager.h"
+#include "../Object/GardenObject/Warp.h"
+#include "../Object/Manager/FenceManager.h"
 
 // コンストラクタ
 GardenStage::GardenStage(StageManager* stageManager)
@@ -19,7 +21,7 @@ GardenStage::GardenStage(StageManager* stageManager)
 	blockManager_ = new BlockManager();
 	plantManager_ = new PlantManager();
 	oreManager_ = new OreManager();
-	
+	fenceManager_ = new FenceManager();
 }
 
 // 初期化処理
@@ -36,6 +38,13 @@ void GardenStage::Init(void)
 
 	oreManager_->Init(mapData, 50.0f);
 
+	fenceManager_->Init(mapData, 50.0f);
+
+	warp_ = std::make_shared<Warp>(stageManager_);
+	warp_->Init();
+
+	CollisionManager::GetInstance().Register(warp_);
+
 	for (const auto& plant : plantManager_->GetPlantObjects())
 	{
 		CollisionManager::GetInstance().Register(plant);
@@ -44,6 +53,11 @@ void GardenStage::Init(void)
 	for (const auto& ore : oreManager_->GetOreObjects())
 	{
 		CollisionManager::GetInstance().Register(ore);
+	}
+
+	for (const auto& fne : fenceManager_->GetFenceObjects())
+	{
+		CollisionManager::GetInstance().Register(fne);
 	}
 }
 
@@ -60,6 +74,8 @@ void GardenStage::Update(void)
 	blockManager_->Update();
 	plantManager_->Update();
 	oreManager_->Update();
+	fenceManager_->Update();
+	warp_->Update();
 }
 
 // 描画処理
@@ -68,6 +84,8 @@ void GardenStage::Draw(void)
 	blockManager_->Draw();
 	plantManager_->Draw();
 	oreManager_->Draw();
+	fenceManager_->Draw();
+	warp_->Draw();
 
 }
 
@@ -79,6 +97,13 @@ void GardenStage::Release(void)
 		oreManager_->Release();
 		delete oreManager_;
 		oreManager_ = nullptr;
+	}
+
+	if (fenceManager_!= nullptr)
+	{
+		fenceManager_->Release();
+		delete fenceManager_;
+		fenceManager_ = nullptr;
 	}
 
 	if (plantManager_ != nullptr)

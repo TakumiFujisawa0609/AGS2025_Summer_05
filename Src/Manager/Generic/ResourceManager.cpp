@@ -149,6 +149,9 @@ void ResourceManager::ResourceGarden(void)
 	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GardenObject/ore.mv1");
 	resourcesMap_.emplace(SRC::ORE_MODEL, res);
 
+	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GardenObject/fence.mv1");
+	resourcesMap_.emplace(SRC::FENCE_MODEL, res);
+
 }
 
 // プレイヤー用リソース初期化（未実装）

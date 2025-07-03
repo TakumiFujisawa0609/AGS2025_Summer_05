@@ -9,6 +9,8 @@
 
 class StageManager;
 
+class TeleportUI;
+
 class TeleportMovement : public HitObject, public UnitBase
 {
 public:
@@ -62,4 +64,6 @@ public:
 private:
 	bool isShowUI_;
 	StageManager* stageManager_;
+
+	std::unique_ptr<TeleportUI> teleportUI_;
 };

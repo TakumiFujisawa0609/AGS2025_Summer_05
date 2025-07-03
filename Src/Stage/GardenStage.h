@@ -7,7 +7,9 @@
 class BlockManager;
 class StageManager;
 class PlantManager;
+class FenceManager;
 class OreManager;
+class Warp;
 
 class GardenStage : public StageBase
 {
@@ -39,4 +41,8 @@ private:
 	PlantManager* plantManager_;
 
 	OreManager* oreManager_;
+
+	FenceManager* fenceManager_;
+
+	std::shared_ptr<Warp> warp_;
 };

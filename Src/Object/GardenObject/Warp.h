@@ -11,7 +11,7 @@ class StageManager;
 
 class TeleportUI;
 
-class Teleport : public HitObject, public UnitBase
+class Warp : public HitObject, public UnitBase
 {
 public:
 
@@ -22,13 +22,13 @@ public:
 	static constexpr VECTOR SCALE = { 0.05f,0.05f,0.05f };
 
 	//モデルのモデル座標用
-	static constexpr VECTOR MODEL_POS = { 200.0f,20.0f, -100.0f };
+	static constexpr VECTOR MODEL_POS = { 1200.0f,20.0f, -1200.0f };
 
 	//コンストラクタ
-	Teleport(StageManager* stageManager);
+	Warp(StageManager* stageManager);
 
 	//デストラクタ
-	~Teleport(void);
+	~Warp(void);
 
 	//初期化処理
 	void Init(void);

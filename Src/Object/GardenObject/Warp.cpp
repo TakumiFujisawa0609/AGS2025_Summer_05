@@ -1,4 +1,4 @@
-#include "Teleport.h"
+#include "warp.h"
 
 #include "../../Manager/Generic/ResourceManager.h"
 #include "../../Manager/Generic/Resource.h"
@@ -11,17 +11,17 @@
 #include"../../Object/Manager/StageManager.h"
 #include "../../DrawUI/SceneUI/TeleportUI.h"
 
-Teleport::Teleport(StageManager* stageManager) : stageManager_(stageManager)
+Warp::Warp(StageManager* stageManager) : stageManager_(stageManager)
 {
 	isShowUI_ = false;
 }
 
-Teleport::~Teleport(void)
+Warp::~Warp(void)
 {
 
 }
 
-void Teleport::Init(void)
+void Warp::Init(void)
 {
 	auto& res = ResourceManager::GetInstance();
 
@@ -40,7 +40,7 @@ void Teleport::Init(void)
 
 }
 
-void Teleport::Update(void)
+void Warp::Update(void)
 {
 	auto& input = InputManager::GetInstance();
 	trans_.Update();
@@ -60,7 +60,7 @@ void Teleport::Update(void)
 	}
 }
 
-void Teleport::Draw(void)
+void Warp::Draw(void)
 {
 	MV1DrawModel(trans_.modelId);
 
@@ -85,46 +85,47 @@ void Teleport::Draw(void)
 	}
 }
 
-void Teleport::Release(void)
+void Warp::Release(void)
 {
 }
 
-HitObject::HIT_TYPE Teleport::GetHitType(void) const
+HitObject::HIT_TYPE Warp::GetHitType(void) const
 {
 	return HIT_TYPE::SPHERE;
 }
 
-VECTOR Teleport::GetHitPosition(void) const
+VECTOR Warp::GetHitPosition(void) const
 {
 	return trans_.pos;
 }
 
-float Teleport::GetHitRadius(void) const
+float Warp::GetHitRadius(void) const
 {
 	return radius_;
 }
 
-void Teleport::ShowUI(void)
+void Warp::ShowUI(void)
 {
 	isShowUI_ = true;
 }
 
-void Teleport::HideUI(void)
+void Warp::HideUI(void)
 {
 	isShowUI_ = false;
 }
 
-bool Teleport::IsValid(void) const
+bool Warp::IsValid(void) const
 {
 	return true;
 }
 
-void Teleport::OnPlayerHit(void)
+void Warp::OnPlayerHit(void)
 {
 	ShowUI();
 }
 
-void Teleport::OnPlayerExit(void)
+void Warp::OnPlayerExit(void)
 {
 	HideUI();
 }
+

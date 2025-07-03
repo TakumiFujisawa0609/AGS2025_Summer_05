@@ -64,6 +64,7 @@ void AlchemyPot::Update(void)
 	if (alchemy.IsOpen())
 	{
 		alchemy.Update();
+		isShowUI_ = false;
 	}
 }
 

@@ -10,6 +10,7 @@
 #include "../Object/GuildObject/BulletinBoard.h"
 #include "../Object/Manager/CollisionManager.h"
 
+
 //コンストラクタ
 GuildStage::GuildStage(StageManager* stageManager) : stageManager_(stageManager)
 {

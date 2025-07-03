@@ -71,7 +71,7 @@ void Player::Init(void)
 	axis_ = { 0.0f,0.0f,0.0f };
 
 	//Š‹à‚Ì‰Šú‰»
-	money_ = 300;
+	money_ = 25000;
 }
 
 void Player::Update(void)
@@ -119,6 +119,7 @@ VECTOR Player::GetPos(void) const
 void Player::SetPos(VECTOR pos)
 {
 	trans_.pos = pos;
+	MV1SetPosition(modelId_, trans_.pos);
 }
 
 VECTOR Player::GetHitMin(void) const

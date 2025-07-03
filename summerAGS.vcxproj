@@ -141,6 +141,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\GardenObject\FenceObject.cpp" />
+    <ClCompile Include="Src\Object\Manager\FenceManager.cpp" />
     <ClCompile Include="Src\Object\Manager\OreMnanager.cpp" />
     <ClCompile Include="Src\Object\GardenObject\OreObject.cpp" />
     <ClCompile Include="Src\Object\PlayerStop.cpp" />
@@ -213,8 +215,12 @@
     <ClCompile Include="Src\Object\UnitBase.cpp" />
     <ClCompile Include="Src\Object\AtelierObject\Teleport.cpp" />
     <ClCompile Include="Src\Object\GuildObject\TeleportMovement.cpp" />
+    <ClCompile Include="Src\DrawUI\SceneUI\TeleportUI.cpp" />
+    <ClCompile Include="Src\Object\GardenObject\Warp.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\GardenObject\FenceObject.h" />
+    <ClInclude Include="Src\Object\Manager\FenceManager.h" />
     <ClInclude Include="Src\Object\Manager\OreMnanager.h" />
     <ClInclude Include="Src\Object\GardenObject\OreObject.h" />
     <ClInclude Include="Src\Object\PlayerStop.h" />
@@ -287,6 +293,8 @@
     <ClInclude Include="Src\Object\UnitBase.h" />
     <ClInclude Include="Src\Object\AtelierObject\Teleport.h" />
     <ClInclude Include="Src\Object\GuildObject\TeleportMovement.h" />
+    <ClInclude Include="Src\DrawUI\SceneUI\TeleportUI.h" />
+    <ClInclude Include="Src\Object\GardenObject\Warp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

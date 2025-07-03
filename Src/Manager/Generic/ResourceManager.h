@@ -43,6 +43,7 @@ public:
 		GROWING_MODEL,			//成長中モデル
 		MATURE_MODEL,			//成熟モデル
 		ORE_MODEL,				//鉱石モデル
+		FENCE_MODEL,			//フェンスモデル
 
 		//ミニマップ関係
 		MAP_FRAME,				//ミニマップ枠
