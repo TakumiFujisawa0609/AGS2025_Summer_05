@@ -273,14 +273,42 @@ void PlantObject::TryHarvest()
 {
     if (!hasPlant_ || growthStage_ != GROW_STAGE::Mature) return;
 
-    // アイテム付与処理 ...
+    // 確定アイテム：薬草(Herb)
+    auto herbItem = std::dynamic_pointer_cast<MaterialItem>(
+        ItemManager::GetInstance().FindItemById("Herb"));
+    if (herbItem) {
+        ItemManager::GetInstance().AddQuantity(herbItem, 1);
+    }
 
+    // ランダムで与えるアイテムIDリスト（薬草以外）
+    std::vector<std::string> possibleItems = {
+        "AntidoteHerb",
+        "MagicFlower",
+        // ほかにランダムで与えたい素材を追加
+    };
+
+    if (!possibleItems.empty())
+    {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dist(0, static_cast<int>(possibleItems.size()) - 1);
+
+        int index = dist(gen);
+
+        auto randomItem = std::dynamic_pointer_cast<MaterialItem>(
+            ItemManager::GetInstance().FindItemById(possibleItems[index]));
+        if (randomItem) {
+            ItemManager::GetInstance().AddQuantity(randomItem, 1);
+        }
+    }
+
+    // 植物状態をリセット
     hasPlant_ = false;
     isActive_ = false;
     growthStage_ = GROW_STAGE::Sprout;
     growthStartTime_ = 0.0f;
 
-    // モデルは残さず非表示にするためIDクリア
+    // モデル非表示
     trans_.modelId = -1;
 
     HideUI();

@@ -7,6 +7,7 @@
 class BlockManager;
 class StageManager;
 class PlantManager;
+class OreManager;
 
 class GardenStage : public StageBase
 {
@@ -36,4 +37,6 @@ private:
 	StageManager* stageManager_;
 
 	PlantManager* plantManager_;
+
+	OreManager* oreManager_;
 };

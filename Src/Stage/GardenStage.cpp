@@ -10,6 +10,7 @@
 #include "../Object/Manager/BlockManager.h"
 #include "../Object/Manager/PlantManager.h"
 #include "../Object/Manager/CollisionManager.h"
+#include "../Object/Manager/OreMnanager.h"
 
 // コンストラクタ
 GardenStage::GardenStage(StageManager* stageManager)
@@ -17,6 +18,7 @@ GardenStage::GardenStage(StageManager* stageManager)
 {
 	blockManager_ = new BlockManager();
 	plantManager_ = new PlantManager();
+	oreManager_ = new OreManager();
 	
 }
 
@@ -32,9 +34,16 @@ void GardenStage::Init(void)
 	// 植物初期化
 	plantManager_->Init(mapData, 50.0f);
 
+	oreManager_->Init(mapData, 50.0f);
+
 	for (const auto& plant : plantManager_->GetPlantObjects())
 	{
 		CollisionManager::GetInstance().Register(plant);
+	}
+
+	for (const auto& ore : oreManager_->GetOreObjects())
+	{
+		CollisionManager::GetInstance().Register(ore);
 	}
 }
 
@@ -50,6 +59,7 @@ void GardenStage::Update(void)
 
 	blockManager_->Update();
 	plantManager_->Update();
+	oreManager_->Update();
 }
 
 // 描画処理
@@ -57,12 +67,20 @@ void GardenStage::Draw(void)
 {
 	blockManager_->Draw();
 	plantManager_->Draw();
+	oreManager_->Draw();
 
 }
 
 // 解放処理
 void GardenStage::Release(void)
 {
+	if (oreManager_ != nullptr)
+	{
+		oreManager_->Release();
+		delete oreManager_;
+		oreManager_ = nullptr;
+	}
+
 	if (plantManager_ != nullptr)
 	{
 		plantManager_->Release();

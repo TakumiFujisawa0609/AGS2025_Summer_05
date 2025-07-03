@@ -141,6 +141,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\Manager\OreMnanager.cpp" />
+    <ClCompile Include="Src\Object\GardenObject\OreObject.cpp" />
     <ClCompile Include="Src\Object\PlayerStop.cpp" />
     <ClCompile Include="Src\Object\Manager\PlantManager.cpp" />
     <ClCompile Include="Src\Object\GardenObject\PlantObject.cpp" />
@@ -213,6 +215,8 @@
     <ClCompile Include="Src\Object\GuildObject\TeleportMovement.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\Manager\OreMnanager.h" />
+    <ClInclude Include="Src\Object\GardenObject\OreObject.h" />
     <ClInclude Include="Src\Object\PlayerStop.h" />
     <ClInclude Include="Src\Object\Manager\PlantManager.h" />
     <ClInclude Include="Src\Object\GardenObject\PlantObject.h" />
