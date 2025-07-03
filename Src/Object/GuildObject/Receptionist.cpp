@@ -14,12 +14,13 @@
 #include "../Manager/ItemManager.h"
 #include "../../Object/player.h"
 #include "../../Object/GuildObject/Shop.h"
+#include "../PlayerStop.h"
 
 Receptionist::Receptionist(void)
 {
     trans_ = Transform();
     // 3Dモデルを右側に配置
-    trans_.pos = VGet(150.0f, 0.0f, 0.0f);
+    trans_.pos = VGet(-150.0f, 0.0f, 0.0f);
     trans_.localPos = VAdd(trans_.pos, MODEL_POS);
     radius_ = 0.0f;
     speed_ = 0.0f;
@@ -115,11 +116,26 @@ void Receptionist::Update()
 }
 
 
-void Receptionist::Draw()
+void Receptionist::Draw(void)
 {
-    MV1DrawModel(trans_.modelId);
+}
 
-    if (!isShowUI_) return;
+void Receptionist::DrawModel(void)
+{
+    // ZバッファONでモデル描画
+    SetUseZBufferFlag(TRUE);
+    SetWriteZBufferFlag(TRUE);
+    MV1DrawModel(trans_.modelId);
+}
+
+void Receptionist::DrawUI(void)
+{
+    // UIを表示しない条件ならスキップ
+    if (!isShowUI_ && deliveryMessageTimer_ <= 0) return;
+
+    // ZバッファOFFでUI描画
+    SetUseZBufferFlag(FALSE);
+    SetWriteZBufferFlag(FALSE);
 
     switch (currentMode_)
     {
@@ -130,7 +146,7 @@ void Receptionist::Draw()
         DrawDeliveryMenu();
         break;
     case MENU_MODE::SHOP_MENU:
-        shop_->Draw();
+        if (shop_) shop_->Draw();
         break;
     default:
         break;
@@ -138,8 +154,13 @@ void Receptionist::Draw()
 
     if (deliveryMessageTimer_ > 0)
     {
-        // メッセージ描画処理（省略）
+        Font::GetInstance().DrawDefaultText(100, 100, lastDeliveryMessage_.c_str(), GetColor(255, 255, 255), 24);
+        deliveryMessageTimer_--;
     }
+
+    // Zバッファ設定を戻す
+    SetUseZBufferFlag(TRUE);
+    SetWriteZBufferFlag(TRUE);
 }
 
 
@@ -164,6 +185,7 @@ float Receptionist::GetHitRadius(void) const
 
 void Receptionist::ShowUI(void)
 {
+
     isShowUI_ = true;
     currentMode_ = MENU_MODE::MAIN_SELECT;
     mainMenuSelected_ = 0;
@@ -253,6 +275,7 @@ void Receptionist::UpdateShopMenu(void)
     if (input.IsTrgDown(KEY_INPUT_ESCAPE) || input.IsTrgDown(KEY_INPUT_X))
     {
         currentMode_ = MENU_MODE::MAIN_SELECT;
+        PlayerStop::GetInstance().ResumeMovement();
         // 必要に応じてショップメニューのフラグをリセット
     }
 }
@@ -262,6 +285,8 @@ void Receptionist::UpdateShopMenu(void)
 void Receptionist::UpdateDeliveryMenu(void)
 {
     auto& input = InputManager::GetInstance();
+
+    PlayerStop::GetInstance().StopMovement();
 
     if (!isSelectingQuantity_ && !deliverableItems_.empty())
     {
@@ -446,6 +471,7 @@ void Receptionist::DrawMainMenu()
 
 void Receptionist::DrawDeliveryMenu(void)
 {
+
     const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
     const int screenHeight = Application::DEFA_SCREEN_SIZE_X;
 

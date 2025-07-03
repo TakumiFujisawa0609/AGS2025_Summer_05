@@ -54,6 +54,11 @@ public:
 
 	void ResetBlockDirs(void);
 
+	void SetMovementEnabled(bool enabled);
+	
+	bool IsMovementEnabled(void) const;
+
+
 
 	// アニメーション種別
 	enum class ANIM_TYPE
@@ -111,6 +116,8 @@ private:
 	int blockedDirX_;
 
 	int blockedDirZ_;
+
+	bool movementEnabled_;
 
 	// アニメーション
 	AnimationController* animationController_;

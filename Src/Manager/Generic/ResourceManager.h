@@ -39,6 +39,9 @@ public:
 		//庭関係
 		BLOCK_DIRT,				//土ブロック
 		BLOCK_GFRASS,			//草ブロック
+		SEED_MODEL,				//発芽モデル
+		GROWING_MODEL,			//成長中モデル
+		MATURE_MODEL,			//成熟モデル
 
 		//ミニマップ関係
 		MAP_FRAME,				//ミニマップ枠

@@ -54,6 +54,8 @@ public:
 
 	std::shared_ptr<Player> GetPlayer(void) const;
 
+	void Fade(void);
+
 private:
 
 	//フェード

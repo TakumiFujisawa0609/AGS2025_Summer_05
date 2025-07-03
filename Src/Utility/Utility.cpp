@@ -7,6 +7,8 @@
 #include<vector>
 #include<math.h>
 
+#include "../Manager/Generic/SceneManager.h"
+
 // 小数値を四捨五入して整数に変換する
 int Utility::Round(float v)
 {
@@ -524,4 +526,19 @@ void Utility::DrawLineXYZ(const VECTOR& pos, const Quaternion& rot, float len)
 	// Z
 	dir = rot.GetForward();
 	DrawLineDir(pos, dir, 0x0000ff, len);
+}
+
+bool Utility::IsTimeOver(float& totalTime, const float& waitTime)
+{
+	//デルタタイム
+	auto delta = SceneManager::GetInstance().GetDeltaTime();
+	totalTime += delta;
+
+	//待機時間を超過しているか判断
+	if (totalTime >= waitTime)
+	{
+		return true;
+	}
+
+	return false;
 }

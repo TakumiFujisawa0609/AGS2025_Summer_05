@@ -18,6 +18,8 @@ Player::Player(void)
 
 	blockedDirZ_ = 0;
 
+	movementEnabled_ = true;
+
 	//角度
 	angles_ = VECTOR();
 
@@ -31,6 +33,8 @@ Player::~Player(void)
 
 void Player::Init(void)
 {
+	movementEnabled_ = true;
+
 	//モデルのロード
 	modelId_ = MV1LoadModel((Application::PATH_MODEL + "player/playerkari.mv1").c_str());
 
@@ -166,9 +170,23 @@ void Player::ResetBlockDirs(void)
 	blockedDirZ_ = 0;
 }
 
+void Player::SetMovementEnabled(bool enabled)
+{
+	movementEnabled_ = enabled;
+}
+
+bool Player::IsMovementEnabled(void) const
+{
+	return movementEnabled_;
+}
+
 
 void Player::ProcessMove(void)
 {
+	if (!movementEnabled_)
+	{
+		return;
+	}
 	InputManager& ins = InputManager::GetInstance();
 
 	ResetBlockDirs(); // 毎フレームリセット

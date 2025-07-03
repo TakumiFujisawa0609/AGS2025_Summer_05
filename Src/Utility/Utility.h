@@ -378,5 +378,7 @@ public:
 	/// <returns>‚È‚µ</returns>
 	static void DrawLineXYZ(const VECTOR& pos, const Quaternion& rot, float len = 50.0f);
 
+	//‘Ò‹@ŽžŠÔ
+	static bool IsTimeOver(float& totalTime, const float& waitTime);
 };
 

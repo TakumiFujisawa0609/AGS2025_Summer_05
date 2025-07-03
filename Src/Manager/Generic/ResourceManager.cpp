@@ -137,6 +137,15 @@ void ResourceManager::ResourceGarden(void)
 	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GardenObject/Block_Grass.mv1");
 	resourcesMap_.emplace(SRC::BLOCK_GFRASS, res);
 
+	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GardenObject/Growing.mv1");
+	resourcesMap_.emplace(SRC::GROWING_MODEL, res);
+
+	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GardenObject/Seed.mv1");
+	resourcesMap_.emplace(SRC::SEED_MODEL , res);
+
+	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GardenObject/mature.mv1");
+	resourcesMap_.emplace(SRC::MATURE_MODEL, res);
+
 }
 
 // プレイヤー用リソース初期化（未実装）

@@ -10,6 +10,7 @@
 #include "../../Object/Manager/ItemManager.h"
 #include "../../Object/player.h"
 #include "../../Application.h"
+#include "../PlayerStop.h"
 
 Shop::Shop(void)
     : selectedItemIndex_(0),
@@ -225,6 +226,9 @@ void Shop::Update()
 void Shop::Draw(void)
 {
     if (!isVisible_) return;
+
+
+    PlayerStop::GetInstance().StopMovement();
 
     const int screenWidth = Application::SCREEN_SIZE_X;
     const int screenHeight = Application::SCREEN_SIZE_Y;

@@ -7,6 +7,7 @@
 #include "../../DrawUI/Font.h"
 #include "../../Application.h"
 #include "../../DrawUI/SceneUI/QuestUI.h"
+#include "../PlayerStop.h"
 
 BulletinBoard::BulletinBoard(void)
 {
@@ -85,12 +86,12 @@ void BulletinBoard::Update(void)
 	// 依頼リスト表示中の選択処理
 	if (isShowQuestList_)
 	{
-		// 上下キーで選択を変更
-		if (input.IsTrgDown(KEY_INPUT_UP))
+		// 左右キーで選択を変更
+		if (input.IsTrgDown(KEY_INPUT_LEFT))
 		{
 			selectedQuest_ = (selectedQuest_ - 1 + 3) % 3;
 		}
-		else if (input.IsTrgDown(KEY_INPUT_DOWN))
+		else if (input.IsTrgDown(KEY_INPUT_RIGHT))
 		{
 			selectedQuest_ = (selectedQuest_ + 1) % 3;
 		}
@@ -100,74 +101,95 @@ void BulletinBoard::Update(void)
 		{
 			isShowQuestList_ = false;
 			isShowUI_ = false;
+			PlayerStop::GetInstance().ResumeMovement();
 		}
 	}
 }
 
-void BulletinBoard::Draw(void)
+void BulletinBoard::DrawModel(void)
 {
+	// 3Dモデル描画（Zバッファ有効）
 	MV1DrawModel(trans_.modelId);
+}
+
+void BulletinBoard::DrawUI(void)
+{
+	// Zバッファ無効化してUIを描画
+	SetUseZBufferFlag(FALSE);
 
 	const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
 	const int screenHeight = Application::DEFA_SCREEN_SZIE_Y;
 
-	if (isShowUI_)
+	if (!isShowUI_) {
+		// UI非表示ならここで終わり
+		SetUseZBufferFlag(TRUE);
+		return;
+	}
+
+	auto& questUI = QuestUI::GetInstance();
+	const auto& quests = questUI.GetSelectedQuests();
+
+	if (!isShowQuestList_)
 	{
-		auto& questUI = QuestUI::GetInstance();
-		const auto& quests = questUI.GetSelectedQuests();
+		const char* text = "依頼";
+		int fontSize = 18;
+		int textWidth = GetDrawStringWidth(text, strlen(text), fontSize);
+		int boxWidth = textWidth + 30;
+		int boxHeight = 30;
+		int boxX = (screenWidth - boxWidth) / 2;
+		int boxY = screenHeight / 2 + 100;
 
-		if (!isShowQuestList_)
+		DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(0, 0, 0), TRUE);
+		DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(255, 255, 255), FALSE);
+		Font::GetInstance().DrawDefaultText(boxX + 15, boxY + 5, text, GetColor(255, 255, 255), fontSize);
+	}
+	else
+	{
+		PlayerStop::GetInstance().StopMovement();
+
+		uiOpenWaitFrame_ = UI_ENTER_DELAY_FRAME;
+		// 依頼ボックスの設定
+		const int boxWidth = 150;
+		const int boxHeight = 300;
+		const int spacing = 40;
+		const int startX = (screenWidth - (3 * boxWidth + 2 * spacing)) / 2;
+		const int startY = 180;
+
+		DrawRotaGraph3(0, 0, 0, 0, 0.98f, 0.98f, 0, imageBoardId_, TRUE);
+
+		Font::GetInstance().DrawDefaultText(startX, startY - 100, "===== 納品依頼一覧 =====", 0xffffff, 24);
+
+		for (int i = 0; i < 3; i++)
 		{
-			const char* text = "依頼";
-			int fontSize = 18;
-			int textWidth = GetDrawStringWidth(text, strlen(text), fontSize);
-			int boxWidth = textWidth + 30;
-			int boxHeight = 30;
-			int boxX = (screenWidth - boxWidth) / 2;
-			int boxY = screenHeight / 2 + 100;
+			int xPos = startX + i * (boxWidth + spacing);
+			int boxColor = (i == selectedQuest_) ? GetColor(50, 50, 80) : GetColor(0, 0, 0);
+			int borderColor = (i == selectedQuest_) ? GetColor(255, 0, 255) : GetColor(255, 255, 255);
+			int textColor = (i == selectedQuest_) ? 0xff00ff : 0xffffff;
 
-			DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(0, 0, 0), TRUE);
-			DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(255, 255, 255), FALSE);
-			Font::GetInstance().DrawDefaultText(boxX + 15, boxY + 5, text, GetColor(255, 255, 255), fontSize);
-		}
-		else
-		{
-			// 依頼ボックスの設定
-			const int boxWidth = 150;
-			const int boxHeight = 300;
-			const int spacing = 40;
-			const int startX = (screenWidth - (3 * boxWidth + 2 * spacing)) / 2;
-			const int startY = 180;
+			DrawBox(xPos, startY, xPos + boxWidth, startY + boxHeight, boxColor, TRUE);
+			DrawBox(xPos, startY, xPos + boxWidth, startY + boxHeight, borderColor, FALSE);
 
-			DrawRotaGraph3(0, 0, 0, 0, 0.98f, 0.98f, 0, imageBoardId_, TRUE);
-
-			Font::GetInstance().DrawDefaultText(startX, startY - 100, "===== 納品依頼一覧 =====", 0xffffff, 24);
-
-			for (int i = 0; i < 3; i++)
+			std::string questText = "未設定";
+			if (i < (int)quests.size())
 			{
-				int xPos = startX + i * (boxWidth + spacing);
-				int boxColor = (i == selectedQuest_) ? GetColor(50, 50, 80) : GetColor(0, 0, 0);
-				int borderColor = (i == selectedQuest_) ? GetColor(255, 0, 255) : GetColor(255, 255, 255);
-				int textColor = (i == selectedQuest_) ? 0xff00ff : 0xffffff;
-
-				DrawBox(xPos, startY, xPos + boxWidth, startY + boxHeight, boxColor, TRUE);
-				DrawBox(xPos, startY, xPos + boxWidth, startY + boxHeight, borderColor, FALSE);
-
-				std::string questText = "未設定";
-				if (i < (int)quests.size())
-				{
-					const auto& quest = quests[i];
-					questText = quest.title + " x" + std::to_string(quest.requiredAmount);
-				}
-
-				Font::GetInstance().DrawDefaultText(xPos + 10, startY + boxHeight / 2 - 10,
-					questText.c_str(), textColor, 18);
+				const auto& quest = quests[i];
+				questText = quest.title + " x" + std::to_string(quest.requiredAmount);
 			}
 
-			Font::GetInstance().DrawDefaultText(startX, startY + boxHeight + 30,
-				"←→キー: 選択  Enter: 決定  X: 戻る", 0xcccccc, 16);
+			Font::GetInstance().DrawDefaultText(xPos + 10, startY + boxHeight / 2 - 10,
+				questText.c_str(), textColor, 18);
 		}
+
+		Font::GetInstance().DrawDefaultText(startX, startY + boxHeight + 30,
+			"←→キー: 選択  Enter: 決定  X: 戻る", 0xcccccc, 16);
 	}
+
+	// UI描画終了後はZバッファを元に戻す
+	SetUseZBufferFlag(TRUE);
+}
+
+void BulletinBoard::Draw(void)
+{
 }
 
 
@@ -206,7 +228,6 @@ void BulletinBoard::ShowUI(void)
 {
 	isShowUI_ = true;
 	isShowQuestList_ = false;
-	uiOpenWaitFrame_ = UI_ENTER_DELAY_FRAME;
 }
 
 

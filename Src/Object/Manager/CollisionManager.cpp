@@ -6,6 +6,7 @@
 #include "../../Manager/System/Collision.h"
 #include "../../Utility/Utility.h"
 #include "../../Object/GuildObject/BulletinBoard.h"
+#include "../PlayerStop.h"
 
 CollisionManager* CollisionManager::instance_ = nullptr;
 
@@ -148,6 +149,7 @@ void CollisionManager::CheckHitSphere(std::shared_ptr<HitObject> obj, VECTOR& pl
          else if (distance > HIDE_RADIUS + playerRadius)
          {
              obj->OnPlayerExit();
+             PlayerStop::GetInstance().ResumeMovement();
          }
     }
     

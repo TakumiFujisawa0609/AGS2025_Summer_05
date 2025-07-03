@@ -20,6 +20,7 @@
 #include "../Manager/System/DateTimeManager.h"
 #include "../Manager/System/TimeManager.h"
 #include "../DrawUI/SceneUI/QuestUI.h"
+#include "../Object/PlayerStop.h"
 
 
 
@@ -41,6 +42,9 @@ void SceneGame::Init(void)
 	//アイテムマネージャー
 	auto itemManager_ = &ItemManager::GetInstance();
 
+	// ゲーム開始時などに初期化
+	PlayerStop::CreateInstance();
+
 	//日数
 	dateTimeManager_ = new DateTimeManager();
 	dateTimeManager_->Init();
@@ -56,6 +60,8 @@ void SceneGame::Init(void)
 	player_ = std::make_shared<Player>();
 	player_->Init();
 
+	// プレイヤー登録
+	PlayerStop::GetInstance().SetPlayer(player_.get());
 
 	//カメラをプレイヤーに追従
 	camera->SetFollow(&player_->GetTransform());
@@ -146,15 +152,6 @@ void SceneGame::Draw(void)
 	int x;
 	x = Application::DEFA_SCREEN_SIZE_X;
 
-	if (isStartFont_ == true)
-	{
-		Font::GetInstance().DrawDefaultText((x - (x / 2)) - 10, 0, "移動と表記が出ている場所でEneterキーを押して\nギルドに移動してそこで依頼を受けよう", 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
-	}
-	else
-	{
-		Font::GetInstance().DrawDefaultText((x - (x / 2)) - 100, 0, "依頼を受けたらアトリエに戻って\n錬金と表記が出ている場所でEneterキーを押してアイテムを錬成しよう\nアイテムができたらギルドに戻ってアイテムを納品しよう", 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
-	}
-
 	// インベントリUIの描画
 	inventoryUI_->Draw();
 
@@ -197,6 +194,8 @@ void SceneGame::Release(void)
 	//ステージマネージャーの削除
 	stageManager_->Destroy();
 	delete stageManager_;
+
+	PlayerStop::GetInstance().Destroy();
 
 	
 }

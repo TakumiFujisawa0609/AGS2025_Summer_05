@@ -20,7 +20,7 @@ void HitObject::OnPlayerHitSphere(VECTOR& playerPos, float playerRadius)
         VECTOR normal = VScale(toPlayer, 1.0f / dist); // 単位ベクトル
 
         float pushBack = radiusSum - dist;
-        VECTOR pushVec = VScale(normal, pushBack);
+        VECTOR pushVec = VScale(normal, pushBack * 1.5f);
 
         if (pushVec.y > 0) pushVec.y = 0; // 上方向には押し返さない（任意）
 

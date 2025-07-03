@@ -10,6 +10,7 @@
 #include "../../Application.h"
 #include "../player.h"
 
+
 AlchemyPot::AlchemyPot(void)
 {
 	isShowUI_ = false;

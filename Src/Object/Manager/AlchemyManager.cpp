@@ -12,6 +12,7 @@
 #include "../Item/Product/MagicPotion.h"
 #include "../Item/Product/Garbage.h"
 #include "../../Application.h"
+#include "../PlayerStop.h"
 
 
 AlchemyManager* AlchemyManager::instance_ = nullptr;
@@ -167,9 +168,13 @@ void AlchemyManager::Update()
     auto& input = InputManager::GetInstance();
     auto& itemManager = ItemManager::GetInstance();
 
+    PlayerStop::GetInstance().StopMovement();
+
     if (input.IsTrgDown(KEY_INPUT_X))
     {
         Close();
+
+        PlayerStop::GetInstance().ResumeMovement();
         return;
     }
 

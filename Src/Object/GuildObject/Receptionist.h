@@ -37,6 +37,8 @@ public:
     void Update(void) override;
     // •`‰æˆ—
     void Draw(void) override;
+    void DrawModel(void);
+    void DrawUI(void);
     // ‰ğ•ú
     void Release(void) override;
 

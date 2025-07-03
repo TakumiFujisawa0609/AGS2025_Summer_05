@@ -5,6 +5,7 @@
 #include "../../Manager/System/TimeManager.h"
 #include "../Manager/ItemManager.h"
 #include "../../Manager/Generic/InputManager.h"
+#include "../../Manager/Generic/ResourceManager.h"
 #include "../Item/Seed/RandomSeed.h"
 #include "../../DrawUI/Font.h"
 #include "../../Application.h"
@@ -13,13 +14,16 @@
 PlantObject::PlantObject(void)
 {
     growthStage_ = GROW_STAGE::Sprout;
-    isActive_ = true;
+    isActive_ = false;   // 初期は成長していない
     isUIVisible_ = false;
-    hasPlant_ = false;
+    hasPlant_ = false;   // 植えていない
     growthStartTime_ = 0.0f;
+
     sproutModelId_ = -1;
     midGrowthModelId_ = -1;
     matureModelId_ = -1;
+
+    trans_.modelId = -1;
 }
 
 // デストラクタ
@@ -31,24 +35,23 @@ PlantObject::~PlantObject(void)
 // 初期化
 void PlantObject::Init(void)
 {
-    isActive_ = true;
-    isUIVisible_ = false;
+    if (sproutModelId_ < 0)
+    {
+        sproutModelId_ = ResourceManager::GetInstance().LoadModelDuplicate(ResourceManager::SRC::SEED_MODEL);
+        midGrowthModelId_ = ResourceManager::GetInstance().LoadModelDuplicate(ResourceManager::SRC::GROWING_MODEL);
+        matureModelId_ = ResourceManager::GetInstance().LoadModelDuplicate(ResourceManager::SRC::MATURE_MODEL);
+    }
+
     hasPlant_ = false;
+    isActive_ = false;
+    isUIVisible_ = false;
     growthStage_ = GROW_STAGE::Sprout;
+    growthStartTime_ = 0.0f;
 
-    growthStartTime_ = TimeManager::GetInstance().GetGameTime();
-
-    // モデル読み込み
-    //sproutModelId_ = MV1LoadModel("Data/PlantSprout.mv1");
-    //midGrowthModelId_ = MV1LoadModel("Data/PlantMidGrowth.mv1");
-    //matureModelId_ = MV1LoadModel("Data/PlantMature.mv1");
-
-   // trans_.modelId = sproutModelId_;
+    trans_.modelId = -1;
     trans_.pos = VGet(0, 0, 0);
-    trans_.scl = VGet(1, 1, 1);
+    trans_.scl = VGet(0.04, 0.03, 0.04);
     trans_.rot = VGet(0, 0, 0);
-
-    radius_ = 5.0f;
 }
 
 // 解放
@@ -125,21 +128,16 @@ void PlantObject::UpdateGrowthStage(float elapsedTime)
 // モデルをステージに応じて切り替える
 void PlantObject::ChangeModelForStage(GROW_STAGE stage)
 {
-    //if (trans_.modelId >= 0)
-    //{
-    //    MV1DeleteModel(trans_.modelId);
-    //}
-
     switch (stage)
     {
     case GROW_STAGE::Sprout:
-        //trans_.modelId = sproutModelId_;
+        trans_.modelId = sproutModelId_;
         break;
     case GROW_STAGE::MidGrowth:
-        //trans_.modelId = midGrowthModelId_;
+        trans_.modelId = midGrowthModelId_;
         break;
     case GROW_STAGE::Mature:
-        //trans_.modelId = matureModelId_;
+        trans_.modelId = matureModelId_;
         break;
     }
 
@@ -156,7 +154,7 @@ void PlantObject::Draw(void)
 {
     if (isActive_)
     {
-        // モデル描画（必要なら）
+        MV1DrawModel(trans_.modelId);
     }
 
     if (isUIVisible_)
@@ -252,16 +250,13 @@ PlantObject::GROW_STAGE PlantObject::GetGrowthStage(void) const
 
 void PlantObject::TryPlant(void)
 {
-    if (hasPlant_) return; // 既に植わっているなら植えない
+    if (hasPlant_) return;
 
     auto seedItem = std::dynamic_pointer_cast<SeedItem>(
         ItemManager::GetInstance().FindItemById("RandomSeed")
     );
 
-    if (!seedItem || seedItem->GetQuantity() <= 0)
-    {
-        return;
-    }
+    if (!seedItem || seedItem->GetQuantity() <= 0) return;
 
     ItemManager::GetInstance().SubtractQuantity(seedItem, 1);
 
@@ -269,6 +264,8 @@ void PlantObject::TryPlant(void)
     isActive_ = true;
     growthStage_ = GROW_STAGE::Sprout;
     growthStartTime_ = TimeManager::GetInstance().GetGameTime();
+
+    ChangeModelForStage(GROW_STAGE::Sprout);
     HideUI();
 }
 
@@ -276,32 +273,15 @@ void PlantObject::TryHarvest()
 {
     if (!hasPlant_ || growthStage_ != GROW_STAGE::Mature) return;
 
-    auto herb = std::dynamic_pointer_cast<MaterialItem>(
-        ItemManager::GetInstance().FindItemById("Herb")
-    );
-    if (herb)
-    {
-        ItemManager::GetInstance().AddQuantity(herb, 1);
-    }
+    // アイテム付与処理 ...
 
-    std::vector<std::string> extraMaterials = {
-        "AntidoteHerb",
-        "MagicFlower",
-    };
-    int index = rand() % static_cast<int>(extraMaterials.size());
-    auto extra = std::dynamic_pointer_cast<MaterialItem>(
-        ItemManager::GetInstance().FindItemById(extraMaterials[index])
-    );
-    if (extra)
-    {
-        ItemManager::GetInstance().AddQuantity(extra, 1);
-    }
-
-    // 植物は収穫したので成長停止＆植えていない状態に
     hasPlant_ = false;
     isActive_ = false;
     growthStage_ = GROW_STAGE::Sprout;
     growthStartTime_ = 0.0f;
+
+    // モデルは残さず非表示にするためIDクリア
+    trans_.modelId = -1;
 
     HideUI();
 }

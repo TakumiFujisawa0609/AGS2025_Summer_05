@@ -40,6 +40,11 @@ void BlockManager::Init(const std::string& csvFilePath)
                 blocks_.emplace_back(std::make_unique<Block>(ResourceManager::SRC::BLOCK_GFRASS, pos, blockSize_, 0.3f)); 
                 break;
 
+            case 3:
+                blocks_.emplace_back(std::make_unique<Block>(ResourceManager::SRC::BLOCK_GFRASS, pos, blockSize_, 0.3f));
+                break;
+
+
             default:
                 break;
             }

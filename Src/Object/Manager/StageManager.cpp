@@ -9,6 +9,7 @@
 #include "../../Stage/GuildStage.h"
 #include "../../Stage/PrivateRoomStage.h"
 #include "CollisionManager.h"
+#include "../../Common/Fader.h"
 
 //コンストラクタ
 StageManager::StageManager(void)
@@ -33,6 +34,11 @@ void StageManager::Init(std::shared_ptr<Player> player)
 	stageId_ = STAGE_ID::NONE;
 	waitStageId_ = STAGE_ID::NONE;
 	stage_ = nullptr; 
+
+	// フェード用UI
+	fader_ = std::make_unique<Fader>();
+	fader_->Init();
+
 	DoChangeStage(STAGE_ID::ATELIER);
 }
 
@@ -55,12 +61,14 @@ void StageManager::Update(void)
 	deltaTime_ = std::chrono::duration<float>(nowTime - preTime_).count();
 	preTime_ = nowTime;
 
-	// ステージ遷移フラグのチェックを先に行う
+	// フェード更新
+	if (fader_) fader_->Update();
+
+	// ステージ切り替えフェーズ中ならフェード処理を進める（ここでDoChangeStageは呼ぶ）
 	if (isStageChanging_)
 	{
-		DoChangeStage(waitStageId_);
-		isStageChanging_ = false;
-		return;  // 切り替え後は更新処理をスキップ
+		Fade();  // ←ここだけ
+		return;  // ステージ切り替え中はそれ以外の処理を止める
 	}
 
 	// 通常の更新処理
@@ -77,16 +85,25 @@ void StageManager::Draw(void)
 	{
 		stage_->Draw();
 	}
+
+	if (fader_) fader_->Draw();
 }
 
 //ステージ遷移
 void StageManager::ChangeStage(STAGE_ID nextId)
 {
+	if (isStageChanging_) return;  // 二重呼び出し防止
+
 	waitStageId_ = nextId;
 
-	// 既存のステージのオブジェクトをクリア
+	// 当たり判定をクリア
 	CollisionManager::GetInstance().Clear();
 
+	// フェードアウト開始
+	if (fader_)
+	{
+		fader_->SetFade(Fader::STATE::FADE_OUT);
+	}
 	isStageChanging_ = true;
 }
 
@@ -155,3 +172,36 @@ std::shared_ptr<Player> StageManager::GetPlayer(void) const
 {
 	return player_;
 }
+
+void StageManager::Fade(void)
+{
+	if (!fader_) return;
+
+	switch (fader_->GetState())
+	{
+	case Fader::STATE::FADE_OUT:
+		if (fader_->IsEnd())
+		{
+			// 一度だけ切り替えるようにガード
+			if (waitStageId_ != STAGE_ID::NONE)
+			{
+				DoChangeStage(waitStageId_);
+				waitStageId_ = STAGE_ID::NONE;
+				fader_->SetFade(Fader::STATE::FADE_IN);
+			}
+		}
+		break;
+
+	case Fader::STATE::FADE_IN:
+		if (fader_->IsEnd())
+		{
+			fader_->SetFade(Fader::STATE::NONE);
+			isStageChanging_ = false;
+		}
+		break;
+
+	default:
+		break;
+	}
+}
+

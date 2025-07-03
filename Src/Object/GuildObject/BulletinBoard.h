@@ -38,6 +38,10 @@ public:
 	//XVˆ—
 	void Update(void) override;
 
+	void DrawModel(void);
+
+	void DrawUI(void);
+
 	//•`‰æˆ—
 	void Draw(void) override;
 

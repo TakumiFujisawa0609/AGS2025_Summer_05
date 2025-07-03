@@ -59,9 +59,11 @@ void GuildStage::Draw(void)
 {
 	DrawFormatString(0, 20, 0xffffff, "ƒMƒ‹ƒh");
 
-	receptionist_->Draw();
+	bulletinBoard_->DrawModel();
+	receptionist_->DrawModel();
 	teleportMovement_->Draw();
-	bulletinBoard_->Draw();
+	bulletinBoard_->DrawUI();
+	receptionist_->DrawUI();
 }
 
 //‰ð•úˆ—
