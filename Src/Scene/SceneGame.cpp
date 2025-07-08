@@ -21,6 +21,7 @@
 #include "../Manager/System/TimeManager.h"
 #include "../DrawUI/SceneUI/QuestUI.h"
 #include "../Object/PlayerStop.h"
+#include "../DrawUI/SceneUI/ItemPickupUI.h"
 
 
 
@@ -59,6 +60,10 @@ void SceneGame::Init(void)
 	//プレイヤー
 	player_ = std::make_shared<Player>();
 	player_->Init();
+
+	//アイテム入手UI
+	itemPickup_ = std::make_shared<ItemPickupUI>();
+	itemPickup_->Init();
 
 	// プレイヤー登録
 	PlayerStop::GetInstance().SetPlayer(player_.get());
@@ -115,6 +120,8 @@ void SceneGame::Update(void)
 	// インベントリUIの更新
 	inventoryUI_->Update();
 
+	
+
 	//// Rキーで錬金メニューの開閉
 	//if (input.IsTrgDown(KEY_INPUT_R))
 	//{
@@ -135,6 +142,8 @@ void SceneGame::Update(void)
 	player_->Update();
 
 	stageManager_->Update();
+
+	itemPickup_->Update();
 
 	
 }
@@ -159,6 +168,8 @@ void SceneGame::Draw(void)
 	{
 		isStartFont_ = false;
 	}
+
+	itemPickup_->Draw();
 
 	
 	

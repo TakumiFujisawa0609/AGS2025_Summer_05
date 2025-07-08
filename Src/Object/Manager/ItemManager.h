@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <vector>
 #include <memory>
 #include <unordered_map>
@@ -8,6 +9,8 @@
 #include "../../Object/Item/Material/MaterialItem.h"
 #include "../../Object/Item/Product/ProductItem.h"
 #include "../../Object/Item/Seed/SeedItem.h"
+
+using QuantityChangeCallback = std::function<void(const std::string& itemId, int delta)>;
 
 class ItemManager
 {
@@ -46,6 +49,8 @@ public:
 	//–¼‘O‚ÌŽæ“¾
 	std::shared_ptr<ItemBase> FindItemById(const std::string& id);
 
+	void  RegisterQuantityChangeCallback(QuantityChangeCallback cb);
+
 	static void Destroy(void);
 
 private:
@@ -63,5 +68,6 @@ private:
 	std::vector<std::shared_ptr<ProductItem>> productItems_;
 	std::vector<std::shared_ptr<ItemBase>> allItems_;
 	std::unordered_map<std::string, std::shared_ptr<ItemBase>> idItemMap_;
+	std::vector<QuantityChangeCallback> quantityChangeCallbacks_;
 };
 

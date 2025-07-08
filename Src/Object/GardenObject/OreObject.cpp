@@ -63,7 +63,7 @@ void OreObject::Update(void)
 
 void OreObject::Draw(void)
 {
-    if (!isOnCooldown_ && modelId_ >= 0) {
+    if (modelId_ >= 0) {
         MV1SetPosition(modelId_, trans_.pos);
         MV1SetScale(modelId_, trans_.scl);
         MV1SetRotationXYZ(modelId_, trans_.rot);

@@ -141,6 +141,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\DrawUI\SceneUI\ItemPickupUI.cpp" />
+    <ClCompile Include="Src\Object\GardenObject\FenceObjectX.cpp" />
     <ClCompile Include="Src\Object\GardenObject\FenceObject.cpp" />
     <ClCompile Include="Src\Object\Manager\FenceManager.cpp" />
     <ClCompile Include="Src\Object\Manager\OreMnanager.cpp" />
@@ -217,8 +219,11 @@
     <ClCompile Include="Src\Object\GuildObject\TeleportMovement.cpp" />
     <ClCompile Include="Src\DrawUI\SceneUI\TeleportUI.cpp" />
     <ClCompile Include="Src\Object\GardenObject\Warp.cpp" />
+    <ClCompile Include="Src\Object\GardenObject\WellObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\DrawUI\SceneUI\ItemPickupUI.h" />
+    <ClInclude Include="Src\Object\GardenObject\FenceObjectX.h" />
     <ClInclude Include="Src\Object\GardenObject\FenceObject.h" />
     <ClInclude Include="Src\Object\Manager\FenceManager.h" />
     <ClInclude Include="Src\Object\Manager\OreMnanager.h" />
@@ -295,6 +300,7 @@
     <ClInclude Include="Src\Object\GuildObject\TeleportMovement.h" />
     <ClInclude Include="Src\DrawUI\SceneUI\TeleportUI.h" />
     <ClInclude Include="Src\Object\GardenObject\Warp.h" />
+    <ClInclude Include="Src\Object\GardenObject\WellObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

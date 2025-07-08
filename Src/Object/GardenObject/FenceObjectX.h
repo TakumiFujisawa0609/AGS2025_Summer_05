@@ -1,38 +1,32 @@
 #pragma once
 
-#include <string>
-#include <vector>
-
+#include <DxLib.h>
 #include "../Interact/HitObject.h"
 #include "../UnitBase.h"
 #include "../../Utility/Utility.h"
 
-class OreObject : public HitObject, public UnitBase
+class FenceObjectX : public HitObject, public UnitBase
 {
 public:
+    static constexpr float WIDTH = 100.0f;
+    static constexpr float HEIGHT = 150.0f;
+    static constexpr float DEPTH = 10.0f;
 
-    enum class COOL_DOWNSTATE
-    {
-        READY,      // 採掘可能
-        COOLINGDOWN // クールタイム中
-    };
-
-
-   static constexpr float ORE_COOLDOWN_TIME = 600.0f;
-
-    OreObject(void);
-    ~OreObject(void);
+    FenceObjectX(void);
+    ~FenceObjectX(void);
 
     void Init(void) override;
     void Update(void) override;
     void Draw(void) override;
     void Release(void) override;
-    void TryMine(void);
 
-    // ヒット判定用
+    VECTOR GetHitMin(void) const override;
+    VECTOR GetHitMax(void) const override;
+
     HIT_TYPE GetHitType(void) const override;
     VECTOR GetHitPosition(void) const override;
     float GetHitRadius(void) const override;
+
     bool IsValid(void) const override;
 
     void ShowUI(void) override;
@@ -45,18 +39,7 @@ public:
     Transform& GetTransform(void);
 
 private:
-    void StartCooldown(void);
-    bool IsCooldownOver(void) const;
-
-    Transform trans_;
-
-    COOL_DOWNSTATE cooldownState_;
-
-
-    float radius_;
-    bool isUIVisible_;
-    bool wantsToShowUI_;
-    bool isOnCooldown_;
-    float minedTime_;
-    int modelId_;
+    VECTOR hitMin_;
+    VECTOR hitMax_;
+    bool isValid_;
 };

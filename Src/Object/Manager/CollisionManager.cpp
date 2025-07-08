@@ -149,7 +149,7 @@ void CollisionManager::CheckHitSphere(std::shared_ptr<HitObject> obj, VECTOR& pl
          else if (distance > HIDE_RADIUS + playerRadius)
          {
              obj->OnPlayerExit();
-             PlayerStop::GetInstance().ResumeMovement();
+             //PlayerStop::GetInstance().ResumeMovement();
          }
     }
     

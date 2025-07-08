@@ -19,6 +19,7 @@ FenceManager::~FenceManager(void)
 void FenceManager::Init(const std::vector<std::vector<int>>& mapData, float blockSize)
 {
     fences_.clear();
+    fencesX_.clear();
 
     rows_ = static_cast<int>(mapData.size());
     cols_ = mapData.empty() ? 0 : static_cast<int>(mapData[0].size());
@@ -35,6 +36,14 @@ void FenceManager::Init(const std::vector<std::vector<int>>& mapData, float bloc
                 fne->GetTransform().pos = pos;
                 fences_.push_back(fne);
             }
+
+            if (mapData[z][x] == 5) {
+                auto fneX = std::make_shared<FenceObjectX>();
+                fneX->Init();
+                VECTOR pos = { x * blockSize + offsetX_, 5.0f, z * blockSize + offsetZ_ };
+                fneX->GetTransform().pos = pos;
+                fencesX_.push_back(fneX);
+            }
         }
     }
 }
@@ -45,6 +54,10 @@ void FenceManager::Update(void)
     {
         fne->Update();
     }
+    for (auto& fneX : fencesX_)
+    {
+        fneX->Update();
+    }
 }
 
 void FenceManager::Draw(void)
@@ -53,14 +66,24 @@ void FenceManager::Draw(void)
     {
         fne->Draw();
     }
+    for (auto& fneX : fencesX_)
+    {
+        fneX->Draw();
+    }
 }
 
 void FenceManager::Release(void)
 {
     fences_.clear();
+    fencesX_.clear();
 }
 
-const std::vector<std::shared_ptr<FenceObject>>& FenceManager::GetFenceObjects() const
+const std::vector<std::shared_ptr<FenceObject>>& FenceManager::GetFenceObjects(void) const
 {
     return fences_;
+}
+
+const std::vector<std::shared_ptr<FenceObjectX>>& FenceManager::GetFenceObjectsX(void) const
+{
+    return fencesX_;
 }

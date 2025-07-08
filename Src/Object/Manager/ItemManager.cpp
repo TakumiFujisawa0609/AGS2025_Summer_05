@@ -120,12 +120,30 @@ int ItemManager::GetSeedItemCount(void) const
 
 void ItemManager::AddQuantity(std::shared_ptr<ItemBase> item, int amount)
 {
-    if (item) item->AddQuantity(amount);
+    if (item)
+    {
+        item->AddQuantity(amount);
+
+        // コールバック呼び出し
+        for (auto& cb : quantityChangeCallbacks_)
+        {
+            cb(item->GetId(), amount);
+        }
+    }
 }
 
 void ItemManager::SubtractQuantity(std::shared_ptr<ItemBase> item, int amount)
 {
-    if (item) item->SubtractQuantity(amount);
+    if (item)
+    {
+        item->SubtractQuantity(amount);
+
+        // コールバック呼び出し（減った量はマイナス値で通知）
+        for (auto& cb : quantityChangeCallbacks_)
+        {
+            cb(item->GetId(), -amount);
+        }
+    }
 }
 
 void ItemManager::Register(std::shared_ptr<ItemBase> item)
@@ -140,6 +158,11 @@ std::shared_ptr<ItemBase> ItemManager::FindItemById(const std::string& id)
     if (it != idItemMap_.end())
         return it->second;
     return nullptr;
+}
+
+void ItemManager::RegisterQuantityChangeCallback(QuantityChangeCallback cb)
+{
+    quantityChangeCallbacks_.push_back(cb);
 }
 
 void ItemManager::Destroy(void)

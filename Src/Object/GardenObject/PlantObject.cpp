@@ -52,6 +52,8 @@ void PlantObject::Init(void)
     trans_.pos = VGet(0, 0, 0);
     trans_.scl = VGet(0.04, 0.03, 0.04);
     trans_.rot = VGet(0, 0, 0);
+
+    radius_ = 1;
 }
 
 // ‰ð•ú

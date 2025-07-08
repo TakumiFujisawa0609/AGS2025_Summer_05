@@ -204,27 +204,34 @@ void QuestUI::DrawActiveQuests(void)
 //依頼受注
 void QuestUI::AcceptQuest(int questId)
 {
-    // 既に依頼を受けている場合は新しい依頼を受けられない
     if (!activeQuests_.empty())
     {
-    Font::GetInstance().DrawDefaultText (0, 180, "既に依頼を受けています。完了してから新しい依頼を受けてください。", 0xff0000, 16);
         return;
     }
 
-    // 利用可能な依頼から指定IDの依頼を探す
-    for (auto& quest : availableQuests_)
+    // 抽選された依頼から探す
+    for (const auto& selected : selectedQuests_)
     {
-        if (quest.id == questId && !quest.isActive)
+        if (selected.id == questId)
         {
+            DeliveryQuest quest = selected;
             quest.isActive = true;
             quest.currentAmount = 0;
             quest.isCompleted = false;
 
-            // アクティブ依頼リストに追加
+            // アクティブ依頼に追加
             activeQuests_.push_back(quest);
 
-            //// デバッグ出力
-            //DrawFormatString(0, 520, 0x00ff00, "依頼受注: %s", quest.title.c_str());
+            // availableQuests_ 側もフラグ更新（これで再度選ばれないようにするなら）
+            for (auto& available : availableQuests_)
+            {
+                if (available.id == questId)
+                {
+                    available.isActive = true;
+                    break;
+                }
+            }
+
             break;
         }
     }
@@ -337,11 +344,16 @@ void QuestUI::RefreshDailyQuests(void)
 {
     std::vector<DeliveryQuest> questPool;
 
+    std::random_device rd;
+    std::mt19937 rng(rd());
+    std::uniform_int_distribution<int> percentDist(0, 99); // 0～99の乱数
+    std::uniform_int_distribution<int> amountDist(1, 3);   // 1～3の納品数
+
     for (auto& quest : availableQuests_)
     {
         if (quest.targetItemId == "Garbage")
         {
-            if (GetRand(100) < 10)
+            if (percentDist(rng) < 10) // 10%の確率で抽選
             {
                 questPool.push_back(quest);
             }
@@ -352,29 +364,24 @@ void QuestUI::RefreshDailyQuests(void)
         }
     }
 
-    std::random_device rd;
-    std::mt19937 rng(rd());
     std::shuffle(questPool.begin(), questPool.end(), rng);
 
     selectedQuests_.clear();
 
-    int logY = 400; // ログ描画の開始Y位置
-    DrawBox(0, logY - 5, 640, logY + 100, GetColor(0, 0, 0), TRUE); // 背景
-
-    DrawFormatString(0, logY, GetColor(255, 255, 0), "【新しく抽選されたクエスト】");
+    int logY = 400;
+    DrawBox(0, logY - 5, 640, logY + 100, GetColor(0, 0, 0), TRUE);
     logY += 20;
 
     for (int i = 0; i < 3 && i < (int)questPool.size(); i++)
     {
         DeliveryQuest q = questPool[i];
-        q.requiredAmount = GetRand(2) + 1;
+        q.requiredAmount = amountDist(rng); // ← ここで1～3の納品数を設定
         q.currentAmount = 0;
         q.isCompleted = false;
         q.isActive = false;
 
         selectedQuests_.push_back(q);
 
-        // 抽選結果を表示
         DrawFormatString(0, logY, GetColor(255, 255, 255), "- %s x%d", q.title.c_str(), q.requiredAmount);
         logY += 20;
     }

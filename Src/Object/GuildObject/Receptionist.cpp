@@ -286,8 +286,6 @@ void Receptionist::UpdateDeliveryMenu(void)
 {
     auto& input = InputManager::GetInstance();
 
-    PlayerStop::GetInstance().StopMovement();
-
     if (!isSelectingQuantity_ && !deliverableItems_.empty())
     {
         int itemCount = static_cast<int>(deliverableItems_.size());
@@ -471,6 +469,7 @@ void Receptionist::DrawMainMenu()
 
 void Receptionist::DrawDeliveryMenu(void)
 {
+    PlayerStop::GetInstance().StopMovement();
 
     const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
     const int screenHeight = Application::DEFA_SCREEN_SIZE_X;

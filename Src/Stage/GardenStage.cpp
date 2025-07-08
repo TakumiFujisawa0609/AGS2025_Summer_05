@@ -13,6 +13,7 @@
 #include "../Object/Manager/OreMnanager.h"
 #include "../Object/GardenObject/Warp.h"
 #include "../Object/Manager/FenceManager.h"
+#include "../Object/GardenObject/WellObject.h"
 
 // コンストラクタ
 GardenStage::GardenStage(StageManager* stageManager)
@@ -43,6 +44,11 @@ void GardenStage::Init(void)
 	warp_ = std::make_shared<Warp>(stageManager_);
 	warp_->Init();
 
+	well_ = std::make_shared<WellObject>();
+	well_->Init();
+
+	CollisionManager::GetInstance().Register(well_);
+
 	CollisionManager::GetInstance().Register(warp_);
 
 	for (const auto& plant : plantManager_->GetPlantObjects())
@@ -58,6 +64,11 @@ void GardenStage::Init(void)
 	for (const auto& fne : fenceManager_->GetFenceObjects())
 	{
 		CollisionManager::GetInstance().Register(fne);
+	}
+
+	for (const auto& fneX : fenceManager_->GetFenceObjectsX())
+	{
+		CollisionManager::GetInstance().Register(fneX);
 	}
 }
 
@@ -76,6 +87,7 @@ void GardenStage::Update(void)
 	oreManager_->Update();
 	fenceManager_->Update();
 	warp_->Update();
+	well_->Update();
 }
 
 // 描画処理
@@ -86,6 +98,7 @@ void GardenStage::Draw(void)
 	oreManager_->Draw();
 	fenceManager_->Draw();
 	warp_->Draw();
+	well_->Draw();
 
 }
 

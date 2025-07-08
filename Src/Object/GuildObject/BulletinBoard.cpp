@@ -49,10 +49,6 @@ void BulletinBoard::Init(void)
 	//掲示板の画像
 	imageBoardId_ = res.Load(ResourceManager::SRC::IMAGE_BOARD).handleId_;
 
-	// 依頼リストを初期化
-	questList_[0] = "依頼1: 回復ポーソンを3こ納品";
-	questList_[1] = "依頼2: 解毒ポーソンを2こ納品";
-	questList_[2] = "依頼3: 魔法ポーソンを1こ納品";
 
 	//モデル制御
 	trans_.Update();
@@ -75,11 +71,13 @@ void BulletinBoard::Update(void)
 		{
 			// 依頼選択の確定処理
 			auto& questUI = QuestUI::GetInstance();
+			
 			questUI.AcceptQuest(selectedQuest_);
-
+			PlayerStop::GetInstance().ResumeMovement();
 			// 依頼受注後はUIを閉じる
 			isShowQuestList_ = false;
 			isShowUI_ = false;
+			
 		}
 	}
 
@@ -101,8 +99,12 @@ void BulletinBoard::Update(void)
 		{
 			isShowQuestList_ = false;
 			isShowUI_ = false;
-			PlayerStop::GetInstance().ResumeMovement();
 		}
+	}
+
+	if (!selectedQuest_)
+	{
+		PlayerStop::GetInstance().ResumeMovement();
 	}
 }
 

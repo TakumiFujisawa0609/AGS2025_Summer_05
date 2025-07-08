@@ -38,6 +38,7 @@ bool TeleportUI::IsVisible(void) const
 void TeleportUI::Update(void)
 {
 	if (!isVisible_) return;
+
 	PlayerStop::GetInstance().StopMovement();
 
 	auto& input = InputManager::GetInstance();
@@ -62,15 +63,15 @@ void TeleportUI::Update(void)
 		{
 		case DESTINATION::GUILD:
 			stageManager_->ChangeStage(StageManager::STAGE_ID::GUILD);
-			teleportPos = { 0, 10, -30 };
+			teleportPos = { 0, 20, -50 };
 			break;
 		case DESTINATION::ATELIER:
 			stageManager_->ChangeStage(StageManager::STAGE_ID::ATELIER);
-			teleportPos = { 0, 10, -30 };
+			teleportPos = { 0, 20, -50 };
 			break;
 		case DESTINATION::GARDEN:
 			stageManager_->ChangeStage(StageManager::STAGE_ID::GARDEN);
-			teleportPos = { 0, 10, -30 };
+			teleportPos = { 0, 20, -50 };
 			break;
 		}
 		if (player_)

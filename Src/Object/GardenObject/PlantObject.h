@@ -16,8 +16,8 @@ public:
 		Mature
 	};
 
-	static constexpr float GROWTH_DURATION_SPROUT = 30.0f;
-	static constexpr float GROWTH_DURATION_MID = 60.0f;
+	static constexpr float GROWTH_DURATION_SPROUT = 300.0f;
+	static constexpr float GROWTH_DURATION_MID = 800.0f;
 
 	PlantObject(void);
 
