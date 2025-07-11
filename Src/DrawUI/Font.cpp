@@ -120,9 +120,14 @@ void Font::RemoveFont(const std::string& fontId)
 //デフォルトフォントの設定
 void Font::SetDefaultFont(const std::string& fontId)
 {
-	if (fontHandles_.find(fontId) != fontHandles_.end())
+	auto it = fontHandles_.find(fontId);
+	if (it != fontHandles_.end() && !it->second.empty())
 	{
 		defaultFont_ = fontId;
+	}
+	else
+	{
+		OutputDebugStringA(("SetDefaultFont: フォントID [" + fontId + "] は未登録またはサイズ情報がありません。\n").c_str());
 	}
 }
 
