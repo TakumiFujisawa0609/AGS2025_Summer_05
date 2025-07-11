@@ -21,7 +21,7 @@ public:
 	static constexpr int FONT_TYPE_ANTIALIASING_EDGE = DX_FONTTYPE_ANTIALIASING_EDGE;       //アンチエイリアス + 縁取りフォント
 
 	//デストラクタ
-	~Font();
+	~Font(void);
 
 	// インスタンスを明示的に生成
 	static void CreateInstance(void);

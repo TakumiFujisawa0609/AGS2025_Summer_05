@@ -157,7 +157,7 @@ void Font::DrawText(const std::string& fontId, int x, int y, const char* text, i
 		if (fontHandle == -1)
 		{
 			// ここで登録済みフォント名を使う
-			fontHandle = GetDynamicFontHandle(internalFontName, fontSize, 3, useFontType);
+ 			fontHandle = GetDynamicFontHandle(internalFontName, fontSize, 3, useFontType);
 		}
 	}
 	else
