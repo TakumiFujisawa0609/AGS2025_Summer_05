@@ -20,9 +20,9 @@ void FenceObjectX::Init(void)
     trans_.SetModel(res.LoadModelDuplicate(ResourceManager::SRC::FENCE_MODEL));
 
     // フェンスの位置を地面に固定（例）
-    trans_.pos = { 0.0f, HEIGHT * 0.5f, 0.0f };
-    trans_.scl = { 0.01f, 0.01f, 0.01f };
-    trans_.rot = { 0.0f, 180.0f, 0.0f };
+    trans_.pos = { 0.0f, 0.0f, 0.0f };
+    trans_.scl = { 11.5f, 11.5f, 11.5f };
+    trans_.rot = { 0.0f, -86.45f, 0.0f };
 
 
     isValid_ = true;
@@ -39,6 +39,7 @@ void FenceObjectX::Draw(void)
 {
     if (trans_.modelId >= 0)
     {
+        MV1SetScale(trans_.modelId, trans_.scl);
         MV1SetPosition(trans_.modelId, trans_.pos);
         MV1SetRotationXYZ(trans_.modelId, trans_.rot);
         MV1DrawModel(trans_.modelId);

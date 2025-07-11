@@ -27,8 +27,6 @@ void Teleport::Init(void)
 
 	//ƒ‚ƒfƒ‹
 	trans_.SetModel(res.LoadModelDuplicate(ResourceManager::SRC::BULLETIN_BOARD));
-	trans_.quaRot = Quaternion();
-	trans_.quaRotLocal = Quaternion::AngleAxis(Utility::Deg2RadF(180.0f), Utility::AXIS_Y);
 	trans_.scl = SCALE;
 	radius_ = RADIUS;
 	speed_ = 0.0f;
@@ -43,7 +41,6 @@ void Teleport::Init(void)
 void Teleport::Update(void)
 {
 	auto& input = InputManager::GetInstance();
-	trans_.Update();
 
 	if (teleportUI_)
 	{

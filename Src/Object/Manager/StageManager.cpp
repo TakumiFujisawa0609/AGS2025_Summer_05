@@ -10,6 +10,7 @@
 #include "../../Stage/PrivateRoomStage.h"
 #include "CollisionManager.h"
 #include "../../Common/Fader.h"
+#include "../../Object/player.h"
 
 //コンストラクタ
 StageManager::StageManager(void)
@@ -182,12 +183,28 @@ void StageManager::Fade(void)
 	case Fader::STATE::FADE_OUT:
 		if (fader_->IsEnd())
 		{
-			// 一度だけ切り替えるようにガード
 			if (waitStageId_ != STAGE_ID::NONE)
 			{
 				DoChangeStage(waitStageId_);
 				waitStageId_ = STAGE_ID::NONE;
 				fader_->SetFade(Fader::STATE::FADE_IN);
+				if (player_)
+				{
+					switch (stageId_)
+					{
+					case STAGE_ID::GUILD:
+						player_->SetPos({ 0, 20, -200 });
+						break;
+					case STAGE_ID::ATELIER:
+						player_->SetPos({ 0, 20, -200 });
+						break;
+					case STAGE_ID::GARDEN:
+						player_->SetPos({ 0, 20, -200 });
+						break;
+					default:
+						break;
+					}
+				}
 			}
 		}
 		break;

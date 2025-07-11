@@ -28,24 +28,21 @@ void AlchemyPot::SetPlayer(std::shared_ptr<Player> player)
 void AlchemyPot::Init(void)
 {
 	auto& res = ResourceManager::GetInstance();
-
-	//ƒ‚ƒfƒ‹
-	trans_.SetModel(res.LoadModelDuplicate(ResourceManager::SRC::BULLETIN_BOARD));
-	trans_.quaRot = Quaternion();
-	trans_.quaRotLocal = Quaternion::AngleAxis(Utility::Deg2RadF(180.0f), Utility::AXIS_Y);
-	trans_.scl = SCALE;
+	trans_.SetModel(res.LoadModelDuplicate(ResourceManager::SRC::ALCHEMYPOT));
 	radius_ = RADIUS;
-	speed_ = 0.0f;
 	isShowUI_ = false;
+
 	trans_.pos = MODEL_POS;
+	trans_.scl = SCALE;
+	trans_.rot = { 0.0f, 0.0f, 0.0f };
+
+	
 }
 
 void AlchemyPot::Update(void)
 {
 	auto& input = InputManager::GetInstance();
 	auto& alchemy = AlchemyManager::GetInstance();
-
-	trans_.Update();
 
 	bool start = false;
 
@@ -72,7 +69,13 @@ void AlchemyPot::Draw(void)
 {
 	auto& alchemy = AlchemyManager::GetInstance();
 
-	MV1DrawModel(trans_.modelId);
+	if (trans_.modelId >= 0)
+	{
+		MV1SetScale(trans_.modelId, trans_.scl);
+		MV1SetPosition(trans_.modelId, trans_.pos);
+		MV1SetRotationXYZ(trans_.modelId, trans_.rot);
+		MV1DrawModel(trans_.modelId);
+	}
 
 	const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
 	const int screenHeight = Application::DEFA_SCREEN_SIZE_X;

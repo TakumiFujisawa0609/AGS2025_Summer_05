@@ -71,6 +71,8 @@ void ResourceManager::InitGame(void)
 	// 敵関連リソースの初期化
 	ResourceEnemy();
 
+	ResourceAtelier();
+
 	//ギルドリソースの初期化
 	ResourceGuild();
 
@@ -112,6 +114,19 @@ void ResourceManager::InitGameClear(void)
 	// 決定音を登録
 	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "");
 	resourcesMap_.emplace(SRC::SE_PUSH, res);
+}
+
+void ResourceManager::ResourceAtelier(void)
+{
+	Resource res;
+	//掲示板オブジェクトの登録
+	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "/Atelier/hondana.mv1");
+	resourcesMap_.emplace(SRC::BOOKS_HELF, res);
+
+	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "/Atelier/renkingama.mv1");
+	resourcesMap_.emplace(SRC::ALCHEMYPOT, res);
+
+	
 }
 
 //ギルドで使うリソース

@@ -32,7 +32,7 @@ void FenceManager::Init(const std::vector<std::vector<int>>& mapData, float bloc
             if (mapData[z][x] == 4) {
                 auto fne = std::make_shared<FenceObject>();
                 fne->Init();
-                VECTOR pos = { x * blockSize + offsetX_, 5.0f, z * blockSize + offsetZ_ };
+                VECTOR pos = { x * blockSize + offsetX_, -40.0f, z * blockSize + offsetZ_ };
                 fne->GetTransform().pos = pos;
                 fences_.push_back(fne);
             }
@@ -40,7 +40,7 @@ void FenceManager::Init(const std::vector<std::vector<int>>& mapData, float bloc
             if (mapData[z][x] == 5) {
                 auto fneX = std::make_shared<FenceObjectX>();
                 fneX->Init();
-                VECTOR pos = { x * blockSize + offsetX_, 5.0f, z * blockSize + offsetZ_ };
+                VECTOR pos = { x * blockSize + offsetX_, -40.0f, z * blockSize + offsetZ_ };
                 fneX->GetTransform().pos = pos;
                 fencesX_.push_back(fneX);
             }

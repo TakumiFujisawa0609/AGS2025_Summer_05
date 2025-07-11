@@ -89,6 +89,8 @@ void SceneGame::Init(void)
 
 	AlchemyManager::GetInstance().Init();
 
+	
+
 
 }
 
@@ -146,11 +148,15 @@ void SceneGame::Update(void)
 	itemPickup_->Update();
 
 	
+
+	
 }
 
 void SceneGame::Draw(void)
 {
 	auto& alchemy = AlchemyManager::GetInstance();
+
+	
 
 	//ƒvƒŒƒCƒ„[‚Ì•`‰æ
 	player_->Draw();

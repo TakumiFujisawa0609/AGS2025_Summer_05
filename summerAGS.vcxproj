@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\AtelierObject\Bookshelf.cpp" />
     <ClCompile Include="Src\DrawUI\SceneUI\ItemPickupUI.cpp" />
     <ClCompile Include="Src\Object\GardenObject\FenceObjectX.cpp" />
     <ClCompile Include="Src\Object\GardenObject\FenceObject.cpp" />
@@ -222,6 +223,7 @@
     <ClCompile Include="Src\Object\GardenObject\WellObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\AtelierObject\Bookshelf.h" />
     <ClInclude Include="Src\DrawUI\SceneUI\ItemPickupUI.h" />
     <ClInclude Include="Src\Object\GardenObject\FenceObjectX.h" />
     <ClInclude Include="Src\Object\GardenObject\FenceObject.h" />

@@ -18,7 +18,7 @@ public:
 	static constexpr float RADIUS = 50.0f;
 
 	//モデルの大きさ
-	static constexpr VECTOR SCALE = { 0.05f,0.05f,0.05f };
+	static constexpr VECTOR SCALE = { 2.0f,2.0f,2.0f };
 
 	//モデルのモデル座標用
 	static constexpr VECTOR MODEL_POS = { 0.0f,10.0f,0.0f };

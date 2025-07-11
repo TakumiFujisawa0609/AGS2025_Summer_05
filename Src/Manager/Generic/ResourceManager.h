@@ -36,6 +36,10 @@ public:
 		BULLETIN_BOARD,			//掲示板
 		IMAGE_BOARD,			//掲示板の画像
 
+		//アトリエ関係
+		BOOKS_HELF,				//本棚
+		ALCHEMYPOT,				//錬金釜
+
 		//庭関係
 		BLOCK_DIRT,				//土ブロック
 		BLOCK_GFRASS,			//草ブロック
@@ -83,6 +87,9 @@ public:
 
 	//ゲームクリアで使うリソース初期化
 	void InitGameClear(void);
+
+	//アトリエで使うリソース
+	void ResourceAtelier(void);
 
 	//ギルドで使うリソース
 	void ResourceGuild(void);

@@ -3,10 +3,12 @@
 #include<memory>
 
 #include "StageBase.h"
-#include "../Object/AtelierObject/AlchemyPot.h"
-#include "../Object/AtelierObject/Teleport.h"
+
 
 class StageManager;
+class AlchemyPot;
+class Teleport;
+class Bookshelf;
 
 class AtelierStage : public StageBase
 {
@@ -52,6 +54,7 @@ private:
 
 	std::shared_ptr<AlchemyPot> alchemyPot_;
 	std::shared_ptr<Teleport> teleportt_;
+	std::shared_ptr<Bookshelf> bookshelf_;
 
 	// StageManagerÇÃéQè∆
 	StageManager* stageManager_;

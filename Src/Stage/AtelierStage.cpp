@@ -6,6 +6,8 @@
 #include"../Manager/Generic/InputManager.h"
 #include"../Object/Manager/StageManager.h"
 #include "../Object/AtelierObject/AlchemyPot.h"
+#include "../Object/AtelierObject/Teleport.h"
+#include "../Object/AtelierObject/Bookshelf.h"
 #include "../Object/Manager/CollisionManager.h"
 
 //コンストラクタ
@@ -37,6 +39,11 @@ void AtelierStage::Init(void)
 	teleportt_ = std::make_shared<Teleport>(stageManager_);
 	teleportt_->Init();
 	CollisionManager::GetInstance().Register(teleportt_);
+
+	bookshelf_ = std::make_shared<Bookshelf>();
+	bookshelf_->Init();
+	CollisionManager::GetInstance().Register(bookshelf_);
+
 }
 
 void AtelierStage::Update(void)
@@ -44,6 +51,7 @@ void AtelierStage::Update(void)
 	auto& input = InputManager::GetInstance();
 	alchemyPot_->Update();
 	teleportt_->Update();
+	bookshelf_->Update();
 
 	// ステージ遷移(デバッグ)
 	if (input.IsTrgDown(KEY_INPUT_P))
@@ -69,6 +77,7 @@ void AtelierStage::Draw(void)
 
 	alchemyPot_->Draw();
 	teleportt_->Draw();
+	bookshelf_->Draw();
 }
 
 //解放処理

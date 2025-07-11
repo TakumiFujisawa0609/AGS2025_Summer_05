@@ -58,25 +58,20 @@ void TeleportUI::Update(void)
 
 	if (input.IsTrgDown(KEY_INPUT_RETURN))
 	{
-		VECTOR teleportPos = { 0, 0, 0 };
 		switch (selected_)
 		{
 		case DESTINATION::GUILD:
 			stageManager_->ChangeStage(StageManager::STAGE_ID::GUILD);
-			teleportPos = { 0, 20, -50 };
 			break;
+
 		case DESTINATION::ATELIER:
 			stageManager_->ChangeStage(StageManager::STAGE_ID::ATELIER);
-			teleportPos = { 0, 20, -50 };
 			break;
+
 		case DESTINATION::GARDEN:
 			stageManager_->ChangeStage(StageManager::STAGE_ID::GARDEN);
-			teleportPos = { 0, 20, -50 };
 			break;
-		}
-		if (player_)
-		{
-			player_->SetPos(teleportPos);
+
 		}
 		Hide();  // UI‚ð•Â‚¶‚é
 	}
