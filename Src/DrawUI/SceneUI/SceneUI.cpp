@@ -43,11 +43,11 @@ void SceneUi::DrawFont(void)
 
 		if (isBlinking_)
 		{
-			Font::GetInstance().DrawDefaultText(xPos, yPos, font.message, 0xFFFFFF, 24, Font::FONT_TYPE_NORMAL);
+			Font::GetInstance().DrawTextA("GameFont",xPos, yPos, font.message, 0xFFFFFF,26);
 		}
 		else
 		{
-			Font::GetInstance().DrawDefaultText(xPos, yPos, font.message, 0xAAAAAA, 24, Font::FONT_TYPE_NORMAL);
+			Font::GetInstance().DrawTextA("GameFont", xPos, yPos, font.message, 0xFFFFFF,26);
 		}
 	}
 }

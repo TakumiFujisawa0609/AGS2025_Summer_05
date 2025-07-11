@@ -88,6 +88,10 @@ void Application::Init(void)
 	//ƒtƒHƒ“ƒg‚Ì‰Šú‰»
 	Font::CreateInstance();
 
+	std::string fontPath = Application::PATH_FONT + "NikkyouSans-mLKax.ttf";
+
+ 	Font::GetInstance().AddFont("GameFont","Nikkyou Sans", fontPath, 24, 6, Font::FONT_TYPE_EDGE);
+
 	//FPS§Œä‰Šú‰»
 	fps_->FpsControll_Initialize();
 }

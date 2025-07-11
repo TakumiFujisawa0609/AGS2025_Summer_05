@@ -11,11 +11,16 @@ Font::Font() : defaultFont_(""){}
 Font::~Font(void)
 {
 	//全てのフォントハンドルを解放
-	for (const auto& font : fontHandles_)
+	// 全てのフォントハンドルを解放
+	for (auto& outerPair : fontHandles_)
 	{
-		if (font.second != -1 && font.second != DX_DEFAULT_FONT_HANDLE)
+		for (auto& innerPair : outerPair.second)
 		{
-			DeleteFontToHandle(font.second);
+			int fontHandle = innerPair.second;
+			if (fontHandle != -1 && fontHandle != DX_DEFAULT_FONT_HANDLE)
+			{
+				DeleteFontToHandle(fontHandle);
+			}
 		}
 	}
 
@@ -54,42 +59,42 @@ void Font::Init(void)
 }
 
 //フォントの追加
-bool Font::AddFont(const std::string& fontId, const std::string& fontPath, int fontSize, int fontWeight, int fontType)
+bool Font::AddFont(const std::string& fontId, const std::string& internalFontName, const std::string& fontPath, int fontSize, int fontWeight, int fontType)
 {
 	int fontFileSize = FileRead_size(fontPath.c_str());
 	int fontFileHandle = FileRead_open(fontPath.c_str());
 
-	//フォント読み込み失敗
 	if (fontFileSize <= 0 || fontFileHandle == -1)
 	{
-		OutputDebugString("フォントが見つかりません \n");
-
+		OutputDebugString("フォントファイルが見つかりません\n");
 		return false;
 	}
 
-	//フォントデータをメモリに読み込む
 	void* buffer = new char[fontFileSize];
 	FileRead_read(buffer, fontFileSize, fontFileHandle);
+	FileRead_close(fontFileHandle);
 
-	DWORD font_num = 0;
-	if (AddFontMemResourceEx(buffer, fontFileSize, NULL, &font_num) == 0)
+	DWORD fontNum = 0;
+	if (AddFontMemResourceEx(buffer, fontFileSize, NULL, &fontNum) == 0)
 	{
-		OutputDebugString("フォントファイルが読み込めませんでした\n");
+		OutputDebugString("AddFontMemResourceEx 失敗\n");
 		delete[] buffer;
 		return false;
 	}
 
-	FileRead_close(fontFileHandle);		//フォントファイルを度汁
-	delete[] buffer;					//メモリ解放
+	delete[] buffer;
 
-	//フォントハンドルを生成
-	int fontHandle = CreateFontToHandle(fontPath.c_str(), fontSize, fontWeight, fontType);
+	fontNameMap_[fontId] = internalFontName;
+
+	int fontHandle = CreateFontToHandle(internalFontName.c_str(), fontSize, fontWeight, fontType);
 	if (fontHandle == -1)
 	{
+		OutputDebugString("フォントハンドル作成失敗\n");
 		return false;
 	}
 
-	fontHandles_[fontId] = fontHandle;  //フォントハンドルを登録
+	fontHandles_[fontId][std::make_pair(fontSize, fontType)] = fontHandle;
+
 	return true;
 }
 
@@ -99,9 +104,14 @@ void Font::RemoveFont(const std::string& fontId)
 	auto it = fontHandles_.find(fontId);
 	if (it != fontHandles_.end())
 	{
-		if (it->second != -1 && it->second != DX_DEFAULT_FONT_HANDLE)
+		// 内側のハンドルを全て削除
+		for (auto& innerPair : it->second)
 		{
-			DeleteFontToHandle(it->second);
+			int fontHandle = innerPair.second;
+			if (fontHandle != -1 && fontHandle != DX_DEFAULT_FONT_HANDLE)
+			{
+				DeleteFontToHandle(fontHandle);
+			}
 		}
 		fontHandles_.erase(it);
 	}
@@ -119,26 +129,52 @@ void Font::SetDefaultFont(const std::string& fontId)
 //テキスト描画
 void Font::DrawText(const std::string& fontId, int x, int y, const char* text, int color, int fontSize, int fontType)
 {
-	int fontHandle;
+	int fontHandle = -1;
+	int useFontType = (fontType >= 0) ? fontType : FONT_TYPE_NORMAL;
+
+	// フォント名取得
+	auto itName = fontNameMap_.find(fontId);
+	std::string internalFontName = (itName != fontNameMap_.end()) ? itName->second : "";
 
 	if (fontSize > 0)
 	{
-		// 動的フォントサイズを使用
-		fontHandle = GetDynamicFontHandle(fontSize, 3, fontType);
+		auto itFont = fontHandles_.find(fontId);
+		if (itFont != fontHandles_.end())
+		{
+			auto& sizeMap = itFont->second;
+			auto itSize = sizeMap.find({ fontSize, useFontType });
+			if (itSize != sizeMap.end())
+			{
+				fontHandle = itSize->second;
+			}
+		}
+
+		if (fontHandle == -1)
+		{
+			// ここで登録済みフォント名を使う
+			fontHandle = GetDynamicFontHandle(internalFontName, fontSize, 3, useFontType);
+		}
 	}
 	else
 	{
-		// 登録済みフォントのハンドルを使用
-		auto it = fontHandles_.find(fontId);
-		fontHandle = (it != fontHandles_.end()) ? it->second : DX_DEFAULT_FONT_HANDLE;
+		auto itFont = fontHandles_.find(fontId);
+		if (itFont != fontHandles_.end())
+		{
+			auto& sizeMap = itFont->second;
+			if (!sizeMap.empty())
+			{
+				fontHandle = sizeMap.begin()->second;
+			}
+		}
 	}
 
-	if (fontHandle != -1)
+	if (fontHandle == -1)
 	{
-		DrawFormatStringFToHandle(x, y, color, fontHandle, text);
+		fontHandle = DX_DEFAULT_FONT_HANDLE;
 	}
-}
 
+	DrawFormatStringFToHandle(x, y, color, fontHandle, text);
+}
 // デフォルトフォントで描画
 void Font::DrawDefaultText(int x, int y, const char* text, int color, int fontSize, int fontType)
 {
@@ -152,7 +188,7 @@ int Font::GetDefaultTextWidth(const std::string& text) const
 }
 
 //一時的なフォントを取得または生成
-int Font::GetDynamicFontHandle(int fontSize, int fontWeight, int fontType)
+int Font::GetDynamicFontHandle(const std::string& internalFontName, int fontSize, int fontWeight, int fontType)
 {
 	auto key = std::make_pair(fontSize, fontType);
 	auto it = dynamicFontHandles_.find(key);
@@ -162,8 +198,7 @@ int Font::GetDynamicFontHandle(int fontSize, int fontWeight, int fontType)
 		return it->second;
 	}
 
-	//新しいフォントを生成
-	int fontHandle = CreateFontToHandle(nullptr, fontSize, fontWeight, fontType);
+	int fontHandle = CreateFontToHandle(internalFontName.c_str(), fontSize, fontWeight, fontType);
 	if (fontHandle != -1)
 	{
 		dynamicFontHandles_[key] = fontHandle;
