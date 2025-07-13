@@ -42,7 +42,7 @@ public:
     int GetQuantity(void) const;
 
     // ‰æ‘œƒnƒ“ƒhƒ‹‚ğæ“¾
-    int GetImageHandle() const;
+    int GetImageHandle(void) const;
 
     // Š”‚ğ‘‚â‚·
     void AddQuantity(int amount);

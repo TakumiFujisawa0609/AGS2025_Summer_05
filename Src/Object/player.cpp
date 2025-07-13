@@ -4,6 +4,7 @@
 #include "../Manager/Generic/SceneManager.h"
 #include "../Object/Common/AnimationController.h"
 #include "../Object/Manager/CollisionManager.h"
+#include "../Manager/Generic/ResourceManager.h"
 #include"player.h"
 
 Player::Player(void)
@@ -19,6 +20,8 @@ Player::Player(void)
 	blockedDirZ_ = 0;
 
 	movementEnabled_ = true;
+
+	currentAnimType_ = -1;
 
 	//角度
 	angles_ = VECTOR();
@@ -36,7 +39,7 @@ void Player::Init(void)
 	movementEnabled_ = true;
 
 	//モデルのロード
-	modelId_ = MV1LoadModel((Application::PATH_MODEL + "player/playerkari.mv1").c_str());
+	modelId_ = ResourceManager::GetInstance().LoadModelDuplicate(ResourceManager::SRC::MODEL_PLAYER);
 
 	// 座標設定
 	//初期化
@@ -58,15 +61,17 @@ void Player::Init(void)
 	angles_ = { 0.0f, Utility::Deg2RadF(180.0f), 0.0f };
 	MV1SetRotationXYZ(modelId_, angles_);
 
-	//モデルアニメーション制御の初期化
+	// アニメーションコントローラ初期化
 	animationController_ = new AnimationController(modelId_);
-	for (int i = 0; i < static_cast<int>(ANIM_TYPE::MAX); i++)
-	{
-		//animationController_->AddInFbx(i, 30.0f, i);
-	}
 
-	// 初期アニメーション再生
+	// アニメーション登録（外部ファイル）
+	animationController_->AddExternal(static_cast<int>(ANIM_TYPE::IDLE), Application::PATH_MODEL + "player/Idle.mv1", 45.0f);
+	animationController_->AddExternal(static_cast<int>(ANIM_TYPE::WALK), Application::PATH_MODEL + "player/Walk.mv1", 45.0f);
+
+	// 再生
 	animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
+	currentAnimType_ = static_cast<int>(ANIM_TYPE::IDLE);
+
 	//カメラ方向初期化
 	axis_ = { 0.0f,0.0f,0.0f };
 
@@ -79,9 +84,11 @@ void Player::Update(void)
 	//移動前座標保存
 	prePos_ = trans_.pos;
 
+	animationController_->Update();
+
 	ProcessMove();
 
-	animationController_->Update();
+	
 
 	// プレイヤーの座標と半径を使って当たり判定
 	CollisionManager::GetInstance().CheckHitWithPlayer(this, trans_.pos, radius_, GetHitMin(), GetHitMax());
@@ -181,50 +188,52 @@ bool Player::IsMovementEnabled(void) const
 	return movementEnabled_;
 }
 
+// Player.cpp に追加
+void Player::PlayAnim(ANIM_TYPE type, bool loop)
+{
+	int animIndex = static_cast<int>(type);
+	if (currentAnimType_ != animIndex)
+	{
+		animationController_->Play(animIndex, loop);
+		currentAnimType_ = animIndex;
+	}
+}
+
 
 void Player::ProcessMove(void)
 {
-	if (!movementEnabled_)
-	{
-		return;
-	}
+	if (!movementEnabled_) return;
+
 	InputManager& ins = InputManager::GetInstance();
+	ResetBlockDirs();
 
-	ResetBlockDirs(); // 毎フレームリセット
-
-	// 移動方向を決める
 	VECTOR moveDir = Utility::VECTOR_ZERO;
 
-	// Z方向（前後）
-	if (ins.IsNew(KEY_INPUT_W) && blockedDirZ_ != 1) // 前方ブロックされてないなら前進OK
+	if (ins.IsNew(KEY_INPUT_W) && blockedDirZ_ != 1)
 		moveDir = VAdd(moveDir, Utility::DIR_F);
-
-	if (ins.IsNew(KEY_INPUT_S) && blockedDirZ_ != -1) // 後方ブロックされてないなら後退OK
+	if (ins.IsNew(KEY_INPUT_S) && blockedDirZ_ != -1)
 		moveDir = VAdd(moveDir, Utility::DIR_B);
-
-	// X方向（左右）
-	if (ins.IsNew(KEY_INPUT_A) && blockedDirX_ != 1) // 左ブロックされてない
+	if (ins.IsNew(KEY_INPUT_A) && blockedDirX_ != 1)
 		moveDir = VAdd(moveDir, Utility::DIR_L);
-
-	if (ins.IsNew(KEY_INPUT_D) && blockedDirX_ != -1) // 右ブロックされてない
+	if (ins.IsNew(KEY_INPUT_D) && blockedDirX_ != -1)
 		moveDir = VAdd(moveDir, Utility::DIR_R);
 
 	if (!Utility::EqualsVZero(moveDir))
 	{
 		moveDir = VNorm(moveDir);
 		VECTOR movePow = VScale(moveDir, SPEED_MOVE);
-
 		trans_.pos = VAdd(trans_.pos, movePow);
 
-		if (Utility::SqrMagnitudeF(moveDir) > 0.0f)
-		{
-			angles_.y = atan2f(moveDir.x, moveDir.z) + DX_PI_F;
-		}
-
+		angles_.y = atan2(moveDir.x, moveDir.z) + Utility::Deg2RadF(180.0f);
+		MV1SetRotationXYZ(modelId_, angles_);
 		MV1SetPosition(modelId_, trans_.pos);
 
-		angles_.y = atan2(moveDir.x, moveDir.z);
-		angles_.y += Utility::Deg2RadF(180.0f);
-		MV1SetRotationXYZ(modelId_, angles_);
+		// 歩行アニメ再生
+		PlayAnim(ANIM_TYPE::WALK);
+	}
+	else
+	{
+		// 待機アニメ再生
+		PlayAnim(ANIM_TYPE::IDLE);
 	}
 }

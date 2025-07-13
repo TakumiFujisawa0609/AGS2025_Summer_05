@@ -1,202 +1,102 @@
 #include "AnimationController.h"
-
-#include<DxLib.h>
-
-#include"../../Manager/Generic//SceneManager.h"
+#include <DxLib.h>
+#include "../../Manager/Generic/SceneManager.h"
 
 AnimationController::AnimationController(int modelId)
+    : modelId_(modelId), playType_(-1), isLoop_(true)
 {
-	modelId_ = modelId;
-
-	PlayType_ - 1;
-	isLoop_ = false;
-
-	isStop_ = false;
-
-	switchLoopReverse_ = 0.0f;
-	endLoopSpeed_ = 0.0f;
-	stepEndLoopStart_ = 0.0f;
-	stepEndLoopEnd_ = 0.0f;
 }
 
-AnimationController::~AnimationController(void)
+AnimationController::~AnimationController()
 {
-	for (const auto& anim : animations_)
-	{
-		MV1DeleteModel(anim.second.model);
-	}
+    Release();
 }
 
-void AnimationController::Add(int type, const std::string& path, float speed)
+void AnimationController::AddInternal(int type, int animIndex, float speed)
 {
-	Animation anim;
-
-	anim.model = MV1LoadModel(path.c_str());
-	anim.amimIndex = type;
-	anim.speed = speed;
-
-	if (animations_.count(type) == 0)
-	{
-		//入れ替え
-		animations_.emplace(type, anim);
-	}
-	else
-	{
-		//追加
-		animations_[type].model = anim.model;
-		animations_[type].amimIndex = anim.amimIndex;
-		animations_[type].attachNo = anim.attachNo;
-		animations_[type].totalTime = anim.totalTime;
-	}
-
+    Animation anim;
+    anim.model = -1;
+    anim.animIndex = animIndex;
+    anim.speed = speed;
+    anim.mode = Mode::Internal;
+    Add(type, anim);
 }
 
-void AnimationController::Play(int type, bool isLoop, float startStep, float aendStep, bool isStop, bool isForce)
+void AnimationController::AddExternal(int type, const std::string& path, float speed)
 {
-	if (PlayType_ != type || isForce)
-	{
-		if (PlayType_ != -1)
-		{
-			//モデルからアニメーションを外す
-			playAnim_.attachNo = MV1DetachAnim(modelId_, playAnim_.attachNo);
-		}
-
-		//アニメーション種別を変更
-		PlayType_ = type;
-		playAnim_ = animations_[type];
-
-		//初期化
-		playAnim_.step = startStep;
-
-		//モデルにアニメーションをつける
-		int animIdx = 0;
-		if (MV1GetAnimNum(playAnim_.model) > 1)
-		{
-			//アニメーションが複数保存されていたら、番号1を指定
-			animIdx = 1;
-		}
-
-		playAnim_.attachNo = MV1AttachAnim(modelId_, animIdx, playAnim_.model);
-
-		//アニメーション総合時間の取得
-		if (aendStep > 0.0f)
-		{
-			playAnim_.totalTime = aendStep;
-		}
-		else
-		{
-			playAnim_.totalTime = MV1GetAttachAnimTotalTime(modelId_, playAnim_.attachNo);
-		}
-
-		//アニメーションループ
-		isLoop_ = isLoop;
-
-		//アニメーションしない
-		isStop_ = isStop;
-
-		stepEndLoopStart_ = -1.0f;
-		stepEndLoopEnd_ = -1.0f;
-		switchLoopReverse_ = 1.0f;
-	}
+    Animation anim;
+    anim.model = MV1LoadModel(path.c_str());
+    anim.animIndex = 0;
+    anim.speed = speed;
+    anim.mode = Mode::External;
+    Add(type, anim);
 }
 
-void AnimationController::Update(void)
+void AnimationController::Add(int type, Animation anim)
 {
-	//経過時間の取得
-	float deltaTime = SceneManager::GetInstance().GetDeltaTime();
-
-	if (!isStop_)
-	{
-		//再生
-		playAnim_.step += (deltaTime * playAnim_.speed * switchLoopReverse_);
-
-		//アニメーション終了判定
-		bool isEnd = false;
-
-		if (switchLoopReverse_ > 0.0f)
-		{
-			//通常再生
-			if (playAnim_.step > playAnim_.totalTime)
-			{
-				isEnd = true;
-			}
-			else
-			{
-				//逆再生の場合
-				if (playAnim_.step < playAnim_.totalTime)
-				{
-					isEnd = true;
-				}
-			}
-
-			if (isEnd)
-			{
-				//アニメーションが終了したら
-				if (isLoop_)
-				{
-					//ループ再生
-					if (stepEndLoopStart_ > 0.0f)
-					{
-						//アニメーション終了後の指定フレーム再生
-						switchLoopReverse_ *= -1.0f;
-						if (switchLoopReverse_ > 0.0f)
-						{
-							playAnim_.step = stepEndLoopStart_;
-							playAnim_.totalTime = stepEndLoopEnd_;
-						}
-						else
-						{
-							playAnim_.step = stepEndLoopEnd_;
-							playAnim_.step = stepEndLoopStart_;
-						}
-						playAnim_.speed = endLoopSpeed_;
-					}
-					else
-					{
-						//通常のループ再生
-						playAnim_.step = 0.0f;
-					}
-
-				}
-				else
-				{
-					//ループしない
-					playAnim_.step = playAnim_.totalTime;
-				}
-			}
-		}
-	}
-
-	//アニメーション設定
-	MV1SetAttachAnimTime(modelId_, playAnim_.attachNo, playAnim_.step);
+    animations_[type] = anim;
 }
 
-void AnimationController::SetEndLoop(float startStep, float endStep, float speed)
+void AnimationController::Play(int type, bool isLoop)
 {
-	stepEndLoopStart_ = startStep;
-	stepEndLoopEnd_ = endStep;
-	endLoopSpeed_ = speed;
+    if (type == playType_)
+        return;
+
+    if (playType_ != -1) {
+        MV1DetachAnim(modelId_, playAnim_.attachNo);
+    }
+
+    playAnim_ = animations_[type];
+    playType_ = type;
+    isLoop_ = isLoop;
+    playAnim_.step = 0.0f;
+
+    if (playAnim_.mode == Mode::Internal) {
+        playAnim_.attachNo = MV1AttachAnim(modelId_, playAnim_.animIndex);
+    }
+    else {
+        playAnim_.attachNo = MV1AttachAnim(modelId_, playAnim_.animIndex, playAnim_.model);
+    }
+
+    playAnim_.totalTime = MV1GetAttachAnimTotalTime(modelId_, playAnim_.attachNo);
 }
 
-int AnimationController::GetPlayType(void) const
+void AnimationController::Update()
 {
-	return PlayType_;
+    float deltaTime = SceneManager::GetInstance().GetDeltaTime();
+
+    playAnim_.step += deltaTime * playAnim_.speed;
+
+    if (isLoop_ && playAnim_.step >= playAnim_.totalTime) {
+        playAnim_.step = 0.0f;
+    }
+
+    MV1SetAttachAnimTime(modelId_, playAnim_.attachNo, playAnim_.step);
 }
 
-bool AnimationController::IsEnd(void) const
+bool AnimationController::IsEnd() const
 {
-	bool ret = false;
-	if (isLoop_)
-	{
-		//ループ設定されているなら、無条件で終了しないを返す
-		return ret;
-	}
+    if (isLoop_) return false;
+    return playAnim_.step >= playAnim_.totalTime;
+}
 
-	if (playAnim_.step >= playAnim_.totalTime)
-	{
-		//再生時間を過ぎたら
-		return true;
-	}
+int AnimationController::GetPlayType() const
+{
+    return playType_;
+}
 
-	return ret;
+void AnimationController::Release()
+{
+    for (auto& [type, anim] : animations_) {
+        if (anim.mode == Mode::External && anim.model != -1) {
+            MV1DeleteModel(anim.model);
+        }
+    }
+
+    if (playType_ != -1) {
+        MV1DetachAnim(modelId_, playAnim_.attachNo);
+    }
+
+    animations_.clear();
+    playType_ = -1;
 }

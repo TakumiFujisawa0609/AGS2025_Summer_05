@@ -31,7 +31,7 @@ int ItemBase::GetQuantity(void) const
     return quantity_;
 }
 
-int ItemBase::GetImageHandle() const 
+int ItemBase::GetImageHandle(void) const 
 {
     return imageHandle_;
 }

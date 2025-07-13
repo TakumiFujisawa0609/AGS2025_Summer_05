@@ -6,7 +6,6 @@
 #include "Manager/Generic/ResourceManager.h"
 #include "Manager/Generic/InputManager.h"
 #include "Manager/Generic/SceneManager.h"
-#include "Object/Manager/ItemManager.h"
 #include "Object/Manager/AlchemyManager.h"
 #include "DrawUI/SceneUI/QuestUI.h"
 #include "DrawUI/Font.h"
@@ -75,9 +74,6 @@ void Application::Init(void)
 
 	// シーン管理初期化
 	SceneManager::CreateInstance();
-
-	//アイテムマネージャー初期化
-	ItemManager::CreateInstance();
 
 	//錬金システムの初期化
 	AlchemyManager::CreateInstance();
@@ -155,7 +151,6 @@ void Application::Destroy(void)
 	InputManager::GetInstance().Destroy();
 	ResourceManager::GetInstance().Destroy();
 	SceneManager::GetInstance().Destroy();
-	ItemManager::GetInstance().Destroy();
 	AlchemyManager::GetInstance().Destroy();
 	Font::GetInstance().Destroy();
 	// QuestUI終了処理
