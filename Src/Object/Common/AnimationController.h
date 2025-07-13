@@ -1,81 +1,44 @@
 #pragma once
 
-#include<string>
-#include<map>
-class SceneManager;
+#include <string>
+#include <map>
 
 class AnimationController
 {
 public:
+    enum class Mode {
+        Internal,
+        External
+    };
 
-	//アニメーションデータ
-	struct Animation
-	{
-		int model = -1;
-		int attachNo = -1;
-		int amimIndex = 0;
-		float speed = 0.0f;
-		float totalTime = 0.0f;
-		float step = 0.0f;
-	};
+    struct Animation {
+        int model = -1;         // 外部モデル（内部アニメの場合は -1）
+        int attachNo = -1;      // アタッチ番号
+        int animIndex = 0;      // アニメインデックス（内部用）
+        float speed = 1.0f;
+        float totalTime = 0.0f;
+        float step = 0.0f;
+        Mode mode = Mode::Internal;
+    };
 
-	//コンストラクタ
-	AnimationController(int modeiId);
+    AnimationController(int modelId);
+    ~AnimationController(void);
 
-	//デストラクタ
-	~AnimationController(void);
+    void AddInternal(int type, int animIndex, float speed);
+    void AddExternal(int type, const std::string& path, float speed);
 
-	//アニメーション追加
-	void Add(int type, const std::string& path, float speed);
-
-	/// <summary>
-	/// アニメーション再生
-	/// </summary>
-	/// <param name="type">アニメーションの種類</param>
-	/// <param name="isLoop">ループするか</param>
-	/// <param name="startStep">途中開始する時間</param>
-	/// <param name="endStep">終了時間</param>
-	/// <param name="isStop">止めるか</param>
-	/// <param name="isForce">強制変更するか</param>
-	void Play(int type, bool isLoop = true,float startStep = 0.0f, float endStep = -1.0f, bool isStop = false, bool isForce = false);
-
-	//更新処理
-	void Update(void);
-
-	//アニメーション終了後に繰り返すループステップ
-	void SetEndLoop(float startStep, float endStep, float speed);
-
-	//再生中のアニメーション
-	int GetPlayType(void) const;
-
-	//再生終了
-	bool IsEnd(void) const;
+    void Play(int type, bool isLoop = true);
+    void Update(void);
+    bool IsEnd(void) const;
+    int GetPlayType(void) const;
+    void Release(void);
 
 private:
+    void Add(int type, Animation anim);
 
-	//モデルのハンドルID
-	int modelId_;
-
-	//種類別のアニメーションデータ
-	std::map<int, Animation> animations_;
-
-	int PlayType_;
-	Animation playAnim_;
-
-	//アニメーションをループするかしないか
-	bool isLoop_;
-
-	//アニメーションを止めたままにする
-	bool isStop_;
-
-	//アニメーション終了後に繰り返すループステップ
-	float stepEndLoopStart_;
-
-	float stepEndLoopEnd_;
-
-	float endLoopSpeed_;
-
-	//逆再生
-	float switchLoopReverse_;
+    int modelId_;
+    std::map<int, Animation> animations_;
+    Animation playAnim_;
+    int playType_;
+    bool isLoop_;
 };
-

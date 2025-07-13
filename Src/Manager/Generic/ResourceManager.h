@@ -32,6 +32,9 @@ public:
 		//種子
 		SEED,					//種
 
+		//プレイー
+		MODEL_PLAYER,			//プレイやー
+
 		//ギルド関係
 		BULLETIN_BOARD,			//掲示板
 		IMAGE_BOARD,			//掲示板の画像

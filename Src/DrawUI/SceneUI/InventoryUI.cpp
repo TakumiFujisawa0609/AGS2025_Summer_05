@@ -128,6 +128,7 @@ void InventoryUI::Update(void)
 
 void InventoryUI::Draw(void)
 {
+
 	if (!isVisible_) return;
 
 	auto& itemManager = ItemManager::GetInstance();

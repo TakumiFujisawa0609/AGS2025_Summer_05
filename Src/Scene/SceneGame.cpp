@@ -6,13 +6,13 @@
 #include "../Manager/Generic/Camera.h"
 #include "../Manager/Generic/SceneManager.h"
 #include "../Manager/Generic/InputManager.h"
+#include "../Object/Manager/ItemManager.h"
 #include "../Manager/Generic/Resource.h"
 #include "../Manager/Generic/ResourceManager.h"
 #include "../Manager/Decoration/SoundManager.h"
 #include "../Manager/System/Collision.h"
 #include "../Object/Manager/StageManager.h"
 #include "../Object/Manager/AlchemyManager.h"
-#include "../Object/Manager/ItemManager.h"
 #include "../Object/Grid.h"
 #include "../Object/player.h"
 #include "../DrawUI/SceneUI/InventoryUI.h"
@@ -22,6 +22,7 @@
 #include "../DrawUI/SceneUI/QuestUI.h"
 #include "../Object/PlayerStop.h"
 #include "../DrawUI/SceneUI/ItemPickupUI.h"
+#include "../Object/Common/AnimationController.h"
 
 
 
@@ -33,6 +34,8 @@ SceneGame::SceneGame(void)
 
 void SceneGame::Init(void)
 {
+	//アイテムマネージャー初期化
+	ItemManager::CreateInstance();
 
 	//カメラ
 	auto camera = SceneManager::GetInstance().GetCamera();
@@ -88,7 +91,6 @@ void SceneGame::Init(void)
 	inventoryUI_ = new InventoryUI();
 
 	AlchemyManager::GetInstance().Init();
-
 	
 
 
@@ -156,8 +158,6 @@ void SceneGame::Draw(void)
 {
 	auto& alchemy = AlchemyManager::GetInstance();
 
-	
-
 	//プレイヤーの描画
 	player_->Draw();
 
@@ -213,6 +213,8 @@ void SceneGame::Release(void)
 	delete stageManager_;
 
 	PlayerStop::GetInstance().Destroy();
+
+	ItemManager::GetInstance().Destroy();
 
 	
 }

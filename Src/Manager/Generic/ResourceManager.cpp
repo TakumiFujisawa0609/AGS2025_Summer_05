@@ -71,6 +71,7 @@ void ResourceManager::InitGame(void)
 	// 敵関連リソースの初期化
 	ResourceEnemy();
 
+	//アトリエ関連リソースの初期化
 	ResourceAtelier();
 
 	//ギルドリソースの初期化
@@ -123,8 +124,13 @@ void ResourceManager::ResourceAtelier(void)
 	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "/Atelier/hondana.mv1");
 	resourcesMap_.emplace(SRC::BOOKS_HELF, res);
 
+	//錬金釜
 	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "/Atelier/renkingama.mv1");
 	resourcesMap_.emplace(SRC::ALCHEMYPOT, res);
+
+	//薬草
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Greenherb.png");
+	resourcesMap_.emplace(SRC::HERB, res);
 
 	
 }
@@ -173,6 +179,8 @@ void ResourceManager::ResourceGarden(void)
 void ResourceManager::ResourcePlayer(void)
 {
 	Resource res;
+	res = res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "player/player.mv1");
+	resourcesMap_.emplace(SRC::MODEL_PLAYER, res);
 }
 
 // 敵用リソース初期化

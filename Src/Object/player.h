@@ -63,29 +63,14 @@ public:
 	// アニメーション種別
 	enum class ANIM_TYPE
 	{
-		DEATH,
-		DUCK,
-		HIT_REACT,
-		IDLE,
-		IDLE_ATTACK,
-		IDLE_HOLD,
-		JUMP,
-		JUMP_IDLE,
-		JUMP_LAND,
-		NO,
-		PUNCH,
-		RUN,
-		RUN_ATTACK,
-		RUN_HOLD,
+		NOME,
 		WALK,
-		WALK_HOLD,
-		WAVE,
-		YES,
-		MAX,
+		IDLE,
+		MAX
 	};
 
 	// モデルの大きさ
-	static constexpr VECTOR SCALES = { 0.2f, 0.2f, 0.2f };
+	static constexpr VECTOR SCALES = { 0.5f, 0.5f, 0.5f };
 
 	// 初期位置
 	static constexpr VECTOR DEFAULT_POS = { 0.0f, 20.0f, -200.0f };
@@ -98,6 +83,9 @@ public:
 
 	//当たり判定の半径
 	static constexpr float RADIUS = 30.0f;
+
+	void PlayAnim(ANIM_TYPE type, bool loop = true);
+
 
 private:
 	// モデルID
@@ -119,9 +107,13 @@ private:
 
 	bool movementEnabled_;
 
+	int currentAnimType_; 
+
+
 	// アニメーション
 	AnimationController* animationController_;
 
 	// 行動制御
 	void ProcessMove(void);
+
 };
