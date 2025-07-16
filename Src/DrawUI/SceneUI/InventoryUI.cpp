@@ -7,6 +7,7 @@
 
 #include "../../Manager/Generic/InputManager.h"
 #include "../../Object/Manager/ItemManager.h"
+#include "../../Manager/Decoration/SoundManager.h"
 #include "../../DrawUI/Font.h"
 #include "../../Application.h"
 
@@ -47,6 +48,7 @@ void InventoryUI::Update(void)
 {
 	auto& input = InputManager::GetInstance();
 	auto& itemManager = ItemManager::GetInstance();
+	auto& sound = SoundManager::GetInstance();
 
 	if (!isVisible_) return;
 
@@ -55,6 +57,7 @@ void InventoryUI::Update(void)
 	// タブ切り替え（TABキーで切り替え）
 	if (input.IsTrgDown(KEY_INPUT_TAB))
 	{
+		sound.Play(SoundManager::SOUND::SE_PUSH);
 		currentTab_ = (currentTab_ == TAB::Material) ? TAB::Product : TAB::Material;
 		selectedItemIndex_ = 0;
 	}
@@ -71,6 +74,7 @@ void InventoryUI::Update(void)
 
 	if (input.IsTrgDown(KEY_INPUT_UP))
 	{
+		sound.Play(SoundManager::SOUND::SE_SELECT);
 		int newRow = row - 1;
 		if (newRow >= 0)
 		{
@@ -80,12 +84,14 @@ void InventoryUI::Update(void)
 	}
 	if (input.IsTrgDown(KEY_INPUT_DOWN))
 	{
+		sound.Play(SoundManager::SOUND::SE_SELECT);
 		int newRow = row + 1;
 		int newIndex = newRow * MAX_COLUMNS + col;
 		if (newIndex < itemCount) selectedItemIndex_ = newIndex;
 	}
 	if (input.IsTrgDown(KEY_INPUT_LEFT))
 	{
+		sound.Play(SoundManager::SOUND::SE_SELECT);
 		int newCol = col - 1;
 		if (newCol >= 0)
 		{
@@ -95,9 +101,16 @@ void InventoryUI::Update(void)
 	}
 	if (input.IsTrgDown(KEY_INPUT_RIGHT))
 	{
+		sound.Play(SoundManager::SOUND::SE_SELECT);
 		int newCol = col + 1;
 		int newIndex = row * MAX_COLUMNS + newCol;
 		if (newIndex < itemCount) selectedItemIndex_ = newIndex;
+	}
+
+	if (input.IsTrgDown(KEY_INPUT_X))
+	{
+		sound.Play(SoundManager::SOUND::SE_CANCEL);
+		Hide();
 	}
 }
 

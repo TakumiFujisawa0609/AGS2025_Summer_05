@@ -6,6 +6,7 @@
 
 #include "ItemManager.h"
 #include "../../Manager/Generic/InputManager.h"
+#include "../../Manager/Decoration/SoundManager.h"
 #include "../../DrawUI/Font.h"
 #include "../Item/Product/RecoveryPotion.h"
 #include "../Item/Product/AntidotePotion.h"
@@ -46,6 +47,7 @@ AlchemyManager::AlchemyManager(void)
     resultMessageTimer_ = 0;
 	isOpen_ = false;
     start_ = false;
+    waitingForSEFinish_ = false;
 }
 
 AlchemyManager::~AlchemyManager(void)
@@ -167,16 +169,34 @@ void AlchemyManager::Update()
 
     auto& input = InputManager::GetInstance();
     auto& itemManager = ItemManager::GetInstance();
+    auto& sound = SoundManager::GetInstance();
 
     PlayerStop::GetInstance().StopMovement();
 
+    // SEが鳴り終わるまで待つ処理
+    if (waitingForSEFinish_)
+    {
+        if (sound.IsPlaying(SoundManager::SOUND::SE_ALCHEMY))
+        {
+            return;
+        }
+        else
+        {
+            waitingForSEFinish_ = false;
+            resultMessageTimer_ = 180;  // 3秒間表示
+        }
+    }
+
     if (input.IsTrgDown(KEY_INPUT_X))
     {
+        sound.Play(SoundManager::SOUND::SE_CANCEL);
         Close();
 
         PlayerStop::GetInstance().ResumeMovement();
         return;
     }
+
+   
 
     int materialCount = itemManager.GetMaterialItemCount();
     if (materialCount == 0)
@@ -198,6 +218,7 @@ void AlchemyManager::Update()
         // --- 移動処理（変更なし） ---
         if (input.IsTrgDown(KEY_INPUT_UP))
         {
+            sound.Play(SoundManager::SOUND::SE_SELECT);
             int newRow = row - 1;
             if (newRow < 0)
                 newRow = maxRow;
@@ -209,6 +230,7 @@ void AlchemyManager::Update()
 
         if (input.IsTrgDown(KEY_INPUT_DOWN))
         {
+            sound.Play(SoundManager::SOUND::SE_SELECT);
             int newRow = row + 1;
             if (newRow > maxRow)
                 newRow = 0;
@@ -220,6 +242,7 @@ void AlchemyManager::Update()
 
         if (input.IsTrgDown(KEY_INPUT_LEFT))
         {
+            sound.Play(SoundManager::SOUND::SE_SELECT);
             int newCol = col - 1;
             if (newCol < 0)
             {
@@ -238,6 +261,7 @@ void AlchemyManager::Update()
 
         if (input.IsTrgDown(KEY_INPUT_RIGHT))
         {
+            sound.Play(SoundManager::SOUND::SE_SELECT);
             int newCol = col + 1;
             if (newCol >= MAX_COLUMNS)
             {
@@ -257,6 +281,7 @@ void AlchemyManager::Update()
         // TABキーで選択済み素材の編集モードに切り替え
         if (input.IsTrgDown(KEY_INPUT_TAB) && !selectedMaterials_.empty())
         {
+            sound.Play(SoundManager::SOUND::SE_PUSH);
             currentPhase_ = 2;
             selectedMaterialEditIndex_ = 0;
             return;
@@ -273,6 +298,7 @@ void AlchemyManager::Update()
         {
             if (input.IsTrgDown(KEY_INPUT_RETURN))
             {
+                sound.Play(SoundManager::SOUND::SE_PUSH);
                 auto material = itemManager.GetMaterialItem(currentIndex_);
                 if (material && selectedMaterials_.size() < 3)
                 {
@@ -302,7 +328,10 @@ void AlchemyManager::Update()
 
         if (input.IsTrgDown(KEY_INPUT_SPACE) && selectedMaterials_.size() >= 2)
         {
+            sound.Play(SoundManager::SOUND::SE_ALCHEMY);
             ExecuteAlchemy();
+            waitingForSEFinish_ = true;
+            return;
         }
     }
     else if (currentPhase_ == 1) // 個数選択フェーズ
@@ -325,19 +354,23 @@ void AlchemyManager::Update()
 
         if (input.IsTrgDown(KEY_INPUT_UP))
         {
+            sound.Play(SoundManager::SOUND::SE_SELECT);
             currentAmount_ = std::min(currentAmount_ + 1, maxAvailable);
         }
         if (input.IsTrgDown(KEY_INPUT_DOWN))
         {
+            sound.Play(SoundManager::SOUND::SE_SELECT);
             currentAmount_ = std::max(1, currentAmount_ - 1);
         }
         if (input.IsTrgDown(KEY_INPUT_RETURN))
         {
+            sound.Play(SoundManager::SOUND::SE_PUSH);
             selectedMaterials_.push_back({ material, currentAmount_ });
             currentPhase_ = 0;
         }
         if (input.IsTrgDown(KEY_INPUT_X))
         {
+            sound.Play(SoundManager::SOUND::SE_CANCEL);
             currentPhase_ = 0; // キャンセル
         }
     }
@@ -347,15 +380,18 @@ void AlchemyManager::Update()
 
         if (input.IsTrgDown(KEY_INPUT_UP))
         {
+            sound.Play(SoundManager::SOUND::SE_SELECT);
             selectedMaterialEditIndex_ = (selectedMaterialEditIndex_ - 1 + selectedCount) % selectedCount;
         }
         if (input.IsTrgDown(KEY_INPUT_DOWN))
         {
+            sound.Play(SoundManager::SOUND::SE_SELECT);
             selectedMaterialEditIndex_ = (selectedMaterialEditIndex_ + 1) % selectedCount;
         }
 
         if (input.IsTrgDown(KEY_INPUT_RETURN))
         {
+            sound.Play(SoundManager::SOUND::SE_SELECT);
             currentPhase_ = 3;
             currentAmount_ = selectedMaterials_[selectedMaterialEditIndex_].amount;
         }
@@ -373,8 +409,9 @@ void AlchemyManager::Update()
             }
         }
 
-        if (input.IsTrgDown(KEY_INPUT_TAB) || input.IsTrgDown(KEY_INPUT_X))
+        if (input.IsTrgDown(KEY_INPUT_TAB))
         {
+            sound.Play(SoundManager::SOUND::SE_PUSH);
             currentPhase_ = 0;
         }
     }
@@ -398,14 +435,17 @@ void AlchemyManager::Update()
 
         if (input.IsTrgDown(KEY_INPUT_UP))
         {
+            sound.Play(SoundManager::SOUND::SE_SELECT);
             currentAmount_ = std::min(currentAmount_ + 1, maxAvailable);
         }
         if (input.IsTrgDown(KEY_INPUT_DOWN))
         {
+            sound.Play(SoundManager::SOUND::SE_SELECT);
             currentAmount_ = std::max(0, currentAmount_ - 1);
         }
         if (input.IsTrgDown(KEY_INPUT_RETURN))
         {
+            sound.Play(SoundManager::SOUND::SE_PUSH);
             if (currentAmount_ == 0)
             {
                 selectedMaterials_.erase(selectedMaterials_.begin() + selectedMaterialEditIndex_);
@@ -430,6 +470,7 @@ void AlchemyManager::Update()
         }
         if (input.IsTrgDown(KEY_INPUT_X))
         {
+            sound.Play(SoundManager::SOUND::SE_CANCEL);
             currentPhase_ = 2;
         }
     }
@@ -663,35 +704,22 @@ void AlchemyManager::ExecuteAlchemy()
     {
         const auto& required = recipe.GetMaterials();
 
-        // 完璧一致の判定
         bool perfectMatch = true;
 
-        // 1. 選択した素材の種類数とレシピの必要素材種類数が一致するかチェック
         if (selectedMap.size() != required.size())
         {
             perfectMatch = false;
         }
         else
         {
-            // 2. 各素材の名前と数量が完璧に一致するかチェック
             for (const auto& [reqName, reqAmount] : required)
             {
-                // 選択した素材にこの必要素材が含まれているかチェック
-                if (selectedMap.count(reqName) == 0)
-                {
-                    perfectMatch = false;
-                    break;
-                }
-
-                // 数量が完璧に一致するかチェック
-                if (selectedMap.at(reqName) != reqAmount)
+                if (selectedMap.count(reqName) == 0 || selectedMap.at(reqName) != reqAmount)
                 {
                     perfectMatch = false;
                     break;
                 }
             }
-
-            // 3. 選択した素材がすべてレシピに含まれているかチェック（不要な素材がないかチェック）
             if (perfectMatch)
             {
                 for (const auto& [selName, selAmount] : selectedMap)
@@ -705,7 +733,6 @@ void AlchemyManager::ExecuteAlchemy()
             }
         }
 
-        // 完璧一致の場合のみ成功
         if (perfectMatch)
         {
             auto item = ItemManager::GetInstance().FindItemById(recipe.GetResult()->GetId());
@@ -718,25 +745,22 @@ void AlchemyManager::ExecuteAlchemy()
 
             selectedMaterials_.clear();
 
-            // ★ メッセージ設定（成功）
             resultMessage_ = item->GetName() + " を作成しました！";
-            resultMessageTimer_ = 180; // 3秒間表示（60fps想定）
 
             return;
         }
     }
 
-    // 合致しなかった場合：ゴミアイテム付与
+    // 失敗時はゴミアイテムを付与
     auto garbage = ItemManager::GetInstance().FindItemById("Garbage");
     ItemManager::GetInstance().AddQuantity(garbage, 1);
 
-    // 素材を消費（失敗でも素材は消費される）
+    // 失敗でも素材は消費
     for (const auto& m : selectedMaterials_)
     {
         ItemManager::GetInstance().SubtractQuantity(m.item, m.amount);
     }
 
-    // 追加：差分メッセージ表示
     ShowRecipeDifferenceMessage(selectedMap);
 
     selectedMaterials_.clear();

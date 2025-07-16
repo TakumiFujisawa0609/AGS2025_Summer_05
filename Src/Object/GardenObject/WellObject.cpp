@@ -1,6 +1,7 @@
 #include "WellObject.h"
 #include <DxLib.h>
 #include "../../Manager/Generic/ResourceManager.h"
+#include "../../Manager/Decoration/SoundManager.h"
 #include "../../Manager/Generic/InputManager.h"
 #include "../../Manager/System/TimeManager.h"
 #include "../../Object/Manager/ItemManager.h"
@@ -30,7 +31,9 @@ void WellObject::Update() {
     isUIVisible_ = wantsToShowUI_;
 
     auto& input = InputManager::GetInstance();
-    if (isUIVisible_ && (input.IsTrgDown(KEY_INPUT_RETURN) || input.IsTrgDown(KEY_INPUT_NUMPADENTER))) {
+    if (isUIVisible_ && (input.IsTrgDown(KEY_INPUT_RETURN) || input.IsTrgDown(KEY_INPUT_NUMPADENTER)))
+    {
+        SoundManager::GetInstance().Play(SoundManager::SOUND::SE_PUSH);
         if (!isOnCooldown_) {
             TryDrawWater();
         }

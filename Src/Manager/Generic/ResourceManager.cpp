@@ -39,13 +39,25 @@ void ResourceManager::InitTitle(void)
 	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/titleRog.png");
 	resourcesMap_.emplace(SRC::TYTLE_LOGO, res);
 
+	// ‘€ìà–¾‰æ‘œ‚ğ“o˜^
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/sousa.png");
+	resourcesMap_.emplace(SRC::OPERATION, res);
+
 	// ƒ^ƒCƒgƒ‹BGM‚ğ“o˜^
 	res = Resource(Resource::TYPE::SOUND, Application::PATH_BGM + "");
 	resourcesMap_.emplace(SRC::BGM_TITLE, res);
 
 	// Œˆ’è‰¹‚ğ“o˜^
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "");
+	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "se_pikon19.mp3");
 	resourcesMap_.emplace(SRC::SE_PUSH, res);
+
+	// ƒLƒƒƒ“ƒZƒ‹‰¹‚ğ“o˜^
+	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "nc298207.mp3");
+	resourcesMap_.emplace(SRC::SE_CANCEL, res);
+
+	// ƒJ[ƒ\ƒ‹ˆÚ“®‰¹‚ğ“o˜^
+	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "Cursormovementsound.mp3");
+	resourcesMap_.emplace(SRC::SE_SELECT, res);
 }
 
 // ƒQ[ƒ€ƒV[ƒ“—pƒŠƒ\[ƒX‚Ì‰Šú‰»
@@ -56,6 +68,18 @@ void ResourceManager::InitGame(void)
 	// ƒQ[ƒ€BGM‚ğ“o˜^
 	res = Resource(Resource::TYPE::SOUND, Application::PATH_BGM + "");
 	resourcesMap_.emplace(SRC::BGM_GAME, res);
+
+	// ƒJ[ƒ\ƒ‹ˆÚ“®‰¹‚ğ“o˜^
+	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "Cursormovementsound.mp3");
+	resourcesMap_.emplace(SRC::SE_SELECT, res);
+
+	// Œˆ’è‰¹‚ğ“o˜^
+	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "se_pikon1.mp3");
+	resourcesMap_.emplace(SRC::SE_PUSH, res);
+
+	// ƒLƒƒƒ“ƒZƒ‹‰¹‚ğ“o˜^
+	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "nc298207.mp3");
+	resourcesMap_.emplace(SRC::SE_CANCEL, res);
 
 	// ƒ_ƒ[ƒW‰¹‚ğ“o˜^
 	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "");
@@ -172,6 +196,10 @@ void ResourceManager::ResourceAtelier(void)
 	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/BlueHerb.png");
 	resourcesMap_.emplace(SRC::MAGIC_FLOWER, res);
 
+	//Œø‰Ê‰¹
+	// ˜B‹à‰¹‚ğ“o˜^
+	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "renkin.mp3");
+	resourcesMap_.emplace(SRC::SE_ALCHEMY, res);
 	
 }
 

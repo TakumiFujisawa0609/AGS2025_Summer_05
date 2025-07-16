@@ -8,6 +8,7 @@
 #include "../../Manager/Generic/ResourceManager.h"
 #include "../../Manager/Generic/InputManager.h"
 #include "../../Manager/System/TimeManager.h"
+#include "../../Manager/Decoration/SoundManager.h"
 #include "../../DrawUI/Font.h"
 #include "../Manager/ItemManager.h"
 #include "../../Application.h"
@@ -53,6 +54,7 @@ void OreObject::Update(void)
     // “ü—Íˆ—iPlantObject‚Æ“¯‚¶\‘¢j
     auto& input = InputManager::GetInstance();
     if (isUIVisible_ && (input.IsTrgDown(KEY_INPUT_RETURN) || input.IsTrgDown(KEY_INPUT_NUMPADENTER))) {
+        SoundManager::GetInstance().Play(SoundManager::SOUND::SE_PUSH);
 
         if (cooldownState_ == COOL_DOWNSTATE::READY) {
 

@@ -24,34 +24,7 @@ public:
     /// </summary>
     enum class EFFECT
     {
-        //使用するエフェクトを羅列
-        NONE,
-        LIFE_UP,        /// <summary>ライフアップエフェクト</summary>
-        ATTACK_UP,      /// <summary>攻撃力アップエフェクト</summary>
-        DEFENCE_UP,     /// <summary>防御力アップエフェクト</summary>
-        SPEED_UP,       /// <summary>速度アップエフェクト</summary>
-        FIREWORK,       /// <summary>花火エフェクト</summary>
-        DAMAGE,         /// <summary>ダメージエフェクト</summary>
-
-        //Enemyが使用
-        BOSS_PUNCH,     /// <summary>ボスのパンチエフェクト</summary>
-        BOSS_SHOUT,     /// <summary>ボスの叫びエフェクト</summary>
-        BOSS_SHOUT_ATK, /// <summary>ボスの叫び攻撃エフェクト</summary>
-        STATE_DOWN,     /// <summary>ステータスダウンエフェクト</summary>
-
-        //KNIGHT
-        GUARD,          /// <summary>ガードエフェクト</summary>
-        HIT2,           /// <summary>敵へ当たった時のエフェクト</summary>
-
-        //AXE
-        CHARGE_AXE_HIT, /// <summary>チャージ斧の衝撃エフェクト</summary>
-
-        //ARCHER
-        ARROW_RED,      /// <summary>矢のエフェクト(赤)</summary>
-        ARROW_WHITE,    /// <summary>矢のエフェクト(白)</summary>
-
-        //チャージスキル
-        CHARGE_SKILL,   /// <summary>チャージスキルエフェクト</summary>
+    
     };
 
     /// <summary>

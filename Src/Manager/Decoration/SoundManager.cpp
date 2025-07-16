@@ -78,6 +78,16 @@ void SoundManager::AdjustVolume(const SOUND sound, const int persent)
 	ChangeVolumeSoundMem(255  * persent / 100, sounds_[sound].data);
 }
 
+//なり終わってるかどうか
+bool SoundManager::IsPlaying(SOUND sound)
+{
+	auto it = sounds_.find(sound);
+	if (it == sounds_.end()) return false; // 存在しなければ再生していない
+
+	int handle = it->second.data;
+	return CheckSoundMem(handle) == 1;  // 1なら再生中
+}
+
 // インスタンスの破棄処理
 void SoundManager::Destroy(void)
 {

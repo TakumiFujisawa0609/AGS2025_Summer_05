@@ -3,6 +3,7 @@
 #include "../../Manager/Generic/ResourceManager.h"
 #include "../../Manager/Generic/Resource.h"
 #include "../../Manager/Generic/InputManager.h"
+#include "../../Manager/Decoration/SoundManager.h"
 #include "../../Utility/Utility.h"
 #include "../Manager/CollisionManager.h"
 #include "../../Object/Manager/AlchemyManager.h"
@@ -52,6 +53,7 @@ void Warp::Update(void)
 
 	if (isShowUI_ && input.IsTrgDown(KEY_INPUT_RETURN))
 	{
+		SoundManager::GetInstance().Play(SoundManager::SOUND::SE_PUSH);
 		if (teleportUI_)
 		{
 			teleportUI_->Show();  // UI•\Ž¦ŠJŽn

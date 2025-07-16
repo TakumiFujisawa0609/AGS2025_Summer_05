@@ -20,6 +20,7 @@ public:
 private:
     int logo_;
     int movieHandle_;
+    int operationHandle_;
     Grid* grid_;
     std::unique_ptr<SceneUi> ui_;
 

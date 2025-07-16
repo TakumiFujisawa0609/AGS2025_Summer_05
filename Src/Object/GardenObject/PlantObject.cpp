@@ -6,6 +6,7 @@
 #include "../Manager/ItemManager.h"
 #include "../../Manager/Generic/InputManager.h"
 #include "../../Manager/Generic/ResourceManager.h"
+#include "../../Manager/Decoration/SoundManager.h"
 #include "../Item/Seed/RandomSeed.h"
 #include "../../DrawUI/Font.h"
 #include "../../Application.h"
@@ -79,6 +80,7 @@ void PlantObject::Update(void)
 
     if (isUIVisible_ && (input.IsTrgDown(KEY_INPUT_RETURN) || input.IsTrgDown(KEY_INPUT_NUMPADENTER)))
     {
+        SoundManager::GetInstance().Play(SoundManager::SOUND::SE_PUSH);
         if (!hasPlant_)
         {
             // A‚¦‚Ä‚¢‚È‚¢‚È‚çA‚¦‚éˆ—

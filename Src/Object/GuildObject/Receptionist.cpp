@@ -6,6 +6,7 @@
 #include "../../Manager/Generic/ResourceManager.h"
 #include "../../Manager/Generic/Resource.h"
 #include "../../Manager/Generic/InputManager.h"
+#include "../../Manager/Decoration/SoundManager.h"
 #include "../../Utility/Utility.h"
 #include "../Manager/CollisionManager.h"
 #include "../../DrawUI/Font.h"
@@ -157,7 +158,7 @@ void Receptionist::DrawUI(void)
 
     if (deliveryMessageTimer_ > 0)
     {
-        Font::GetInstance().DrawDefaultText(100, 100, lastDeliveryMessage_.c_str(), GetColor(255, 255, 255), 24);
+        Font::GetInstance().DrawDefaultText(100, 95, lastDeliveryMessage_.c_str(), 0x0, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
         deliveryMessageTimer_--;
     }
 
@@ -242,19 +243,23 @@ void Receptionist::OnPlayerExit(void)
 void Receptionist::UpdateMainMenu()
 {
     auto& input = InputManager::GetInstance();
+    auto& sound = SoundManager::GetInstance();
 
     // 入力による選択変更
     if (input.IsTrgDown(KEY_INPUT_DOWN))
     {
+        sound.Play(SoundManager::SOUND::SE_SELECT);
         mainMenuSelected_ = (mainMenuSelected_ + 1) % 2; // 納品と購入の2つだけ
     }
     else if (input.IsTrgDown(KEY_INPUT_UP))
     {
+        sound.Play(SoundManager::SOUND::SE_SELECT);
         mainMenuSelected_ = (mainMenuSelected_ - 1 + 2) % 2;
     }
 
     if (input.IsTrgDown(KEY_INPUT_RETURN))
     {
+        sound.Play(SoundManager::SOUND::SE_PUSH);
         if (mainMenuSelected_ == 0)
         {
             // 納品メニューへ
@@ -271,12 +276,14 @@ void Receptionist::UpdateMainMenu()
 
 void Receptionist::UpdateShopMenu(void)
 {
+    auto& sound = SoundManager::GetInstance();
     auto& input = InputManager::GetInstance();
 
     // ショップメニューの入力処理を今後実装
 
-    if (input.IsTrgDown(KEY_INPUT_ESCAPE) || input.IsTrgDown(KEY_INPUT_X))
+    if (input.IsTrgDown(KEY_INPUT_X))
     {
+        sound.Play(SoundManager::SOUND::SE_CANCEL);
         currentMode_ = MENU_MODE::MAIN_SELECT;
         PlayerStop::GetInstance().ResumeMovement();
         // 必要に応じてショップメニューのフラグをリセット

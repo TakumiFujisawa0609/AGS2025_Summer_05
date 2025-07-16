@@ -8,6 +8,8 @@
 #include "../../Object/Manager/StageManager.h"
 #include "../../Object/PlayerStop.h"
 #include "../../Object/player.h"
+#include "../../Manager/Decoration/SoundManager.h"
+#include "../../Manager/Generic/ResourceManager.h"
 
 TeleportUI::TeleportUI(StageManager* stageManager, Player* player)
 	: stageManager_(stageManager),player_(player), isVisible_(false), selected_(DESTINATION::ATELIER)
@@ -16,7 +18,12 @@ TeleportUI::TeleportUI(StageManager* stageManager, Player* player)
 
 void TeleportUI::Init(void)
 {
+	auto& sound = SoundManager::GetInstance();
+	auto& res = ResourceManager::GetInstance();
+
 	selected_ = DESTINATION::ATELIER;
+	sound.Add(SoundManager::TYPE::SE, SoundManager::SOUND::SE_SELECT, res.Load(ResourceManager::SRC::SE_SELECT).handleId_);
+	sound.AdjustVolume(SoundManager::SOUND::SE_SELECT, 50);
 }
 
 void TeleportUI::Show(void)
@@ -37,6 +44,7 @@ bool TeleportUI::IsVisible(void) const
 
 void TeleportUI::Update(void)
 {
+	auto& sound = SoundManager::GetInstance();
 	if (!isVisible_) return;
 
 	PlayerStop::GetInstance().StopMovement();
@@ -45,12 +53,14 @@ void TeleportUI::Update(void)
 
 	if (input.IsTrgDown(KEY_INPUT_UP))
 	{
+		sound.Play(SoundManager::SOUND::SE_SELECT);
 		int idx = static_cast<int>(selected_);
 		idx = (idx - 1 + static_cast<int>(DESTINATION::MAX)) % static_cast<int>(DESTINATION::MAX);
 		selected_ = static_cast<DESTINATION>(idx);
 	}
 	else if (input.IsTrgDown(KEY_INPUT_DOWN))
 	{
+		sound.Play(SoundManager::SOUND::SE_SELECT);
 		int idx = static_cast<int>(selected_);
 		idx = (idx + 1) % static_cast<int>(DESTINATION::MAX);
 		selected_ = static_cast<DESTINATION>(idx);
@@ -61,14 +71,17 @@ void TeleportUI::Update(void)
 		switch (selected_)
 		{
 		case DESTINATION::GUILD:
+			sound.Play(SoundManager::SOUND::SE_PUSH);
 			stageManager_->ChangeStage(StageManager::STAGE_ID::GUILD);
 			break;
 
 		case DESTINATION::ATELIER:
+			sound.Play(SoundManager::SOUND::SE_PUSH);
 			stageManager_->ChangeStage(StageManager::STAGE_ID::ATELIER);
 			break;
 
 		case DESTINATION::GARDEN:
+			sound.Play(SoundManager::SOUND::SE_PUSH);
 			stageManager_->ChangeStage(StageManager::STAGE_ID::GARDEN);
 			break;
 
@@ -76,9 +89,11 @@ void TeleportUI::Update(void)
 		Hide();  // UIを閉じる
 	}
 
-	if (input.IsTrgDown(KEY_INPUT_ESCAPE))
+	if (input.IsTrgDown(KEY_INPUT_X))
 	{
+		sound.Play(SoundManager::SOUND::SE_CANCEL);
 		Hide();
+		PlayerStop::GetInstance().ResumeMovement();
 	}
 }
 
@@ -86,7 +101,7 @@ void TeleportUI::Draw(void)
 {
 	if (!isVisible_) return;
 
-	const char* options[] = { "ギルド", "アトリエ", "庭" };
+	const char* options[] = { "ギルド", "アトリエ", "ガーデン" };
 	const int count = static_cast<int>(DESTINATION::MAX);
 
 	const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
@@ -104,6 +119,6 @@ void TeleportUI::Draw(void)
 
 		DrawBox(boxX, y, boxX + 200, y + boxHeight, GetColor(0, 0, 0), TRUE);
 		DrawBox(boxX, y, boxX + 200, y + boxHeight, color, FALSE);
-		Font::GetInstance().DrawDefaultText(boxX + 10, y + 4, options[i], color, fontSize);
+		Font::GetInstance().DrawDefaultText(boxX + 80, y + 4, options[i], color, fontSize);
 	}
 }

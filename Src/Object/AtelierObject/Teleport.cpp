@@ -2,6 +2,7 @@
 
 #include "../../Manager/Generic/ResourceManager.h"
 #include "../../Manager/Generic/Resource.h"
+#include "../../Manager/Decoration/SoundManager.h"
 #include "../../Manager/Generic/InputManager.h"
 #include "../../Utility/Utility.h"
 #include "../Manager/CollisionManager.h"
@@ -50,6 +51,7 @@ void Teleport::Update(void)
 	{
 		if (teleportUI_)
 		{
+			SoundManager::GetInstance().Play(SoundManager::SOUND::SE_PUSH);
 			teleportUI_->Show();  // UI•\Ž¦ŠJŽn
 			isShowUI_ = false;
 		}

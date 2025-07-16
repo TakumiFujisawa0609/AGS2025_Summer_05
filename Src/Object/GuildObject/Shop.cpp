@@ -8,6 +8,7 @@
 #include "../../Manager/Generic/InputManager.h"
 #include "../../DrawUI/Font.h"
 #include "../../Object/Manager/ItemManager.h"
+#include "../../Manager/Decoration/SoundManager.h"
 #include "../../Object/player.h"
 #include "../../Application.h"
 #include "../PlayerStop.h"
@@ -98,6 +99,7 @@ void Shop::Update()
     if (!isVisible_) return;
 
     auto& input = InputManager::GetInstance();
+    auto& sound = SoundManager::GetInstance();
 
     if (skipFirstInputFrame_)
     {
@@ -117,29 +119,34 @@ void Shop::Update()
 
             if (input.IsTrgDown(KEY_INPUT_LEFT))
             {
+                sound.Play(SoundManager::SOUND::SE_SELECT);
                 if (col > 0) selectedItemIndex_--;
             }
             else if (input.IsTrgDown(KEY_INPUT_RIGHT))
             {
+                sound.Play(SoundManager::SOUND::SE_SELECT);
                 if (col < SHOP_COLUMNS - 1 && selectedItemIndex_ + 1 < totalItems)
                     selectedItemIndex_++;
             }
 
             if (input.IsTrgDown(KEY_INPUT_RETURN))
             {
+                sound.Play(SoundManager::SOUND::SE_PUSH);
                 currentPhase_ = SHOP_PHASE::SELECT_AMOUNT;
                 selectedQuantity_ = GetSelectedQuantity();
                 if (selectedQuantity_ <= 0) selectedQuantity_ = 1;
             }
 
-            if (input.IsTrgDown(KEY_INPUT_X) || input.IsTrgDown(KEY_INPUT_ESCAPE))
+            if (input.IsTrgDown(KEY_INPUT_X))
             {
+                sound.Play(SoundManager::SOUND::SE_CANCEL);
                 Hide();
                 PlayerStop::GetInstance().ResumeMovement();
             }
 
             if (input.IsTrgDown(KEY_INPUT_TAB)) // 例：Tabキーで左右エリア切り替えも可能
             {
+                sound.Play(SoundManager::SOUND::SE_PUSH);
                 currentArea_ = SHOP_AREA::PURCHASE_LIST;
                 purchaseListSelectedIndex_ = 0;
             }
@@ -154,10 +161,12 @@ void Shop::Update()
 
             if (input.IsTrgDown(KEY_INPUT_UP))
             {
+                sound.Play(SoundManager::SOUND::SE_SELECT);
                 purchaseListSelectedIndex_ = (purchaseListSelectedIndex_ - 1 + listSize) % listSize;
             }
             else if (input.IsTrgDown(KEY_INPUT_DOWN))
             {
+                sound.Play(SoundManager::SOUND::SE_SELECT);
                 purchaseListSelectedIndex_ = (purchaseListSelectedIndex_ + 1) % listSize;
             }
 
@@ -166,27 +175,37 @@ void Shop::Update()
                 // アイテム選択中、左右で数量調整
                 auto it = std::next(purchaseQuantities_.begin(), purchaseListSelectedIndex_);
                 if (input.IsTrgDown(KEY_INPUT_LEFT) && it->second > 1)
+                {
+                    sound.Play(SoundManager::SOUND::SE_SELECT);
                     it->second--;
+                }
                 else if (input.IsTrgDown(KEY_INPUT_RIGHT))
+                {
+                    sound.Play(SoundManager::SOUND::SE_SELECT);
                     it->second++;
+                }
+
             }
             else
             {
                 // 購入ボタン選択中
                 if (input.IsTrgDown(KEY_INPUT_RETURN))
                 {
+                    sound.Play(SoundManager::SOUND::SE_PUSH);
                     ConfirmPurchase();
                     purchaseListSelectedIndex_ = 0;
                 }
             }
 
-            if (input.IsTrgDown(KEY_INPUT_X) || input.IsTrgDown(KEY_INPUT_ESCAPE))
+            if (input.IsTrgDown(KEY_INPUT_X))
             {
+                sound.Play(SoundManager::SOUND::SE_CANCEL);
                 Hide();
             }
 
             if (input.IsTrgDown(KEY_INPUT_TAB))
             {
+                sound.Play(SoundManager::SOUND::SE_PUSH);
                 currentArea_ = SHOP_AREA::ITEM_LIST;
             }
         }
@@ -196,15 +215,18 @@ void Shop::Update()
     {
         if (input.IsTrgDown(KEY_INPUT_UP))
         {
+            sound.Play(SoundManager::SOUND::SE_SELECT);
             selectedQuantity_++;
         }
         else if (input.IsTrgDown(KEY_INPUT_DOWN))
         {
+            sound.Play(SoundManager::SOUND::SE_SELECT);
             if (selectedQuantity_ > 1) selectedQuantity_--;
         }
 
         if (input.IsTrgDown(KEY_INPUT_RETURN))
         {
+            sound.Play(SoundManager::SOUND::SE_PUSH);
             auto item = GetSelectedItem();
             if (item)
             {
@@ -217,9 +239,11 @@ void Shop::Update()
 
         if (input.IsTrgDown(KEY_INPUT_X))
         {
+            sound.Play(SoundManager::SOUND::SE_CANCEL);
             currentPhase_ = SHOP_PHASE::SELECT_ITEM;
         }
         break;
+
     }
     }
 }

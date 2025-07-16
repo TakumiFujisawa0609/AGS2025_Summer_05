@@ -67,6 +67,7 @@ public:
 		EVENING,                //夕方のアイコン
 		NIGHT,                  //夜のアイコン
 		MANEY,					//お金のアイコン
+		OPERATION,              //操作説明の画像
 
 		//ミニマップ関係
 		MAP_FRAME,				//ミニマップ枠
@@ -82,8 +83,11 @@ public:
 		BGM_GAMECLEAR,			//ゲームクリアBGM
 
 		SE_PUSH,				//ボタン決定音
+		SE_SELECT,              //カーソル移動音
+		SE_CANCEL,              //キャンセル音
 		SE_DAMAGE,				//ダメージ音
 		SE_GET,					//アイテム取得音
+		SE_ALCHEMY,             //錬金音
 	};
 
 	//明示的にインスタンスを生成する

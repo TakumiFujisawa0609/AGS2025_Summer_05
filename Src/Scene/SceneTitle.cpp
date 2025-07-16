@@ -17,6 +17,7 @@ SceneTitle::SceneTitle(void)
     grid_ = nullptr;
     isDecided_ = false;
     blackAlpha_ = 0;
+    operationHandle_ = -1;
 }
 
 void SceneTitle::Init(void)
@@ -40,8 +41,10 @@ void SceneTitle::Init(void)
 
     sound.Add(SoundManager::TYPE::BGM, SoundManager::SOUND::BGM_TITLE, res.Load(ResourceManager::SRC::BGM_TITLE).handleId_);
     sound.Add(SoundManager::TYPE::SE, SoundManager::SOUND::SE_PUSH, res.Load(ResourceManager::SRC::SE_PUSH).handleId_);
+    sound.Add(SoundManager::TYPE::SE, SoundManager::SOUND::SE_SELECT, res.Load(ResourceManager::SRC::SE_SELECT).handleId_);
     sound.AdjustVolume(SoundManager::SOUND::BGM_TITLE, 40);
-    sound.AdjustVolume(SoundManager::SOUND::SE_PUSH, 50);
+    sound.AdjustVolume(SoundManager::SOUND::SE_PUSH, 30);
+    sound.AdjustVolume(SoundManager::SOUND::SE_SELECT, 30);
 
     sound.Play(SoundManager::SOUND::BGM_TITLE);
 
@@ -51,6 +54,7 @@ void SceneTitle::Init(void)
 
 
     logo_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::TYTLE_LOGO).handleId_;
+    operationHandle_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::OPERATION).handleId_;
 }
 
 void SceneTitle::Update(void)
@@ -63,6 +67,7 @@ void SceneTitle::Update(void)
         // 黒背景表示中はXキーで戻る処理のみ許可
         if (input.IsTrgDown(KEY_INPUT_X))
         {
+            sound.Play(SoundManager::SOUND::SE_CANCEL);
             showBlackBackground_ = false; // メニュー表示に戻る
         }
         return; // それ以外は操作無効化
@@ -74,12 +79,14 @@ void SceneTitle::Update(void)
 
     if (input.IsTrgDown(KEY_INPUT_UP))
     {
+        sound.Play(SoundManager::SOUND::SE_SELECT);
         currentIndex--;
         if (currentIndex < 0) currentIndex = maxIndex;
         ui_->SetCurrentIndex(currentIndex);
     }
     else if (input.IsTrgDown(KEY_INPUT_DOWN))
     {
+        sound.Play(SoundManager::SOUND::SE_SELECT);
         currentIndex++;
         if (currentIndex > maxIndex) currentIndex = 0;
         ui_->SetCurrentIndex(currentIndex);
@@ -128,6 +135,11 @@ void SceneTitle::Draw(void)
         // タイトルロゴ
         DrawRotaGraph(Application::SCREEN_SIZE_X / 2 + 55, Application::SCREEN_SIZE_Y / 2, 1.0, 0.0, logo_, true);
         ui_->Draw();
+    }
+
+    if (ui_->GetCurrentIndex() == 2 && showBlackBackground_)
+    {
+        DrawRotaGraph3(20,20, 0, 0, 1.2f, 1.2f, 0,operationHandle_, true);
     }
 }
 

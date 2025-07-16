@@ -2,6 +2,7 @@
 
 #include "../../Manager/Generic/ResourceManager.h"
 #include "../../Manager/Generic/InputManager.h"
+#include "../../Manager/Decoration/SoundManager.h"
 #include "../../DrawUI/SceneUI/InventoryUI.h"
 #include "../../DrawUI/Font.h"
 #include "../../Application.h"
@@ -43,6 +44,7 @@ void ItemBox::Update(void)
 	{
 		if (input.IsTrgDown(KEY_INPUT_RETURN))
 		{
+			SoundManager::GetInstance().Play(SoundManager::SOUND::SE_PUSH);
 			isInventoryOpen_ = true;
 			if (inventoryUI_) inventoryUI_->Show(); // © ZƒL[§Œä‚È‚µ‚Å•\¦
 		}
@@ -53,6 +55,7 @@ void ItemBox::Update(void)
 		inventoryUI_->Update();
 		if (input.IsTrgDown(KEY_INPUT_X))
 		{
+			SoundManager::GetInstance().Play(SoundManager::SOUND::SE_CANCEL);
 			isInventoryOpen_ = false;
 			inventoryUI_->Hide();
 		}

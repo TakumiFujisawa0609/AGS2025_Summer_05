@@ -1,6 +1,8 @@
 #include "PauseMenu.h"
 #include <DxLib.h>
 #include "../../Manager/Generic/InputManager.h"
+#include "../../Manager/Decoration/SoundManager.h"
+#include "../../DrawUI/Font.h"
 #include "../../Application.h"
 
 PauseMenu::PauseMenu()
@@ -44,19 +46,24 @@ int PauseMenu::GetSelectedIndex() const
 
 void PauseMenu::Update()
 {
+    SoundManager& sound = SoundManager::GetInstance();
+
     if (mode_ == MODE_POUSE::SELECT)
     {
 		if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_UP))
 		{
+            sound.Play(SoundManager::SOUND::SE_SELECT);
 			currentIndex_ = (currentIndex_ + menuItems_.size() - 1) % menuItems_.size();  // èCê≥
 		}
 		if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_DOWN))
 		{
+            sound.Play(SoundManager::SOUND::SE_SELECT);
 			currentIndex_ = (currentIndex_ + 1) % menuItems_.size();  // èCê≥
 		}
 
         if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_RETURN))
         {
+            sound.Play(SoundManager::SOUND::SE_PUSH);
             if (currentIndex_ == 0) // ë±ÇØÇÈ
             {
                 visible_ = false;
@@ -80,6 +87,7 @@ void PauseMenu::Update()
         // XÇ≈ñﬂÇÈ
         if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_X))
         {
+            sound.Play(SoundManager::SOUND::SE_CANCEL);
             mode_ = MODE_POUSE::SELECT;
         }
     }
@@ -123,8 +131,8 @@ void PauseMenu::Draw()
         int itemY = y + 20 + i * 50;
         if (i == currentIndex_)
         {
-            DrawBox(x + 10, itemY - 5, x + boxW - 10, itemY + 30, GetColor(100, 100, 255), TRUE);
+            DrawBox(x + 10, itemY - 5, x + boxW - 10, itemY + 30, 0xFFFF00, false);
         }
-        DrawString(x + 20, itemY, menuItems_[i].c_str(), GetColor(255, 255, 255));
+        Font::GetInstance().DrawDefaultText(x + 150, itemY, menuItems_[i].c_str(), 0xffffff,24, Font::FONT_TYPE_ANTIALIASING_EDGE);
     }
 }

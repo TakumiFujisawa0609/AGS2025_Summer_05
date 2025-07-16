@@ -61,6 +61,8 @@ private:
 	
 	std::vector<AlchemyRecipe> recipes_;
 
+	std::string pendingResultMessage_;
+
 	int currentPhase_;
 
 	int currentIndex_;
@@ -75,6 +77,8 @@ private:
 
 
 	bool isOpen_;
+
+	bool waitingForSEFinish_;
 
 	static AlchemyManager* instance_;
 

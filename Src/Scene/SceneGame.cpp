@@ -85,8 +85,12 @@ void SceneGame::Init(void)
 
 	sound.Add(SoundManager::TYPE::BGM, SoundManager::SOUND::BGM_TITLE, res.Load(ResourceManager::SRC::BGM_TITLE).handleId_);
 	sound.Add(SoundManager::TYPE::SE, SoundManager::SOUND::SE_PUSH, res.Load(ResourceManager::SRC::SE_PUSH).handleId_);
-	sound.AdjustVolume(SoundManager::SOUND::BGM_TITLE, 40);
-	sound.AdjustVolume(SoundManager::SOUND::SE_PUSH, 50);
+	sound.Add(SoundManager::TYPE::SE, SoundManager::SOUND::SE_CANCEL, res.Load(ResourceManager::SRC::SE_CANCEL).handleId_);
+	sound.Add(SoundManager::TYPE::SE, SoundManager::SOUND::SE_ALCHEMY, res.Load(ResourceManager::SRC::SE_ALCHEMY).handleId_);
+	sound.AdjustVolume(SoundManager::SOUND::BGM_TITLE, 30);
+	sound.AdjustVolume(SoundManager::SOUND::SE_CANCEL, 30);
+	sound.AdjustVolume(SoundManager::SOUND::SE_PUSH, 30);
+	sound.AdjustVolume(SoundManager::SOUND::SE_ALCHEMY, 30);
 
 	// UIÇÃê∂ê¨
 	inventoryUI_ = new InventoryUI();

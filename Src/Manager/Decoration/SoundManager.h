@@ -31,8 +31,11 @@ public:
 		BGM_GAMEOVER,   // ゲームオーバー時BGM
 		BGM_GAMECLEAR,  // ゲームクリア時BGM
 		SE_PUSH,        // ボタン押下時効果音
+		SE_CANCEL,              //キャンセル音
+		SE_SELECT,      // カーソル移動
 		SE_DAMAGE,      // ダメージ受けた時効果音
 		SE_GET,         // アイテム取得時効果音
+		SE_ALCHEMY,     // 錬金時効果音	
 	};
 
 	/// <summary>
@@ -88,6 +91,9 @@ public:
 	/// <param name="_sound">調整対象の音声</param>
 	/// <param name="_persent">調整割合(0%～100%)</param>
 	void AdjustVolume(const SOUND _sound, const int _persent);
+
+	//なり終わってるかどうか
+	bool IsPlaying(SOUND sound);
 
 	/// <summary>
 	/// インスタンスの破棄

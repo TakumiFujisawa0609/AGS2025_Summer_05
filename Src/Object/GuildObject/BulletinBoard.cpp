@@ -2,6 +2,7 @@
 
 #include "../../Manager/Generic/ResourceManager.h"
 #include "../../Manager/Generic/InputManager.h"
+#include "../../Manager/Decoration/SoundManager.h"
 #include "../../Utility/Utility.h"
 #include "../Manager/CollisionManager.h"
 #include "../../DrawUI/Font.h"
@@ -64,10 +65,12 @@ void BulletinBoard::Init(void)
 void BulletinBoard::Update(void)
 {
 	auto& input = InputManager::GetInstance();
+	auto& sound = SoundManager::GetInstance();
 
 	// エンターキーが押された時の処理
 	if (isShowUI_ && input.IsTrgDown(KEY_INPUT_RETURN))
 	{
+		sound.Play(SoundManager::SOUND::SE_PUSH);
 		if (!isShowQuestList_)
 		{
 			isShowQuestList_ = true;
@@ -96,16 +99,19 @@ void BulletinBoard::Update(void)
 		// 左右キーで選択を変更
 		if (input.IsTrgDown(KEY_INPUT_LEFT))
 		{
+			sound.Play(SoundManager::SOUND::SE_SELECT);
 			selectedQuest_ = (selectedQuest_ - 1 + 3) % 3;
 		}
 		else if (input.IsTrgDown(KEY_INPUT_RIGHT))
 		{
+			sound.Play(SoundManager::SOUND::SE_SELECT);
 			selectedQuest_ = (selectedQuest_ + 1) % 3;
 		}
 
 		// ESCキーで依頼リストを閉じる
 		if (input.IsTrgDown(KEY_INPUT_X))
 		{
+			sound.Play(SoundManager::SOUND::SE_CANCEL);
 			isShowQuestList_ = false;
 			isShowUI_ = false;
 			PlayerStop::GetInstance().ResumeMovement();
@@ -201,7 +207,7 @@ void BulletinBoard::DrawUI(void)
 		}
 
 		Font::GetInstance().DrawDefaultText(startX, startY + boxHeight + 30,
-			"←→キー: 選択  Enter: 決定  X: 戻る", 0xcccccc, 16);
+			"←→キー: 選択  Enter: 決定  X: 閉じる", 0xcccccc, 16);
 	}
 
 	// UI描画終了後はZバッファを元に戻す
