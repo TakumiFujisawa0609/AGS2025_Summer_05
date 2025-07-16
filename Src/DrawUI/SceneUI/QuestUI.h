@@ -28,6 +28,8 @@ class QuestUI
 {
 public:
 
+    static constexpr int MAX_QUESTS = 100;
+
     //シングルトンインスタンス生成
     static void CreateInstance(void);
     
@@ -85,6 +87,10 @@ public:
 
     const std::vector<DeliveryQuest>& GetSelectedQuests(void) const;
 
+    int GetCompletedQuestCount(void) const;
+
+    bool HasReachedMaxCompletion(void) const;
+
 
 private:
     QuestUI() = default;
@@ -112,6 +118,8 @@ private:
 
     //前回ゲーム内日数
     int lastDay_;
+
+    int completedQuestCount_;
 
     // 内部メソッド
    

@@ -14,6 +14,10 @@
 #include "../Object/GardenObject/Warp.h"
 #include "../Object/Manager/FenceManager.h"
 #include "../Object/GardenObject/WellObject.h"
+#include "../Manager/Generic/SceneManager.h"
+#include "../Manager/Generic/Camera.h"
+#include "../Object/Player.h"
+#include "../DrawUI/SceneUI/QuestUI.h"
 
 // コンストラクタ
 GardenStage::GardenStage(StageManager* stageManager)
@@ -33,6 +37,11 @@ void GardenStage::Init(void)
 
 	// CSVデータ再取得
 	auto mapData = blockManager_->GetMapData();
+
+	//カメラ設定
+	auto camera = SceneManager::GetInstance().GetCamera();
+
+	camera->ChangeMode(Camera::MODE::FOLLOW);
 
 	// 植物初期化
 	plantManager_->Init(mapData, 50.0f);
@@ -70,6 +79,10 @@ void GardenStage::Init(void)
 	{
 		CollisionManager::GetInstance().Register(fneX);
 	}
+
+	// カメラをプレイヤーに追従
+    auto player = stageManager_->GetPlayer();  
+    camera->SetFollow(&player->GetTransform());
 }
 
 // 更新処理
@@ -99,6 +112,8 @@ void GardenStage::Draw(void)
 	fenceManager_->Draw();
 	warp_->Draw();
 	well_->Draw();
+
+	QuestUI::GetInstance().Draw();
 
 }
 

@@ -24,7 +24,7 @@ public:
 	static constexpr VECTOR SCALE = { 0.05f,0.05f,0.05f };
 
 	//モデルのモデル座標用
-	static constexpr VECTOR MODEL_POS = { 0.0f,50.0f,0.0f };
+	static constexpr VECTOR MODEL_POS = { 200.0f,-5.0f,350.0f };
 
 	//コンストラクタ
 	BulletinBoard(void);
@@ -76,6 +76,8 @@ public:
 private:
 	//掲示板の背景画像のID
 	int imageBoardId_;
+
+	int imageQuest_;
 
 	int uiOpenWaitFrame_; // UIを開いたあとの猶予時間
 

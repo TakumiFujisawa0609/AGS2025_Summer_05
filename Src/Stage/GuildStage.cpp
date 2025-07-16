@@ -9,6 +9,16 @@
 #include "../Object/Manager/StageManager.h"
 #include "../Object/GuildObject/BulletinBoard.h"
 #include "../Object/Manager/CollisionManager.h"
+#include "../Object/GuildObject/ WallGuild.h"
+#include "../Object/GuildObject/ WallGuild2.h"
+#include "../Object/GuildObject/ WallGuildZ.h"
+#include "../Object/GuildObject/WallGuildZZ.h"
+#include "../Object/GuildObject/TableSetGuild.h"
+#include "../Object/Manager/TableSetGuildManager.h"
+#include "../Manager/Generic/SceneManager.h"
+#include "../Manager/Generic/Camera.h"
+#include "../Object/player.h"
+#include "../DrawUI/SceneUI/QuestUI.h"
 
 
 //コンストラクタ
@@ -20,6 +30,25 @@ GuildStage::GuildStage(StageManager* stageManager) : stageManager_(stageManager)
 //初期化処理
 void GuildStage::Init(void)
 {
+	modelId_ = ResourceManager::GetInstance().LoadModelDuplicate(ResourceManager::SRC::STAGE_ATELIER);
+
+	modelIdPos_ = INIT_MODELID_POS;
+
+	// 座標をモデルに設定
+	MV1SetPosition(modelId_, modelIdPos_);
+
+	// ステージの大きさ
+	MV1SetScale(modelId_, MODELID_SCALEA);
+
+	//カメラ設定
+	auto camera = SceneManager::GetInstance().GetCamera();
+
+	camera->ChangeMode(Camera::MODE::FIXED_POINT);
+
+	auto player = stageManager_->GetPlayer();
+	camera->SetPos(Camera::DEFAULT_CAMERA_POS, { 0.0f,0.0f,0.0f });
+	//camera->SetFollow(&player->GetTransform());
+
 	// 1つのインスタンスを作成
 	bulletinBoard_ = std::make_shared<BulletinBoard>();
 	bulletinBoard_->Init();
@@ -33,6 +62,34 @@ void GuildStage::Init(void)
 	teleportMovement_ = std::make_shared<TeleportMovement>(stageManager_);
 	teleportMovement_->Init();
 	CollisionManager::GetInstance().Register(teleportMovement_);
+
+	counter_ = std::make_shared<Counter>();
+	counter_->Init();
+	CollisionManager::GetInstance().Register(counter_);
+
+	wall_ = std::make_shared<WallGuild>();
+	wall_->Init();
+	CollisionManager::GetInstance().Register(wall_);
+
+	wall2_ = std::make_shared<WallGuild2>();
+	wall2_->Init();
+	CollisionManager::GetInstance().Register(wall2_);
+
+	wallZ_ = std::make_shared<WallGuildZ>();
+	wallZ_->Init();
+	CollisionManager::GetInstance().Register(wallZ_);
+
+	wallZZ_ = std::make_shared<WallGuildZZ>();
+	wallZZ_->Init();
+	CollisionManager::GetInstance().Register(wallZZ_);
+
+	tableSetGuildManager_ = std::make_unique<TableSetGuildManager>();
+	tableSetGuildManager_->Init();
+
+	for (auto& table : tableSetGuildManager_->GetTableSets())
+	{
+		CollisionManager::GetInstance().Register(table);
+	}
 }
 
 //更新処理
@@ -46,25 +103,40 @@ void GuildStage::Update(void)
 		//ステージ遷移
 		if (stageManager_)
 		{
-			stageManager_->ChangeStage(StageManager::STAGE_ID::PRIVATE_ROOM);
+			stageManager_->ChangeStage(StageManager::STAGE_ID::ATELIER);
 		}
 	}
 
 	bulletinBoard_->Update();
 	receptionist_->Update();
 	teleportMovement_->Update();
+	counter_->Update();
+	wall_->Update();
+	wall2_->Update();
+	wallZ_->Update();
+	wallZZ_->Update();
+	tableSetGuildManager_->Update();
 }
 
 //描画処理
 void GuildStage::Draw(void)
 {
-	DrawFormatString(0, 20, 0xffffff, "ギルド");
+	//DrawFormatString(0, 20, 0xffffff, "ギルド");
+
+	MV1DrawModel(modelId_);
 
 	bulletinBoard_->DrawModel();
 	receptionist_->DrawModel();
-	teleportMovement_->Draw();
+	counter_->Draw();
+	wall_->Draw();
+	wall2_->Draw();
+	wallZ_->Draw();
+	wallZZ_->Draw();
+	tableSetGuildManager_->Draw();
 	bulletinBoard_->DrawUI();
+	QuestUI::GetInstance().Draw();
 	receptionist_->DrawUI();
+	teleportMovement_->Draw();
 }
 
 //解放処理

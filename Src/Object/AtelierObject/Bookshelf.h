@@ -8,7 +8,7 @@
 class Bookshelf : public HitObject, public UnitBase
 {
 public:
-    static constexpr float WIDTH = 100.0f;
+    static constexpr float WIDTH = 150.0f;
     static constexpr float HEIGHT = 150.0f;
     static constexpr float DEPTH = 10.0f;
 

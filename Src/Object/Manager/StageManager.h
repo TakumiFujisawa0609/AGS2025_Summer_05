@@ -10,6 +10,9 @@
 class StageBase;
 class Fader;
 class Player;
+class DateTimeManager;
+class GameHUD;
+
 
 class StageManager
 {
@@ -32,7 +35,7 @@ public:
 	~StageManager(void);
 
 	//初期化処理
-	void Init(std::shared_ptr<Player> player);
+	void Init(std::shared_ptr<Player> player, DateTimeManager* dateTimeManager);
 
 	//破棄処理
 	void Destroy(void);
@@ -52,7 +55,7 @@ public:
 	//デルタタイム取得
 	float GetDeltaTime(void) const;
 
-	std::shared_ptr<Player> GetPlayer(void) const;
+	std::shared_ptr<Player> GetPlayer(void);
 
 	void Fade(void);
 
@@ -69,6 +72,9 @@ private:
 
 	//ステージ管理クラス
 	StageBase* stage_;
+
+
+	std::unique_ptr<GameHUD> gameHUD_;
 
 	//遷移中かどうか
 	bool isStageChanging_;

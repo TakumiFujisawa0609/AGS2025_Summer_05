@@ -49,12 +49,12 @@ void Receptionist::Init(void)
     auto& res = ResourceManager::GetInstance();
 
     // モデル（箱系のモデルを使用想定）
-    trans_.SetModel(res.LoadModelDuplicate(ResourceManager::SRC::BULLETIN_BOARD));
+    trans_.SetModel(res.LoadModelDuplicate(ResourceManager::SRC::RECEPTIONIST));
     trans_.quaRot = Quaternion();
     trans_.quaRotLocal = Quaternion::AngleAxis(Utility::Deg2RadF(0.0f), Utility::AXIS_Y);
     trans_.scl = SCALE;
     // 3Dモデルを右側に配置（X軸方向に移動）
-    trans_.pos = VGet(150.0f, 0.0f, 0.0f);
+    trans_.pos = MODEL_POS;
     trans_.localPos = VAdd(trans_.pos, MODEL_POS);
     radius_ = RADIUS;
     speed_ = 0.0f;
@@ -70,17 +70,14 @@ void Receptionist::Init(void)
     mainMenuSelected_ = 0;
 
     // アイテム名を初期化
-    itemNames_[static_cast<int>(IETEM_TYPE::HEALTH_POTION)] = "回復ポーション";
-    itemNames_[static_cast<int>(IETEM_TYPE::ANTIDOTE_POTION)] = "解毒ポーション";
-    itemNames_[static_cast<int>(IETEM_TYPE::MAGIC_POTION)] = "魔法ポーション";
+    itemNames_[static_cast<int>(IETEM_TYPE::HEALTH_POTION)] = "回復ポーソン";
+    itemNames_[static_cast<int>(IETEM_TYPE::ANTIDOTE_POTION)] = "解毒ポーソン";
+    itemNames_[static_cast<int>(IETEM_TYPE::MAGIC_POTION)] = "魔法ポーソン";
 
     // アイテムIDを初期化
     itemIds_[static_cast<int>(IETEM_TYPE::HEALTH_POTION)] = "RecoveryPotion";
     itemIds_[static_cast<int>(IETEM_TYPE::ANTIDOTE_POTION)] = "AntidotePotion";
     itemIds_[static_cast<int>(IETEM_TYPE::MAGIC_POTION)] = "MagicPotion";
-
-    // モデル制御
-    trans_.Update();
 
     shop_ = std::make_shared<Shop>();
     shop_->Init();
@@ -125,7 +122,13 @@ void Receptionist::DrawModel(void)
     // ZバッファONでモデル描画
     SetUseZBufferFlag(TRUE);
     SetWriteZBufferFlag(TRUE);
-    MV1DrawModel(trans_.modelId);
+    if (trans_.modelId >= 0)
+    {
+        MV1SetScale(trans_.modelId, trans_.scl);
+        MV1SetPosition(trans_.modelId, {trans_.pos.x, trans_.pos.y,trans_.pos.z + 60});
+        MV1SetRotationXYZ(trans_.modelId, trans_.rot);
+        MV1DrawModel(trans_.modelId);
+    }
 }
 
 void Receptionist::DrawUI(void)
@@ -344,6 +347,8 @@ void Receptionist::UpdateDeliveryMenu(void)
             isShowDeliveryMenu_ = false;
             currentMode_ = MENU_MODE::MAIN_SELECT;
         }
+
+        PlayerStop::GetInstance().ResumeMovement();
     }
 }
 

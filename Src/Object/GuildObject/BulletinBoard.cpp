@@ -21,6 +21,8 @@ BulletinBoard::BulletinBoard(void)
 	selectedQuest_ = 0;
 	imageBoardId_ = 0;
 
+	imageQuest_ = 0;
+
 	uiOpenWaitFrame_ = 0;
 
 	uiShowUIDelayFrames_ = 0;
@@ -40,6 +42,8 @@ void BulletinBoard::Init(void)
 	trans_.quaRot = Quaternion();
 	trans_.quaRotLocal = Quaternion::AngleAxis(Utility::Deg2RadF(180.0f), Utility::AXIS_Y);
 	trans_.scl = SCALE;
+	trans_.rot = { 0.0f, -105.3f, 0.0f };
+	trans_.pos = MODEL_POS;
 	radius_ = RADIUS;
 	speed_ = 0.0f;
 	isShowUI_ = false;
@@ -49,9 +53,11 @@ void BulletinBoard::Init(void)
 	//掲示板の画像
 	imageBoardId_ = res.Load(ResourceManager::SRC::IMAGE_BOARD).handleId_;
 
+	imageQuest_ = res.Load(ResourceManager::SRC::IMAGE_REQUEST).handleId_;
 
-	//モデル制御
-	trans_.Update();
+	MV1SetScale(trans_.modelId, trans_.scl);
+	MV1SetPosition(trans_.modelId, trans_.pos);
+	MV1SetRotationXYZ(trans_.modelId, trans_.rot);
 
 }
 
@@ -59,7 +65,6 @@ void BulletinBoard::Update(void)
 {
 	auto& input = InputManager::GetInstance();
 
-	trans_.Update();
 	// エンターキーが押された時の処理
 	if (isShowUI_ && input.IsTrgDown(KEY_INPUT_RETURN))
 	{
@@ -69,17 +74,21 @@ void BulletinBoard::Update(void)
 		}
 		else
 		{
-			// 依頼選択の確定処理
 			auto& questUI = QuestUI::GetInstance();
-			
-			questUI.AcceptQuest(selectedQuest_);
+			const auto& selectedQuests = questUI.GetSelectedQuests();
+
+			if (selectedQuest_ >= 0 && selectedQuest_ < (int)selectedQuests.size())
+			{
+				int questId = selectedQuests[selectedQuest_].id;
+				questUI.AcceptQuest(questId);
+			}
+
 			PlayerStop::GetInstance().ResumeMovement();
-			// 依頼受注後はUIを閉じる
 			isShowQuestList_ = false;
 			isShowUI_ = false;
-			
 		}
 	}
+
 
 	// 依頼リスト表示中の選択処理
 	if (isShowQuestList_)
@@ -99,6 +108,7 @@ void BulletinBoard::Update(void)
 		{
 			isShowQuestList_ = false;
 			isShowUI_ = false;
+			PlayerStop::GetInstance().ResumeMovement();
 		}
 	}
 
@@ -151,13 +161,13 @@ void BulletinBoard::DrawUI(void)
 
 		uiOpenWaitFrame_ = UI_ENTER_DELAY_FRAME;
 		// 依頼ボックスの設定
-		const int boxWidth = 150;
-		const int boxHeight = 300;
-		const int spacing = 40;
+		const int boxWidth = 400;
+		const int boxHeight = 600;
+		const int spacing = 100;
 		const int startX = (screenWidth - (3 * boxWidth + 2 * spacing)) / 2;
-		const int startY = 180;
+		const int startY = 200;
 
-		DrawRotaGraph3(0, 0, 0, 0, 0.98f, 0.98f, 0, imageBoardId_, TRUE);
+		DrawRotaGraph3(-5, -5, 0, 0, 1.0f, 1.0f, 0, imageBoardId_, TRUE);
 
 		Font::GetInstance().DrawDefaultText(startX, startY - 100, "===== 納品依頼一覧 =====", 0xffffff, 24);
 
@@ -168,9 +178,17 @@ void BulletinBoard::DrawUI(void)
 			int borderColor = (i == selectedQuest_) ? GetColor(255, 0, 255) : GetColor(255, 255, 255);
 			int textColor = (i == selectedQuest_) ? 0xff00ff : 0xffffff;
 
-			DrawBox(xPos, startY, xPos + boxWidth, startY + boxHeight, boxColor, TRUE);
-			DrawBox(xPos, startY, xPos + boxWidth, startY + boxHeight, borderColor, FALSE);
+			int imgW, imgH;
+			GetGraphSize(imageQuest_, &imgW, &imgH);
 
+			int imgX = xPos + (boxWidth / 2) - (imgW / 2);
+			int imgY = startY + (boxHeight / 2) - (imgH / 2);
+
+			DrawGraph(imgX, imgY, imageQuest_, TRUE);
+
+			//DrawBox(xPos, startY, xPos + boxWidth, startY + boxHeight, boxColor, TRUE);
+			//DrawBox(xPos, startY, xPos + boxWidth, startY + boxHeight, borderColor, FALSE);
+			
 			std::string questText = "未設定";
 			if (i < (int)quests.size())
 			{
@@ -178,7 +196,7 @@ void BulletinBoard::DrawUI(void)
 				questText = quest.title + " x" + std::to_string(quest.requiredAmount);
 			}
 
-			Font::GetInstance().DrawDefaultText(xPos + 10, startY + boxHeight / 2 - 10,
+			Font::GetInstance().DrawDefaultText(xPos + 100, startY + boxHeight / 2 - 10,
 				questText.c_str(), textColor, 18);
 		}
 

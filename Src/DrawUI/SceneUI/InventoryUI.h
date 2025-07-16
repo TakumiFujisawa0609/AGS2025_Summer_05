@@ -24,6 +24,11 @@ public:
     ~InventoryUI(void);
 
     void Init(void);      // ‰Šú‰»
+
+    void Show(void);
+
+    void Hide(void);
+
     void Update(void);    // XV
     void Draw(void);      // •`‰æ
 

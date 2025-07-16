@@ -26,6 +26,7 @@
 
 
 
+
 SceneGame::SceneGame(void)
 {
 	grid_ = nullptr;
@@ -76,7 +77,7 @@ void SceneGame::Init(void)
 
 	// ステージ管理初期
 	stageManager_ = new StageManager();
-	stageManager_->Init(player_);
+	stageManager_->Init(player_,dateTimeManager_);
 
 	//サウンド
 	auto& sound = SoundManager::GetInstance();
@@ -89,6 +90,8 @@ void SceneGame::Init(void)
 
 	// UIの生成
 	inventoryUI_ = new InventoryUI();
+
+	
 
 	AlchemyManager::GetInstance().Init();
 	
@@ -158,6 +161,7 @@ void SceneGame::Draw(void)
 {
 	auto& alchemy = AlchemyManager::GetInstance();
 
+
 	//プレイヤーの描画
 	player_->Draw();
 
@@ -167,13 +171,10 @@ void SceneGame::Draw(void)
 	int x;
 	x = Application::DEFA_SCREEN_SIZE_X;
 
+	//QuestUI::GetInstance().Draw();
+
 	// インベントリUIの描画
 	inventoryUI_->Draw();
-
-	if (InputManager::GetInstance().IsNew(KEY_INPUT_RETURN))
-	{
-		isStartFont_ = false;
-	}
 
 	itemPickup_->Draw();
 

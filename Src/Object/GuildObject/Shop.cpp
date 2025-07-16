@@ -135,6 +135,7 @@ void Shop::Update()
             if (input.IsTrgDown(KEY_INPUT_X) || input.IsTrgDown(KEY_INPUT_ESCAPE))
             {
                 Hide();
+                PlayerStop::GetInstance().ResumeMovement();
             }
 
             if (input.IsTrgDown(KEY_INPUT_TAB)) // 例：Tabキーで左右エリア切り替えも可能

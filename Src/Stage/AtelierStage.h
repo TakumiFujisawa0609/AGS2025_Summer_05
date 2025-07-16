@@ -8,14 +8,20 @@
 class StageManager;
 class AlchemyPot;
 class Teleport;
-class Bookshelf;
+class ItemBox;
+class WallAtelier;
+class WallAtelier2;
+class WallAtelierZ;
+class WallAtelierZZ;
+class TableSetAtelier;
+class BookshelfManager;
 
 class AtelierStage : public StageBase
 {
 public:
 
 	//“ç‚Ì‘å‚«‚³
-	static constexpr VECTOR MODELID_SCALEA = { 5.0f,5.0f,5.0f };
+	static constexpr VECTOR MODELID_SCALEA = { 4.0f,2.2f,4.0f };
 
 	// “ç‚Ì‰ŠúˆÊ’u
 	static constexpr VECTOR INIT_MODELID_POS = { 0.0f, 0.0f, 0.0f };
@@ -54,7 +60,13 @@ private:
 
 	std::shared_ptr<AlchemyPot> alchemyPot_;
 	std::shared_ptr<Teleport> teleportt_;
-	std::shared_ptr<Bookshelf> bookshelf_;
+	std::unique_ptr<BookshelfManager> bookshelfManager_;
+	std::shared_ptr<WallAtelier> wall_;
+	std::shared_ptr<WallAtelier2> wall2_;
+	std::shared_ptr<WallAtelierZ> wallZ_;
+	std::shared_ptr<WallAtelierZZ> wallZZ_;
+	std::shared_ptr<ItemBox> itemBox_;
+	std::shared_ptr<TableSetAtelier> tableSetAtelier_;
 
 	// StageManager‚ÌQÆ
 	StageManager* stageManager_;

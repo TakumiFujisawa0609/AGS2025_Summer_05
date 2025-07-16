@@ -16,9 +16,9 @@ WellObject::~WellObject() {
 }
 
 void WellObject::Init() {
-    trans_.modelId = ResourceManager::GetInstance().LoadModelDuplicate(ResourceManager::SRC::BULLETIN_BOARD);
-    trans_.pos = VGet(0, 0, 0);
-    trans_.scl = VGet(0.5f, 0.5f, 0.5f);
+    trans_.modelId = ResourceManager::GetInstance().LoadModelDuplicate(ResourceManager::SRC::WELL_MODEL);
+    trans_.pos = VGet(0, -10, 0);
+    trans_.scl = VGet(0.1f, 0.15f, 0.1f);
     trans_.rot = VGet(0, 0, 0);
 }
 

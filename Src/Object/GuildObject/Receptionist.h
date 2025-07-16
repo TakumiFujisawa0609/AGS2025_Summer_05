@@ -23,8 +23,8 @@ class Receptionist : public HitObject, public UnitBase
 {
 public:
     static constexpr float RADIUS = 50.0f;
-    static constexpr VECTOR SCALE = { 1.0f, 1.0f, 1.0f };
-    static constexpr VECTOR MODEL_POS = { 0.0f, 0.0f, 0.0f };
+    static constexpr VECTOR SCALE = { 0.03f, 0.03f, 0.03f };
+    static constexpr VECTOR MODEL_POS = { -150.0f, 0.0f, 190.0f };
 
     // コンストラクタ
     Receptionist(void);

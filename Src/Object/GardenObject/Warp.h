@@ -22,7 +22,7 @@ public:
 	static constexpr VECTOR SCALE = { 0.05f,0.05f,0.05f };
 
 	//モデルのモデル座標用
-	static constexpr VECTOR MODEL_POS = { 1200.0f,20.0f, -1200.0f };
+	static constexpr VECTOR MODEL_POS = { 1180.0f,0.0f, -1180.0f };
 
 	//コンストラクタ
 	Warp(StageManager* stageManager);

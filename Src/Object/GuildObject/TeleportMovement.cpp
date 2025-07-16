@@ -43,7 +43,6 @@ void TeleportMovement::Init(void)
 void TeleportMovement::Update(void)
 {
 	auto& input = InputManager::GetInstance();
-	trans_.Update();
 
 	if (teleportUI_)
 	{

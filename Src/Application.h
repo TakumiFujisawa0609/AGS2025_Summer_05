@@ -32,6 +32,7 @@ public:
 	static const std::string PATH_JSON;
 	static const std::string PATH_BGM;
 	static const std::string PATH_SE;
+	static const std::string PATH_MOVIE;
 	static const std::string PATH_MAP_DATA;
 	//----------------------------------------
 

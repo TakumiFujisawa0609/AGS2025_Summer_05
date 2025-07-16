@@ -26,11 +26,12 @@ void Warp::Init(void)
 	auto& res = ResourceManager::GetInstance();
 
 	//ƒ‚ƒfƒ‹
-	trans_.SetModel(res.LoadModelDuplicate(ResourceManager::SRC::BULLETIN_BOARD));
+	trans_.SetModel(res.LoadModelDuplicate(ResourceManager::SRC::DOWA_MODEL));
 	trans_.quaRot = Quaternion();
 	trans_.quaRotLocal = Quaternion::AngleAxis(Utility::Deg2RadF(180.0f), Utility::AXIS_Y);
 	trans_.scl = SCALE;
 	radius_ = RADIUS;
+	trans_.rot = { 0.0f, DX_PI_F, 0.0f };
 	speed_ = 0.0f;
 	isShowUI_ = false;
 	trans_.pos = MODEL_POS;
@@ -43,7 +44,6 @@ void Warp::Init(void)
 void Warp::Update(void)
 {
 	auto& input = InputManager::GetInstance();
-	trans_.Update();
 
 	if (teleportUI_)
 	{
@@ -62,7 +62,13 @@ void Warp::Update(void)
 
 void Warp::Draw(void)
 {
-	MV1DrawModel(trans_.modelId);
+	if (trans_.modelId >= 0)
+	{
+		MV1SetScale(trans_.modelId, trans_.scl);
+		MV1SetPosition(trans_.modelId, trans_.pos);
+		MV1SetRotationXYZ(trans_.modelId, trans_.rot);
+		MV1DrawModel(trans_.modelId);
+	}
 
 	if (isShowUI_)
 	{

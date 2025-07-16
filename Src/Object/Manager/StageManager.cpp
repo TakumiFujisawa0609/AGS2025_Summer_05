@@ -11,6 +11,7 @@
 #include "CollisionManager.h"
 #include "../../Common/Fader.h"
 #include "../../Object/player.h"
+#include "../../DrawUI/SceneUI/GameHUD.h"
 
 //コンストラクタ
 StageManager::StageManager(void)
@@ -29,7 +30,7 @@ StageManager::~StageManager(void)
 }
 
 //初期化処理
-void StageManager::Init(std::shared_ptr<Player> player)
+void StageManager::Init(std::shared_ptr<Player> player, DateTimeManager* dateTimeManager)
 {
 	player_ = player;
 	stageId_ = STAGE_ID::NONE;
@@ -39,6 +40,10 @@ void StageManager::Init(std::shared_ptr<Player> player)
 	// フェード用UI
 	fader_ = std::make_unique<Fader>();
 	fader_->Init();
+
+	// 初期化時
+	gameHUD_ = std::make_unique<GameHUD>();
+	gameHUD_->Init(player_, dateTimeManager);
 
 	DoChangeStage(STAGE_ID::ATELIER);
 }
@@ -61,6 +66,8 @@ void StageManager::Update(void)
 	auto nowTime = std::chrono::system_clock::now();
 	deltaTime_ = std::chrono::duration<float>(nowTime - preTime_).count();
 	preTime_ = nowTime;
+
+	gameHUD_->Update();
 
 	// フェード更新
 	if (fader_) fader_->Update();
@@ -86,6 +93,8 @@ void StageManager::Draw(void)
 	{
 		stage_->Draw();
 	}
+
+	gameHUD_->Draw();
 
 	if (fader_) fader_->Draw();
 }
@@ -169,7 +178,7 @@ float StageManager::GetDeltaTime(void) const
 	return deltaTime_;
 }
 
-std::shared_ptr<Player> StageManager::GetPlayer(void) const
+std::shared_ptr<Player> StageManager::GetPlayer(void)
 {
 	return player_;
 }

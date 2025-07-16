@@ -70,7 +70,7 @@ public:
 	};
 
 	// モデルの大きさ
-	static constexpr VECTOR SCALES = { 0.5f, 0.5f, 0.5f };
+	static constexpr VECTOR SCALES = { 1.0f, 1.0f, 1.0f };
 
 	// 初期位置
 	static constexpr VECTOR DEFAULT_POS = { 0.0f, 20.0f, -200.0f };
@@ -79,7 +79,7 @@ public:
 	static constexpr COLOR_F COLOR_EMI_DEFAULT = { 0.5f, 0.5f, 0.5f, 0.5f };
 
 	// 移動スピード
-	static constexpr float SPEED_MOVE = 10.0f;
+	static constexpr float SPEED_MOVE = 5.0f;
 
 	//当たり判定の半径
 	static constexpr float RADIUS = 30.0f;

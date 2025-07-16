@@ -10,6 +10,7 @@
 #include "DrawUI/SceneUI/QuestUI.h"
 #include "DrawUI/Font.h"
 #include "Fps/FpsControll.h"
+#include "DrawUI/SceneUI/PauseMenu.h"
 
 
 Application* Application::instance_ = nullptr;
@@ -23,6 +24,7 @@ const std::string Application::PATH_TEXT = "Data/Text/";
 const std::string Application::PATH_FONT = "Data/Font/";
 const std::string Application::PATH_BGM = "Data/Sound/BGM/";
 const std::string Application::PATH_SE = "Data/Sound/SE/";
+const std::string Application::PATH_MOVIE = "Data/Movie/";
 const std::string Application::PATH_MAP_DATA = "Data/MapData/MapData.csv";
 
 void Application::CreateInstance(void)
@@ -61,6 +63,7 @@ void Application::Init(void)
 		isInitFail_ = true;
 		return;
 	}
+	SetMouseDispFlag(FALSE);
 
 	//エフェクシアの初期化
 	InitEffekseer();
@@ -97,52 +100,72 @@ void Application::Run(void)
 	auto& inputManager = InputManager::GetInstance();
 	auto& sceneManager = SceneManager::GetInstance();
 
+	PauseMenu pauseMenu;  // ← 追加：ポーズメニューインスタンス
+
 	MSG msg;
 
-	//ゲームループ
 	while (ProcessMessage() == 0)
 	{
-		//メッセージループ
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
 
-
-		//システムに処理を返す
 		Sleep(1);
 
-		//FPS制御更新処理
 		fps_->FpsControll_Update();
 
-		//ESCAPEキーが押されたら終了
-		if (CheckHitKey(KEY_INPUT_ESCAPE) == 1)
+		// --- ESCキーでポーズ表示 ---
+		if (!pauseMenu.IsVisible() && CheckHitKey(KEY_INPUT_ESCAPE) == 1)
 		{
-			return;
+			pauseMenu.Show();  // メニュー表示
 		}
-		//更新処理
+
 		inputManager.Update();
-		sceneManager.Update();
-		// QuestUI更新
-		QuestUI::GetInstance().Update();
-		
-		//描画処理
-		sceneManager.Draw();
-		// QuestUI描画（最後に描画して他のUIより前面に表示）
-		QuestUI::GetInstance().Draw();
 
-		if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_TAB) == 1)
+		if (pauseMenu.IsVisible())
 		{
-			fps_->FpsControll_Draw();
+			pauseMenu.Update();
+			if (pauseMenu.IsDecisionMade())
+			{
+				int index = pauseMenu.GetSelectedIndex();
+				switch (index)
+				{
+				case 0: // 続ける
+					pauseMenu.Hide();
+					break;
+
+				case 1: // 遊び方
+					// TODO: Help UI表示
+					break;
+
+				case 2: // 操作説明
+					// TODO: 操作説明 UI表示
+					break;
+
+				case 3: // ゲーム終了
+					return;
+				}
+			}
 		}
-		//フロントバッファに書き出し
+		else
+		{
+			// 通常ゲーム処理
+			sceneManager.Update();
+			QuestUI::GetInstance().Update();
+		}
+
+		// 描画
+		sceneManager.Draw();
+
+		if (pauseMenu.IsVisible())
+		{
+			pauseMenu.Draw();  // ポーズメニュー前面に
+		}
+
 		ScreenFlip();
-
-
-		//FPS制御
 		fps_->FpsControll_Wait();
-		
 	}
 }
 

@@ -36,7 +36,7 @@ void ResourceManager::InitTitle(void)
 	Resource res;
 
 	// タイトルロゴ画像を登録
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "");
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/titleRog.png");
 	resourcesMap_.emplace(SRC::TYTLE_LOGO, res);
 
 	// タイトルBGMを登録
@@ -64,6 +64,30 @@ void ResourceManager::InitGame(void)
 	// アイテム取得音を登録
 	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "");
 	resourcesMap_.emplace(SRC::SE_GET, res);
+
+	//フレーム
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/DHUI.png");
+	resourcesMap_.emplace(SRC::UI_FRAME, res);
+
+	//朝アイコン
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/moningUI.png");
+	resourcesMap_.emplace(SRC::MORNING, res);
+
+	//昼アイコン
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/HirumaUI.png");
+	resourcesMap_.emplace(SRC::DAY, res);
+
+	//夕方アイコン
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/HiruUI.png");
+	resourcesMap_.emplace(SRC::EVENING, res);
+
+	//夜アイコン
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/nightUI.png");
+	resourcesMap_.emplace(SRC::NIGHT, res);
+
+	//夜アイコン
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/Maney.png");
+	resourcesMap_.emplace(SRC::MANEY, res);
 
 	// プレイヤー関連リソースの初期化
 	ResourcePlayer();
@@ -128,9 +152,25 @@ void ResourceManager::ResourceAtelier(void)
 	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "/Atelier/renkingama.mv1");
 	resourcesMap_.emplace(SRC::ALCHEMYPOT, res);
 
+	//壁
+	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "/Atelier/AtelierStage.mv1");
+	resourcesMap_.emplace(SRC::STAGE_ATELIER, res);
+
+	//アイテムインベントリ
+	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "/Atelier/Box.mv1");
+	resourcesMap_.emplace(SRC::BOX, res);
+
 	//薬草
 	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Greenherb.png");
 	resourcesMap_.emplace(SRC::HERB, res);
+	
+	//解毒草
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Purpleherb.png");
+	resourcesMap_.emplace(SRC::ANTIDOTE_HERB, res);
+
+	//魔力草
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/BlueHerb.png");
+	resourcesMap_.emplace(SRC::MAGIC_FLOWER, res);
 
 	
 }
@@ -141,12 +181,32 @@ void ResourceManager::ResourceGuild(void)
 	Resource res;
 
 	//掲示板オブジェクトの登録
-	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "/GuildObject/Iitem.mv1");
+	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "/GuildObject/BulletinBoard.mv1");
 	resourcesMap_.emplace(SRC::BULLETIN_BOARD, res);
 
 	//掲示板の画像の登録
 	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "/GuildStage/BulletinBoard.png");
 	resourcesMap_.emplace(SRC::IMAGE_BOARD, res);
+
+	//カウンタ-オブジェクトの登録
+	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "/GuildObject/counter.mv1");
+	resourcesMap_.emplace(SRC::COUNTER, res);
+
+	//カウンタ-オブジェクトの登録
+	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "/GuildObject/TableSet.mv1");
+	resourcesMap_.emplace(SRC::TABLE_SET, res);
+
+	//依頼書の画像の登録
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "/GuildStage/Request.png");
+	resourcesMap_.emplace(SRC::IMAGE_REQUEST, res);
+	
+	//受付嬢のモデル
+	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GuildObject/uketuke.mv1");
+	resourcesMap_.emplace(SRC::RECEPTIONIST, res);
+
+	//種
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Seed.png");
+	resourcesMap_.emplace(SRC::SEED, res);
 }
 
 void ResourceManager::ResourceGarden(void)
@@ -172,6 +232,12 @@ void ResourceManager::ResourceGarden(void)
 
 	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GardenObject/fence.mv1");
 	resourcesMap_.emplace(SRC::FENCE_MODEL, res);
+
+	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GardenObject/well.mv1");
+	resourcesMap_.emplace(SRC::WELL_MODEL, res);
+
+	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GardenObject/Dowa.mv1");
+	resourcesMap_.emplace(SRC::DOWA_MODEL, res);
 
 }
 

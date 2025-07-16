@@ -26,7 +26,6 @@ void Teleport::Init(void)
 	auto& res = ResourceManager::GetInstance();
 
 	//ƒ‚ƒfƒ‹
-	trans_.SetModel(res.LoadModelDuplicate(ResourceManager::SRC::BULLETIN_BOARD));
 	trans_.scl = SCALE;
 	radius_ = RADIUS;
 	speed_ = 0.0f;
@@ -59,10 +58,7 @@ void Teleport::Update(void)
 
 void Teleport::Draw(void)
 {
-	MV1SetScale(trans_.modelId, trans_.scl);
-	MV1SetPosition(trans_.modelId, trans_.pos);
-	MV1SetRotationXYZ(trans_.modelId, trans_.rot);
-	MV1DrawModel(trans_.modelId);
+
 
 	if (isShowUI_)
 	{

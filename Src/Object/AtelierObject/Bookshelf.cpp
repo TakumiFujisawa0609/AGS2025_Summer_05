@@ -21,8 +21,8 @@ void Bookshelf::Init(void)
     trans_.SetModel(res.LoadModelDuplicate(ResourceManager::SRC::BOOKS_HELF));
 
     // フェンスの位置を地面に固定（例）
-    trans_.pos = { 300.0f, 0.0f, 200.0f };
-    trans_.scl = { 2.5f, 2.5f, 2.5f };
+    trans_.pos = { 0.0f, 0.0f, 0.0f };
+    trans_.scl = { 5.0f, 5.0f, 5.0f };
     trans_.rot = { 0.0f, 0.0f, 0.0f };
 
     // 当たり判定の範囲
@@ -34,7 +34,9 @@ void Bookshelf::Init(void)
 
 void Bookshelf::Update(void)
 {
-    
+    // 現在の位置に合わせて当たり判定範囲を毎フレーム更新
+    hitMin_ = { trans_.pos.x - WIDTH / 2, trans_.pos.y - HEIGHT / 2, trans_.pos.z - DEPTH / 2 };
+    hitMax_ = { trans_.pos.x + WIDTH / 2, trans_.pos.y + HEIGHT / 2, trans_.pos.z + DEPTH / 2 };
 }
 
 void Bookshelf::Draw(void)

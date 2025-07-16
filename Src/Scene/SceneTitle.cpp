@@ -1,107 +1,145 @@
-#include"SceneTitle.h"
+#include "SceneTitle.h"
 
-#include<DxLib.h>
-
-#include"../Manager/Generic/Resource.h"
-#include"../Manager/Generic/ResourceManager.h"
-#include"../Manager/Generic/SceneManager.h"
-#include"../Manager/Generic/InputManager.h"
-#include"../Manager/Decoration/SoundManager.h"
+#include <DxLib.h>
+#include "../Manager/Generic/Resource.h"
+#include "../Manager/Generic/ResourceManager.h"
+#include "../Manager/Generic/SceneManager.h"
+#include "../Manager/Generic/InputManager.h"
+#include "../Manager/Decoration/SoundManager.h"
 #include "../Manager/Generic/Camera.h"
-#include"../DrawUI/SceneUI/SceneUI.h"
-#include"../Object/Grid.h"
+#include "../DrawUI/SceneUI/SceneUI.h"
+#include "../Object/Grid.h"
+#include "../Application.h"
 
 SceneTitle::SceneTitle(void)
 {
-	logo_ = -1;
-	grid_ = nullptr;
+    logo_ = -1;
+    grid_ = nullptr;
+    isDecided_ = false;
+    blackAlpha_ = 0;
 }
 
 void SceneTitle::Init(void)
 {
-	//カメラ設定
-	auto camera = SceneManager::GetInstance().GetCamera();
-	camera->ChangeMode(Camera::MODE::FREE);
+    
+    auto camera = SceneManager::GetInstance().GetCamera();
+    camera->ChangeMode(Camera::MODE::FREE);
 
-	//グリッド線
-	grid_ = new Grid();
-	grid_->Init();
 
-	//UI
-	ui_ = std::make_unique<SceneUi>();
-	ui_->AddCharctor("Spaceを押して開始");
+    grid_ = new Grid();
+    grid_->Init();
 
-	//サウンド
-	auto& sound = SoundManager::GetInstance();
-	auto& res = ResourceManager::GetInstance();
+    ui_ = std::make_unique<SceneUi>();
+    ui_->AddCharctor("開始");
+    ui_->AddCharctor("遊び方");
+    ui_->AddCharctor("操作説明");
+    ui_->AddCharctor("クレジット");
 
-	sound.Add(SoundManager::TYPE::BGM, SoundManager::SOUND::BGM_TITLE, res.Load(ResourceManager::SRC::BGM_TITLE).handleId_);
-	sound.Add(SoundManager::TYPE::SE, SoundManager::SOUND::SE_PUSH, res.Load(ResourceManager::SRC::SE_PUSH).handleId_);
-	sound.AdjustVolume(SoundManager::SOUND::BGM_TITLE, 40);
-	sound.AdjustVolume(SoundManager::SOUND::SE_PUSH, 50);
+    auto& sound = SoundManager::GetInstance();
+    auto& res = ResourceManager::GetInstance();
 
-	//初期BGM
-	sound.Play(SoundManager::SOUND::BGM_TITLE);
+    sound.Add(SoundManager::TYPE::BGM, SoundManager::SOUND::BGM_TITLE, res.Load(ResourceManager::SRC::BGM_TITLE).handleId_);
+    sound.Add(SoundManager::TYPE::SE, SoundManager::SOUND::SE_PUSH, res.Load(ResourceManager::SRC::SE_PUSH).handleId_);
+    sound.AdjustVolume(SoundManager::SOUND::BGM_TITLE, 40);
+    sound.AdjustVolume(SoundManager::SOUND::SE_PUSH, 50);
+
+    sound.Play(SoundManager::SOUND::BGM_TITLE);
+
+    movieHandle_ = LoadGraph((Application::PATH_MOVIE + "TitleMovie.mp4").c_str());
+    PlayMovieToGraph(movieHandle_, TRUE);
+    SetMovieVolumeToGraph(movieHandle_, 255);
+
+
+    logo_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::TYTLE_LOGO).handleId_;
 }
 
 void SceneTitle::Update(void)
 {
-	auto& sound = SoundManager::GetInstance();
+    auto& sound = SoundManager::GetInstance();
+    auto& input = InputManager::GetInstance();
 
-	//シーン遷移(デバッグ)
-	if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_SPACE))
-	{
-		//決定音
-		sound.Play(SoundManager::SOUND::SE_PUSH);
+    if (showBlackBackground_)
+    {
+        // 黒背景表示中はXキーで戻る処理のみ許可
+        if (input.IsTrgDown(KEY_INPUT_X))
+        {
+            showBlackBackground_ = false; // メニュー表示に戻る
+        }
+        return; // それ以外は操作無効化
+    }
 
-		//BGM停止
-		sound.Stop(SoundManager::SOUND::BGM_TITLE);
+    // カーソル操作（上下キー）と決定処理はここだけで動く
+    int currentIndex = ui_->GetCurrentIndex();
+    int maxIndex = ui_->GetMaxIndex() - 1;
 
-		//シーン遷移
-		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME);
+    if (input.IsTrgDown(KEY_INPUT_UP))
+    {
+        currentIndex--;
+        if (currentIndex < 0) currentIndex = maxIndex;
+        ui_->SetCurrentIndex(currentIndex);
+    }
+    else if (input.IsTrgDown(KEY_INPUT_DOWN))
+    {
+        currentIndex++;
+        if (currentIndex > maxIndex) currentIndex = 0;
+        ui_->SetCurrentIndex(currentIndex);
+    }
 
-		//処理終了
-		return;
-	}
+    if (input.IsTrgDown(KEY_INPUT_RETURN))
+    {
+        int selected = ui_->GetCurrentIndex();
+        if (selected != 0)
+        {
+            showBlackBackground_ = true;
+        }
+        else
+        {
+            sound.Play(SoundManager::SOUND::SE_PUSH);
+            sound.Stop(SoundManager::SOUND::BGM_TITLE);
+            SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME);
+            return;
+        }
+    }
 
-	//点滅
-	ui_->FontBlinking();
+    ui_->FontBlinking();
 }
 
 void SceneTitle::Draw(void)
 {
 #ifdef _DEBUG
+    DrawDebug();
+    grid_->Draw();
+#endif
 
-	//デバッグ
-	DrawDebug();
+    // 背景動画
+    DrawRotaGraph3(0, 0, 0, 0, 0.8f, 0.8f, 0, movieHandle_, FALSE);
 
-	//グリッド線
-	grid_->Draw();
+    // 黒背景表示
+    if (showBlackBackground_)
+    {
+        DrawBox(0, 0, Application::DEFA_SCREEN_SIZE_X, Application::DEFA_SCREEN_SZIE_Y, GetColor(0, 0, 0), TRUE);
+    }
 
-#endif // SCENE_DEBUG
+   
 
-	//タイトルロゴ
-	DrawRotaGraph(Application::SCREEN_SIZE_X / 2, Application::SCREEN_SIZE_Y / 2, 1.0, 0.0, logo_, true);
-
-	int font = CreateFontToHandle(NULL, 10, 10);
-
-	DeleteFontToHandle(font);
-
-	//UI
-	ui_->Draw();
+    // UIは黒背景時は非表示
+    if (!showBlackBackground_)
+    {
+        // タイトルロゴ
+        DrawRotaGraph(Application::SCREEN_SIZE_X / 2 + 55, Application::SCREEN_SIZE_Y / 2, 1.0, 0.0, logo_, true);
+        ui_->Draw();
+    }
 }
 
 void SceneTitle::Release(void)
 {
-	grid_->Release();
-	delete grid_;
-	grid_ = nullptr;
+    DeleteGraph(movieHandle_);
+    grid_->Release();
+    delete grid_;
+    grid_ = nullptr;
 }
 
 void SceneTitle::DrawDebug(void)
 {
-
+    // 必要に応じて
 }
-
-
-

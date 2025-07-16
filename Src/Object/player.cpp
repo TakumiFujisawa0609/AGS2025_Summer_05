@@ -65,8 +65,8 @@ void Player::Init(void)
 	animationController_ = new AnimationController(modelId_);
 
 	// アニメーション登録（外部ファイル）
-	animationController_->AddExternal(static_cast<int>(ANIM_TYPE::IDLE), Application::PATH_MODEL + "player/Idle.mv1", 45.0f);
-	animationController_->AddExternal(static_cast<int>(ANIM_TYPE::WALK), Application::PATH_MODEL + "player/Walk.mv1", 45.0f);
+	animationController_->AddExternal(static_cast<int>(ANIM_TYPE::IDLE), Application::PATH_MODEL + "player/Idle.mv1", 35.0f);
+	animationController_->AddExternal(static_cast<int>(ANIM_TYPE::WALK), Application::PATH_MODEL + "player/Walk.mv1", 25.0f);
 
 	// 再生
 	animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
@@ -101,7 +101,7 @@ void Player::Draw(void)
 	MV1DrawModel(modelId_);
 #ifdef _DEBUG
 	// プレイヤー座標
-	DrawFormatString(0, 40, 0xffffff, "プレイヤー座標:(%.2f, %.2f, %.2f)", trans_.pos.x, trans_.pos.y, trans_.pos.z);
+	DrawFormatString(0, 40, 0x0, "プレイヤー座標:(%.2f, %.2f, %.2f)", trans_.pos.x, trans_.pos.y, trans_.pos.z);
 	DrawSphere3D(trans_.pos, radius_, 16, 0xffffff, 0xffffff, false);
 	DrawFormatString(0, 120, 0xffffff,"所持金 :%d", money_);
 	
@@ -111,7 +111,10 @@ void Player::Draw(void)
 void Player::Release(void)
 {
 	// プレイヤーモデルの解放
-	MV1DeleteModel(modelId_);
+	MV1SetScale(trans_.modelId, trans_.scl);
+	MV1SetPosition(trans_.modelId, trans_.pos);
+	MV1SetRotationXYZ(trans_.modelId, trans_.rot);
+	MV1DrawModel(trans_.modelId);
 
 	// アニメーションコントローラの解放
 	//animationController_->Release();

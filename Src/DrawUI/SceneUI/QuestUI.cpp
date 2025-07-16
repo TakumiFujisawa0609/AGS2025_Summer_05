@@ -76,6 +76,8 @@ void QuestUI::Init(void)
     activeQuests_.clear();
     isVisible_ = true;
 
+    completedQuestCount_ = 0;
+
     lastDay_ = -1;
 
     InitializeQuests();
@@ -88,11 +90,11 @@ void QuestUI::InitializeQuests(void)
     availableQuests_.clear();
 
     // 納品依頼データの初期化
-    availableQuests_.push_back(DeliveryQuest(0, "回復ポーソン納品", "回復ポーションを納品",
+    availableQuests_.push_back(DeliveryQuest(0, "回復ポーソン納品", "回復ポーソンを納品",
         "RecoveryPotion", 3, 300));
-    availableQuests_.push_back(DeliveryQuest(1, "解毒ポーソン納品", "解毒ポーションを納品",
+    availableQuests_.push_back(DeliveryQuest(1, "解毒ポーソン納品", "解毒ポーソンを納品",
         "AntidotePotion", 2 ,400));
-    availableQuests_.push_back(DeliveryQuest(2, "魔法ポーソン納品", "魔法ポーションを納品",
+    availableQuests_.push_back(DeliveryQuest(2, "魔法ポーソン納品", "魔法ポーソンを納品",
         "MagicPotion", 1, 500));
     availableQuests_.push_back(DeliveryQuest(3, "失敗した作品納品", "失敗した作品を納品",
         "Garbage", 1, 1000));
@@ -159,43 +161,40 @@ void QuestUI::Draw(void)
 // アクティブ依頼描画
 void QuestUI::DrawActiveQuests(void)
 {
-    int yOffset = 10;
-    int lineHeight = 25;
+    int xBase = 100;
+    int yBase = 120;
+    int yOffset = yBase + 10;  // 上辺から10px下に開始（余白）
+    int lineHeight = 30;       // フォント16〜20に合う余白込みの行間
 
-    // 背景描画
-    int bgWidth = 350;
+    int bgWidth = 380;
     int bgHeight = 30 + (activeQuests_.size() * lineHeight);
-    DrawBox(10, 5, 10 + bgWidth, 5 + bgHeight, GetColor(0, 0, 0), TRUE);
-    DrawBox(10, 5, 10 + bgWidth, 5 + bgHeight, GetColor(255, 255, 255), FALSE);
 
-    // タイトル描画
-    Font::GetInstance().DrawDefaultText(15, yOffset, "【納品依頼】", 0xffff00, 20);
+    DrawBox(xBase, yBase, xBase + bgWidth, yBase + bgHeight, GetColor(0, 0, 0), TRUE);
+    DrawBox(xBase, yBase, xBase + bgWidth, yBase + bgHeight, GetColor(255, 255, 255), FALSE);
+
+    Font::GetInstance().DrawDefaultText(xBase + 10, yOffset, "【納品依頼】", 0xffff00, 20);
     yOffset += lineHeight;
 
-    // アクティブ依頼リスト描画
     for (const auto& quest : activeQuests_)
     {
-        // 依頼タイトル
         unsigned int titleColor = quest.isCompleted ? 0x00ff00 : 0xffffff;
-        Font::GetInstance().DrawDefaultText(20, yOffset, quest.title.c_str(), titleColor, 16);
+        Font::GetInstance().DrawDefaultText(xBase + 10, yOffset, quest.title.c_str(), titleColor, 16);
 
-        // 納品進行状況表示
         std::string progressText = "納品: " + std::to_string(quest.currentAmount) + "/" + std::to_string(quest.requiredAmount);
-
-        // 進行状況の色分け
         unsigned int progressColor = quest.isCompleted ? 0x00ff00 :
             (quest.currentAmount > 0 ? 0xffff00 : 0xffffff);
 
-        Font::GetInstance().DrawDefaultText(220, yOffset, progressText.c_str(), progressColor, 16);
+        Font::GetInstance().DrawDefaultText(xBase + 180, yOffset, progressText.c_str(), progressColor, 16);
 
-        // 完了マーク
         if (quest.isCompleted)
         {
-            Font::GetInstance().DrawDefaultText(320, yOffset, "完了!", 0x00ff00, 16);
+            Font::GetInstance().DrawDefaultText(xBase + 330, yOffset, "完了!", 0x00ff00, 16);
         }
 
         yOffset += lineHeight;
     }
+
+
 
     //// デバッグ情報
     //DrawFormatString(0, 500, 0xffffff, "納品依頼数: %d", (int)activeQuests_.size());
@@ -257,6 +256,12 @@ void QuestUI::CompleteQuest(int questId)
                     break;
                 }
             }
+
+            if (completedQuestCount_ < MAX_QUESTS)
+            {
+                completedQuestCount_++;
+            }
+
             break;
         }
     }
@@ -390,6 +395,16 @@ void QuestUI::RefreshDailyQuests(void)
 const std::vector<DeliveryQuest>& QuestUI::GetSelectedQuests(void) const
 {
     return selectedQuests_;
+}
+
+int QuestUI::GetCompletedQuestCount(void) const
+{
+    return completedQuestCount_;
+}
+
+bool QuestUI::HasReachedMaxCompletion(void) const
+{
+    return completedQuestCount_ >= MAX_QUESTS;
 }
 
 

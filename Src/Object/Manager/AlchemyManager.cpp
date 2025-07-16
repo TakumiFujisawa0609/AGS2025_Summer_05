@@ -442,27 +442,71 @@ void AlchemyManager::Draw(void)
     auto& font = Font::GetInstance();
     auto& itemManager = ItemManager::GetInstance();
 
-    // 画面サイズを取得
     const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
     const int screenHeight = Application::DEFA_SCREEN_SZIE_Y;
 
-    // UI表示の基準位置
     const int startX = 100;
     const int startY = 100;
 
-    // タイトル
+    // --- タイトル ---
     font.DrawDefaultText(startX, startY - 30, "錬金メニュー", 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
 
-    // 素材アイテム一覧（左上）
     const int iconSize = 64;
     const int padding = 50;
     const int maxColumns = 5;
 
     int itemCount = itemManager.GetMaterialItemCount();
+    int rowCount = (itemCount + maxColumns - 1) / maxColumns;
+
+    // 左側背景サイズ
+    int leftWidth = maxColumns * (iconSize + padding) - padding;
+    int leftHeight = rowCount * (iconSize + padding + 20);
+
+    // 右側のX開始位置（右端の1/3から）
+    const int rightX = screenWidth * 3 / 5;
+
+    // 右側背景
+    const int rightBgLeft = rightX - 20;
+    const int rightBgTop = startY - 40;
+    const int rightBgRight = rightBgLeft + leftWidth + 40;
+    const int rightBgBottom = rightBgTop + leftHeight + Application::DEFA_SCREEN_SZIE_Y / 2;
+
+    // --- 背景描画 ---
+
+    SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
+
+    // 左背景 黒
+    const int leftBgLeft = startX - 20;
+    const int leftBgTop = startY - 40;
+    const int leftBgRight = startX + leftWidth + 20;
+    const int leftBgBottom = startY + leftHeight + Application::DEFA_SCREEN_SZIE_Y / 2;
+
+    DrawBox(leftBgLeft, leftBgTop, leftBgRight, leftBgBottom, GetColor(0, 0, 0), TRUE);
+
+    // 右背景 黒
+    DrawBox(rightBgLeft, rightBgTop, rightBgRight, rightBgBottom, GetColor(0, 0, 0), TRUE);
+
+    SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+    // --- 白い外枠 ---
+    const int borderThickness = 3;
+    const int white = GetColor(255, 255, 255);
+
+    for (int i = 0; i < borderThickness; ++i)
+    {
+        // 左側外枠
+        DrawBox(leftBgLeft - i, leftBgTop - i, leftBgRight + i, leftBgBottom + i, white, FALSE);
+
+        // 右側外枠
+        DrawBox(rightBgLeft - i, rightBgTop - i, rightBgRight + i, rightBgBottom + i, white, FALSE);
+    }
+
+    // --- 左側：素材一覧表示 ---
+
     auto getItemFunc = [&](int i) -> std::shared_ptr<ItemBase> {
         return itemManager.GetMaterialItem(i);
         };
-    // Draw メソッドの素材一覧表示部分（修正版）
+
     for (int i = 0; i < itemCount; ++i)
     {
         auto item = getItemFunc(i);
@@ -477,7 +521,6 @@ void AlchemyManager::Draw(void)
         DrawGraph(x, y, item->GetImageHandle(), true);
         font.DrawDefaultText(x, y + iconSize + 2, item->GetName().c_str(), 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
 
-        // 選択済みの同じ素材の合計数を計算
         int alreadySelectedAmount = 0;
         for (const auto& selected : selectedMaterials_)
         {
@@ -487,11 +530,9 @@ void AlchemyManager::Draw(void)
             }
         }
 
-        // 残り利用可能数を計算して表示
         int remainingQuantity = item->GetQuantity() - alreadySelectedAmount;
         std::string quantityStr = "x" + std::to_string(remainingQuantity);
 
-        // 残数が0の場合は赤色で表示
         int quantityColor = (remainingQuantity > 0) ? GetColor(200, 200, 200) : GetColor(255, 100, 100);
         font.DrawDefaultText(x, y + iconSize + 24, quantityStr.c_str(), quantityColor, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
 
@@ -503,13 +544,12 @@ void AlchemyManager::Draw(void)
         }
     }
 
-    // 使用数選択フェーズ（Draw メソッド内の該当部分）
+    // --- 使用数選択フェーズ ---
     if (currentPhase_ == 1)
     {
         auto item = itemManager.GetMaterialItem(selectedMaterialIndex_);
         if (item)
         {
-            // 選択済みの同じ素材の合計数を計算
             int alreadySelectedAmount = 0;
             for (const auto& selected : selectedMaterials_)
             {
@@ -528,62 +568,60 @@ void AlchemyManager::Draw(void)
             font.DrawDefaultText(startX, startY + 230, "↑↓：個数変更 Enter：決定 X：キャンセル", GetColor(150, 150, 150), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
         }
     }
-    // 個数編集フェーズ（Draw メソッド内の該当部分）- 修正版
+
+    // --- 個数編集フェーズ ---
     if (currentPhase_ == 3)
     {
-        // 選択中素材（右側に表示）
-        const int rightX = screenWidth - (screenWidth / 3);
         const int offsetY = 50;
-
         auto material = selectedMaterials_[selectedMaterialEditIndex_].item;
 
-        // シンプルな表示（利用可能数は表示しない）
         std::string text = material->GetName() + " 個数変更： " + std::to_string(currentAmount_) + " (0で削除)";
-        font.DrawDefaultText((rightX / 2) + offsetY * 6 , offsetY + static_cast<int>(selectedMaterials_.size() * 40), text.c_str(), GetColor(255, 200, 100), 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
 
-        font.DrawDefaultText((rightX / 2) + offsetY * 6 , offsetY + static_cast<int>(selectedMaterials_.size() * 40) + 30, "↑↓：個数変更 Enter：決定 X：キャンセル", GetColor(150, 150, 150), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
+        // 右側の文字表示位置を右背景の左端 + 20pxに合わせる
+        int rightTextX = rightBgLeft + 20;
+
+        font.DrawDefaultText(rightTextX, offsetY + static_cast<int>(selectedMaterials_.size() * 40), text.c_str(), GetColor(255, 200, 100), 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+        font.DrawDefaultText(rightTextX, offsetY + static_cast<int>(selectedMaterials_.size() * 40) + 30, "↑↓：個数変更 Enter：決定 X：キャンセル", GetColor(150, 150, 150), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
     }
-   
 
-    // 選択中素材（右側に表示）
-    const int rightX = screenWidth - (screenWidth / 3);
-    const int offsetY = 50;
-
-    font.DrawDefaultText((rightX / 2) + offsetY * 2, offsetY, "選択中の素材：", 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
-
-    for (size_t i = 0; i < selectedMaterials_.size(); ++i)
+    // --- 右側：選択中素材リスト ---
     {
-        std::string line = selectedMaterials_[i].item->GetName() + " x" + std::to_string(selectedMaterials_[i].amount);
-        int textColor = 0xffffff;
+        const int offsetY = 50;
+        int rightTextX = rightBgLeft + 20;
 
-        // 編集モードで選択中の素材をハイライト
-        if (currentPhase_ == 2 && i == static_cast<size_t>(selectedMaterialEditIndex_))
+        font.DrawDefaultText(rightTextX, offsetY, "選択中の素材：", 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+
+        for (size_t i = 0; i < selectedMaterials_.size(); ++i)
         {
-            textColor = GetColor(255, 255, 0); // 黄色でハイライト
+            std::string line = selectedMaterials_[i].item->GetName() + " x" + std::to_string(selectedMaterials_[i].amount);
+            int textColor = 0xffffff;
 
-            // 背景を描画
-            int textWidth = font.GetDefaultTextWidth(line.c_str());
-            DrawBox(rightX + 5, offsetY + 35 + static_cast<int>(i * 40),
-                rightX + 15 + textWidth, offsetY + 65 + static_cast<int>(i * 40),
-                GetColor(50, 50, 0), true);
+            if (currentPhase_ == 2 && i == static_cast<size_t>(selectedMaterialEditIndex_))
+            {
+                textColor = GetColor(255, 255, 0);
+
+                int textWidth = font.GetDefaultTextWidth(line.c_str());
+                DrawBox(rightTextX - 5, offsetY + 35 + static_cast<int>(i * 40),
+                    rightTextX + 10 + textWidth, offsetY + 65 + static_cast<int>(i * 40),
+                    GetColor(50, 50, 0), true);
+            }
+
+            font.DrawDefaultText(rightTextX, offsetY + 40 + static_cast<int>(i * 40), line.c_str(), textColor, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
         }
 
-        font.DrawDefaultText((rightX / 2) + offsetY * 2, offsetY + 40 + static_cast<int>(i * 40), line.c_str(), textColor, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+        int startTextY = offsetY + 60 + static_cast<int>(selectedMaterials_.size() * 40);
+
+        if (selectedMaterials_.size() >= 2)
+        {
+            font.DrawDefaultText(rightTextX, startTextY, "Space: 錬金開始", GetColor(0, 255, 0), 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+        }
+        else
+        {
+            font.DrawDefaultText(rightTextX, startTextY, "2種類以上の素材を選択して錬金開始", GetColor(150, 150, 150), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
+        }
     }
 
-    // 錬金開始表示（素材リストの下）
-    int startTextY = offsetY + 60 + static_cast<int>(selectedMaterials_.size() * 40);
-
-    if (selectedMaterials_.size() >= 2)
-    {
-        // 錬金実行可能な場合
-        font.DrawDefaultText((rightX / 2) + offsetY * 2, startTextY, "Space: 錬金開始", GetColor(0, 255, 0), 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
-    }
-    else
-    {
-        // 錬金実行不可能な場合
-        font.DrawDefaultText((rightX / 2) + offsetY * 2, startTextY, "2種類以上の素材を選択して錬金開始", GetColor(150, 150, 150), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
-    }    // フェーズ別の操作説明
+    // --- フェーズ別操作説明 ---
     std::string helpText;
     switch (currentPhase_)
     {
@@ -604,11 +642,11 @@ void AlchemyManager::Draw(void)
     int helpTextWidth = font.GetDefaultTextWidth(helpText.c_str());
     font.DrawDefaultText((screenWidth - helpTextWidth) / 2, screenHeight - 60, helpText.c_str(), GetColor(150, 150, 150), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
 
-    // 結果メッセージ（画面下）
+    // --- 結果メッセージ（画面下） ---
     if (resultMessageTimer_ > 0)
     {
         int resultTextWidth = font.GetDefaultTextWidth(resultMessage_.c_str());
-        font.DrawDefaultText((screenWidth - resultTextWidth) / 2, (screenHeight / 2) + MAX_COLUMNS * 4, resultMessage_.c_str(), 0xffaa00, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+        font.DrawDefaultText((screenWidth - resultTextWidth) / 2, (screenHeight / 2) + maxColumns * 4, resultMessage_.c_str(), 0xffaa00, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
         resultMessageTimer_--;
     }
 }

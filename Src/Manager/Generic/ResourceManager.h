@@ -38,10 +38,16 @@ public:
 		//ギルド関係
 		BULLETIN_BOARD,			//掲示板
 		IMAGE_BOARD,			//掲示板の画像
+		IMAGE_REQUEST,			//依頼書
+		TABLE_SET,				//テーブルセット
+		COUNTER,				//カウンター
+		RECEPTIONIST,			//受付嬢
 
 		//アトリエ関係
 		BOOKS_HELF,				//本棚
 		ALCHEMYPOT,				//錬金釜
+		STAGE_ATELIER,			//アトリエ全体
+		BOX,					//アイテムインベントリ
 
 		//庭関係
 		BLOCK_DIRT,				//土ブロック
@@ -51,6 +57,16 @@ public:
 		MATURE_MODEL,			//成熟モデル
 		ORE_MODEL,				//鉱石モデル
 		FENCE_MODEL,			//フェンスモデル
+		WELL_MODEL,				//井戸のモデル
+		DOWA_MODEL,				//ドア
+
+		//UI画像関連
+		UI_FRAME,               //フレーム
+		MORNING,				//朝のアイコン
+		DAY,					//昼のアイコン
+		EVENING,                //夕方のアイコン
+		NIGHT,                  //夜のアイコン
+		MANEY,					//お金のアイコン
 
 		//ミニマップ関係
 		MAP_FRAME,				//ミニマップ枠
