@@ -30,12 +30,19 @@ public:
 		BGM_GAME,       // ゲームプレイ中BGM
 		BGM_GAMEOVER,   // ゲームオーバー時BGM
 		BGM_GAMECLEAR,  // ゲームクリア時BGM
+		BGM_GARDEN_DAY, //ガーデンの朝昼BGM
+		BGM_GARDEN_NIGHT, //ガーデンの夕方夜BGM
+		BGM_ATELIER,    //アトリエBGM
+		BGM_GUILD,      //ギルドのBGM
+
 		SE_PUSH,        // ボタン押下時効果音
 		SE_CANCEL,              //キャンセル音
 		SE_SELECT,      // カーソル移動
 		SE_DAMAGE,      // ダメージ受けた時効果音
 		SE_GET,         // アイテム取得時効果音
 		SE_ALCHEMY,     // 錬金時効果音	
+		SE_ALCHEMY_FAIL, //錬金失敗効果音
+		SE_ALCHEMY_SUCCESS, //錬金成功効果音
 	};
 
 	/// <summary>

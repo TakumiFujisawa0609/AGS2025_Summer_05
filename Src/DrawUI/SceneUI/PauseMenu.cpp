@@ -2,10 +2,11 @@
 #include <DxLib.h>
 #include "../../Manager/Generic/InputManager.h"
 #include "../../Manager/Decoration/SoundManager.h"
+#include "../../Manager/Generic/ResourceManager.h"
 #include "../../DrawUI/Font.h"
 #include "../../Application.h"
 
-PauseMenu::PauseMenu()
+PauseMenu::PauseMenu(void)
 	: currentIndex_(0), visible_(false), decisionMade_(false)
 {
 	menuItems_ = {
@@ -14,37 +15,44 @@ PauseMenu::PauseMenu()
 		"操作説明",
 		"ゲーム終了"
 	};
+
+    controlHandle_ = -1;
 }
 
-void PauseMenu::Show()
+void PauseMenu::Show(void)
 {
 	visible_ = true;
 	currentIndex_ = 0;
 	decisionMade_ = false;
 }
 
-void PauseMenu::Hide()
+void PauseMenu::Hide(void)
 {
 	visible_ = false;
 	decisionMade_ = false;
 }
 
-bool PauseMenu::IsVisible() const
+bool PauseMenu::IsVisible(void) const
 {
 	return visible_;
 }
 
-bool PauseMenu::IsDecisionMade() const
+bool PauseMenu::IsDecisionMade(void) const
 {
 	return decisionMade_;
 }
 
-int PauseMenu::GetSelectedIndex() const
+int PauseMenu::GetSelectedIndex(void) const
 {
 	return currentIndex_;
 }
 
-void PauseMenu::Update()
+void PauseMenu::Init(void)
+{
+	controlHandle_ = LoadGraph((Application::PATH_IMAGE + "UI/sousa.png").c_str());
+}
+
+void PauseMenu::Update(void)
 {
     SoundManager& sound = SoundManager::GetInstance();
 
@@ -93,7 +101,7 @@ void PauseMenu::Update()
     }
 }
 
-void PauseMenu::Draw()
+void PauseMenu::Draw(void)
 {
     if (!visible_) return;
 
@@ -108,7 +116,12 @@ void PauseMenu::Draw()
         // TODO: ここに説明文の描画なども入れられます
         const char* message = (mode_ == MODE_POUSE::HOW_TO_PLAY) ? "遊び方説明..." : "操作説明...";
         DrawString(50, 50, message, GetColor(255, 255, 255));
-        DrawString(50, 100, "戻るにはXキーを押してください", GetColor(255, 255, 255));
+        DrawString(50, screenH - 10, "戻るにはXキーを押してください", GetColor(255, 255, 255));
+
+        if (mode_ == MODE_POUSE::CONTROL)
+        {
+            DrawRotaGraph3(5, 20, 0, 0, 1.0f, 1.0f, 0, controlHandle_, true);
+        }
         return;
     }
 
@@ -135,4 +148,9 @@ void PauseMenu::Draw()
         }
         Font::GetInstance().DrawDefaultText(x + 150, itemY, menuItems_[i].c_str(), 0xffffff,24, Font::FONT_TYPE_ANTIALIASING_EDGE);
     }
+}
+
+void PauseMenu::Release(void)
+{
+    DeleteGraph(controlHandle_);
 }

@@ -7,6 +7,7 @@
 #include "../Manager/Generic/ResourceManager.h"
 #include "../Manager/Generic/InputManager.h"
 #include "../Object/Manager/StageManager.h"
+#include "../Manager/Decoration/SoundManager.h"
 #include "../Object/GuildObject/BulletinBoard.h"
 #include "../Object/Manager/CollisionManager.h"
 #include "../Object/GuildObject/ WallGuild.h"
@@ -30,6 +31,9 @@ GuildStage::GuildStage(StageManager* stageManager) : stageManager_(stageManager)
 //初期化処理
 void GuildStage::Init(void)
 {
+	auto& sound = SoundManager::GetInstance();
+	auto& res = ResourceManager::GetInstance();
+
 	modelId_ = ResourceManager::GetInstance().LoadModelDuplicate(ResourceManager::SRC::STAGE_ATELIER);
 
 	modelIdPos_ = INIT_MODELID_POS;
@@ -47,6 +51,15 @@ void GuildStage::Init(void)
 
 	auto player = stageManager_->GetPlayer();
 	camera->SetPos(Camera::DEFAULT_CAMERA_POS, { 0.0f,0.0f,0.0f });
+
+	//BGMの追加
+	sound.Add(SoundManager::TYPE::BGM, SoundManager::SOUND::BGM_GUILD, res.Load(ResourceManager::SRC::BGM_GUILD).handleId_);
+
+	//BGMの音量調整
+	sound.AdjustVolume(SoundManager::SOUND::BGM_GUILD, 20);
+
+	sound.Play(SoundManager::SOUND::BGM_GUILD);
+	
 	//camera->SetFollow(&player->GetTransform());
 
 	// 1つのインスタンスを作成
@@ -97,6 +110,7 @@ void GuildStage::Update(void)
 {
 	auto& input = InputManager::GetInstance();
 
+#ifdef _DEBUG
 	//ステージ遷移(デバッグ)
 	if (input.IsTrgDown(KEY_INPUT_P))
 	{
@@ -107,6 +121,9 @@ void GuildStage::Update(void)
 		}
 	}
 
+#endif // _DEBUG
+
+	
 	bulletinBoard_->Update();
 	receptionist_->Update();
 	teleportMovement_->Update();

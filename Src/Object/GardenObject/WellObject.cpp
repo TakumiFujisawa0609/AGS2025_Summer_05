@@ -51,17 +51,21 @@ void WellObject::Draw() {
     if (isUIVisible_) {
         const char* text = isOnCooldown_ ? "ãÇÇﬂÇ»Ç¢" : "êÖÇãÇÇﬁ";
 
-        int fontSize = 18;
+        int fontSize = 24;
         int textWidth = GetDrawStringWidth(text, strlen(text), fontSize);
         int boxWidth = textWidth + 30;
         int boxHeight = 30;
 
-        int boxX = Application::SCREEN_SIZE_X / 2 - boxWidth / 2;
-        int boxY = Application::SCREEN_SIZE_Y / 2 + 100;
+        int boxX = (Application::SCREEN_SIZE_X / 2) - boxWidth / 2;
+        int boxY = (Application::SCREEN_SIZE_Y / 2) + 100;
 
-        DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(0, 0, 0), TRUE);
-        DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(255, 255, 255), FALSE);
-        Font::GetInstance().DrawDefaultText(boxX + 15, boxY + 5, text, GetColor(255, 255, 255), fontSize);
+        DrawBox(boxX - 10, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(0, 0, 0), TRUE);
+        DrawBox(boxX - 10, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(255, 255, 255), FALSE);
+        Font::GetInstance().DrawDefaultText(boxX + 10, boxY + 5, text, GetColor(255, 255, 255), fontSize);
+
+
+       
+       
     }
 
 #ifdef _DEBUG

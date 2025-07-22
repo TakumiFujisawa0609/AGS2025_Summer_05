@@ -73,16 +73,19 @@ void TeleportUI::Update(void)
 		case DESTINATION::GUILD:
 			sound.Play(SoundManager::SOUND::SE_PUSH);
 			stageManager_->ChangeStage(StageManager::STAGE_ID::GUILD);
+			PlayerStop::GetInstance().ResumeMovement();
 			break;
 
 		case DESTINATION::ATELIER:
 			sound.Play(SoundManager::SOUND::SE_PUSH);
 			stageManager_->ChangeStage(StageManager::STAGE_ID::ATELIER);
+			PlayerStop::GetInstance().ResumeMovement();
 			break;
 
 		case DESTINATION::GARDEN:
 			sound.Play(SoundManager::SOUND::SE_PUSH);
 			stageManager_->ChangeStage(StageManager::STAGE_ID::GARDEN);
+			PlayerStop::GetInstance().ResumeMovement();
 			break;
 
 		}
@@ -107,18 +110,18 @@ void TeleportUI::Draw(void)
 	const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
 	const int screenHeight = Application::DEFA_SCREEN_SZIE_Y;
 
-	int fontSize = 14;
+	int fontSize = 24;
 	int boxX = (screenWidth - 200) / 2;
 	int boxY = screenHeight / 4;
 
 	for (int i = 0; i < count; ++i)
 	{
-		int boxHeight = 24;
+		int boxHeight = 32;
 		int y = boxY + i * (boxHeight + 8);
 		int color = (i == static_cast<int>(selected_)) ? GetColor(255, 255, 0) : GetColor(255, 255, 255);
 
-		DrawBox(boxX, y, boxX + 200, y + boxHeight, GetColor(0, 0, 0), TRUE);
-		DrawBox(boxX, y, boxX + 200, y + boxHeight, color, FALSE);
+		DrawBox(boxX - 200, y, boxX + 400, y + boxHeight, GetColor(0, 0, 0), TRUE);
+		DrawBox(boxX -200, y, boxX + 400, y + boxHeight, color, FALSE);
 		Font::GetInstance().DrawDefaultText(boxX + 80, y + 4, options[i], color, fontSize);
 	}
 }

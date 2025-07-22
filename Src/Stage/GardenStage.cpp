@@ -6,6 +6,9 @@
 #include "../Manager/Generic/Resource.h"
 #include "../Manager/Generic/ResourceManager.h"
 #include "../Manager/Generic/InputManager.h"
+#include "../Manager/System/TimeManager.h"
+#include "../Manager/Decoration/SoundManager.h"
+#include "../Manager/System/DateTimeManager.h"
 #include "../Object/Manager/StageManager.h"
 #include "../Object/Manager/BlockManager.h"
 #include "../Object/Manager/PlantManager.h"
@@ -27,11 +30,16 @@ GardenStage::GardenStage(StageManager* stageManager)
 	plantManager_ = new PlantManager();
 	oreManager_ = new OreManager();
 	fenceManager_ = new FenceManager();
+
+	TimeZone currentTimeZone_ = TimeZone::MORNING;
 }
 
 // 初期化処理
 void GardenStage::Init(void)
 {
+	auto& res = ResourceManager::GetInstance();
+	auto& sound = SoundManager::GetInstance();
+	
 	// CSVファイルからブロック読み込み
 	blockManager_->Init(Application::PATH_MAP_DATA);
 
@@ -42,6 +50,20 @@ void GardenStage::Init(void)
 	auto camera = SceneManager::GetInstance().GetCamera();
 
 	camera->ChangeMode(Camera::MODE::FOLLOW);
+
+	//BGMの追加
+	sound.Add(SoundManager::TYPE::BGM, SoundManager::SOUND::BGM_GARDEN_DAY, res.Load(ResourceManager::SRC::BGM_GARDEN_DAY).handleId_);
+	sound.Add(SoundManager::TYPE::BGM, SoundManager::SOUND::BGM_GARDEN_NIGHT, res.Load(ResourceManager::SRC::BGM_GARDEN_NIGHT).handleId_);
+
+	//BGMの音量調整
+	sound.AdjustVolume(SoundManager::SOUND::BGM_GARDEN_DAY, 30);
+	sound.AdjustVolume(SoundManager::SOUND::BGM_GARDEN_NIGHT, 30);
+
+	sound.Play(SoundManager::SOUND::BGM_GARDEN_DAY);
+
+	auto& timeManager = TimeManager::GetInstance();
+	int hour = timeManager.GetGameHour();
+
 
 	// 植物初期化
 	plantManager_->Init(mapData, 50.0f);
@@ -55,6 +77,9 @@ void GardenStage::Init(void)
 
 	well_ = std::make_shared<WellObject>();
 	well_->Init();
+
+	dateTimeManager_ = new DateTimeManager();
+	dateTimeManager_->Init();
 
 	CollisionManager::GetInstance().Register(well_);
 
@@ -90,17 +115,24 @@ void GardenStage::Update(void)
 {
 	auto& input = InputManager::GetInstance();
 
+#ifdef _DEBUG
 	if (input.IsTrgDown(KEY_INPUT_P))
 	{
 		stageManager_->ChangeStage(StageManager::STAGE_ID::GUILD);
 	}
+#endif
 
+
+	// 各オブジェクトの更新
 	blockManager_->Update();
-	plantManager_->Update();
+	plantManager_->Update(stageManager_->GetPlayer()->GetPos());
 	oreManager_->Update();
 	fenceManager_->Update();
 	warp_->Update();
 	well_->Update();
+
+	// DateTimeManager の更新も忘れずに
+	dateTimeManager_->Update();
 }
 
 // 描画処理
@@ -146,5 +178,11 @@ void GardenStage::Release(void)
 		blockManager_->Release();
 		delete blockManager_;
 		blockManager_ = nullptr;
+	}
+
+	if (dateTimeManager_ != nullptr)
+	{
+		delete dateTimeManager_;
+		dateTimeManager_ = nullptr;
 	}
 }

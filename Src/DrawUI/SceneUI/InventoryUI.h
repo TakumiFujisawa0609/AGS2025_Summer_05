@@ -11,7 +11,7 @@ public:
     static constexpr int ICON_SIZE = 64;
 
     // 各アイテムの間隔
-    static constexpr int PADDING = 20;
+    static constexpr int PADDING = 100;
 
     // インベントリの表示タブ
     enum class TAB

@@ -21,6 +21,8 @@ private:
     int logo_;
     int movieHandle_;
     int operationHandle_;
+    int playHandle_;
+	int playHandle2_;
     Grid* grid_;
     std::unique_ptr<SceneUi> ui_;
 
@@ -28,6 +30,8 @@ private:
     bool isDecided_;
     int blackAlpha_;
     bool showBlackBackground_ = false;
+
+    bool isPlay_;
 
     void DrawDebug(void);
 };

@@ -35,7 +35,7 @@ void PlantManager::Init(const std::vector<std::vector<int>>& mapData, float bloc
 			{
 				auto plant = std::make_shared<PlantObject>();
 				plant->Init();
-				pos_ = { x * blockSize + offsetX_, 0.0f, z * blockSize + offsetZ_ };
+				pos_ = { x * blockSize + offsetX_, -10.0f, z * blockSize + offsetZ_ };
 				plant->GetTransforms().pos = pos_;
 				plant->SetActive(false);  // 最初は植えられていない
 				plants_.push_back(plant);
@@ -44,10 +44,31 @@ void PlantManager::Init(const std::vector<std::vector<int>>& mapData, float bloc
 	}
 }
 
-void PlantManager::Update()
+void PlantManager::Update(const VECTOR& playerPos)
 {
-	for (auto& plant : plants_)
-	{
+	std::shared_ptr<PlantObject> closestPlant = nullptr;
+	float minDist = FLT_MAX;
+
+	for (auto& plant : plants_) {
+		float dist = VSize(VSub(plant->GetTransforms().pos, playerPos));
+		if (dist < 50.0f && dist < minDist) {
+			minDist = dist;
+			closestPlant = plant;
+		}
+	}
+
+	// まず全UIを非表示
+	for (auto& plant : plants_) {
+		plant->HideUI();
+	}
+
+	// 最も近いものだけUIを表示
+	if (closestPlant) {
+		closestPlant->ShowUI();
+	}
+
+	// 通常の更新処理
+	for (auto& plant : plants_) {
 		plant->Update();
 	}
 }

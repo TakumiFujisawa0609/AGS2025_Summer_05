@@ -38,7 +38,7 @@ DeliveryQuest::DeliveryQuest(int questId, const std::string& questTitle, const s
 
     currentAmount = 0;
 
-    rewardMoney = money;
+    rewardMoney = money * required;
 
     isCompleted = false;
 
@@ -91,13 +91,13 @@ void QuestUI::InitializeQuests(void)
 
     // 納品依頼データの初期化
     availableQuests_.push_back(DeliveryQuest(0, "回復ポーソン納品", "回復ポーソンを納品",
-        "RecoveryPotion", 3, 300));
+        "RecoveryPotion", 1, 150));
     availableQuests_.push_back(DeliveryQuest(1, "解毒ポーソン納品", "解毒ポーソンを納品",
-        "AntidotePotion", 2 ,400));
+        "AntidotePotion", 1 ,300));
     availableQuests_.push_back(DeliveryQuest(2, "魔法ポーソン納品", "魔法ポーソンを納品",
-        "MagicPotion", 1, 500));
+        "MagicPotion", 1, 400));
     availableQuests_.push_back(DeliveryQuest(3, "失敗した作品納品", "失敗した作品を納品",
-        "Garbage", 1, 1000));
+        "Garbage", 1, 500));
 }
 
 //更新処理
@@ -167,7 +167,7 @@ void QuestUI::DrawActiveQuests(void)
     int lineHeight = 30;       // フォント16〜20に合う余白込みの行間
 
     int bgWidth = 380;
-    int bgHeight = 30 + (activeQuests_.size() * lineHeight);
+    int bgHeight = 40 + (activeQuests_.size() * lineHeight);
 
     DrawBox(xBase, yBase, xBase + bgWidth, yBase + bgHeight, GetColor(0, 0, 0), TRUE);
     DrawBox(xBase, yBase, xBase + bgWidth, yBase + bgHeight, GetColor(255, 255, 255), FALSE);
@@ -178,17 +178,17 @@ void QuestUI::DrawActiveQuests(void)
     for (const auto& quest : activeQuests_)
     {
         unsigned int titleColor = quest.isCompleted ? 0x00ff00 : 0xffffff;
-        Font::GetInstance().DrawDefaultText(xBase + 10, yOffset, quest.title.c_str(), titleColor, 16);
+        Font::GetInstance().DrawDefaultText(xBase + 10, yOffset, quest.title.c_str(), titleColor, 24, Font::FONT_TYPE_ANTIALIASING);
 
         std::string progressText = "納品: " + std::to_string(quest.currentAmount) + "/" + std::to_string(quest.requiredAmount);
         unsigned int progressColor = quest.isCompleted ? 0x00ff00 :
             (quest.currentAmount > 0 ? 0xffff00 : 0xffffff);
 
-        Font::GetInstance().DrawDefaultText(xBase + 180, yOffset, progressText.c_str(), progressColor, 16);
+        Font::GetInstance().DrawDefaultText(xBase + 200, yOffset, progressText.c_str(), progressColor, 24, Font::FONT_TYPE_ANTIALIASING);
 
         if (quest.isCompleted)
         {
-            Font::GetInstance().DrawDefaultText(xBase + 330, yOffset, "完了!", 0x00ff00, 16);
+            Font::GetInstance().DrawDefaultText(xBase + 330, yOffset, "完了!", 0x00ff00, 24, Font::FONT_TYPE_ANTIALIASING);
         }
 
         yOffset += lineHeight;

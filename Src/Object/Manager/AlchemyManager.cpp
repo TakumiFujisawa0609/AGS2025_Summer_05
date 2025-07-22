@@ -48,6 +48,7 @@ AlchemyManager::AlchemyManager(void)
 	isOpen_ = false;
     start_ = false;
     waitingForSEFinish_ = false;
+    alchemyResult_ = ALCHEMYRESULT::NONE;
 }
 
 AlchemyManager::~AlchemyManager(void)
@@ -178,14 +179,29 @@ void AlchemyManager::Update()
     {
         if (sound.IsPlaying(SoundManager::SOUND::SE_ALCHEMY))
         {
-            return;
+            return; // 錬金SEが再生中 → まだ待つ
         }
         else
         {
+            // 錬金SEが終わった → 結果SEを再生
+            if (alchemyResult_ == ALCHEMYRESULT::SUCCESS)
+            {
+                sound.Play(SoundManager::SOUND::SE_ALCHEMY_SUCCESS);
+            }
+            else if (alchemyResult_ == ALCHEMYRESULT::FAILURE)
+            {
+               
+            }
+            
+
+            // 結果のリセットと表示時間
+            alchemyResult_ = ALCHEMYRESULT::NONE;
             waitingForSEFinish_ = false;
-            resultMessageTimer_ = 180;  // 3秒間表示
+            resultMessageTimer_ = 180; // 3秒表示
+            return;
         }
     }
+
 
     if (input.IsTrgDown(KEY_INPUT_X))
     {
@@ -606,7 +622,7 @@ void AlchemyManager::Draw(void)
                 " (利用可能: " + std::to_string(availableAmount) + ")";
             font.DrawDefaultText(startX, startY + 200, text.c_str(), 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
 
-            font.DrawDefaultText(startX, startY + 230, "↑↓：個数変更 Enter：決定 X：キャンセル", GetColor(150, 150, 150), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
+            font.DrawDefaultText(startX, startY + 230, "↑↓：個数変更 Enter", GetColor(150, 150, 150), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
         }
     }
 
@@ -619,10 +635,10 @@ void AlchemyManager::Draw(void)
         std::string text = material->GetName() + " 個数変更： " + std::to_string(currentAmount_) + " (0で削除)";
 
         // 右側の文字表示位置を右背景の左端 + 20pxに合わせる
-        int rightTextX = rightBgLeft + 20;
+        int rightTextX = rightBgLeft + 150;
 
         font.DrawDefaultText(rightTextX, offsetY + static_cast<int>(selectedMaterials_.size() * 40), text.c_str(), GetColor(255, 200, 100), 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
-        font.DrawDefaultText(rightTextX, offsetY + static_cast<int>(selectedMaterials_.size() * 40) + 30, "↑↓：個数変更 Enter：決定 X：キャンセル", GetColor(150, 150, 150), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
+        font.DrawDefaultText(rightTextX, offsetY + static_cast<int>(selectedMaterials_.size() * 40) + 30, "↑↓：個数変更 Enter：決定", GetColor(150, 150, 150), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
     }
 
     // --- 右側：選択中素材リスト ---
@@ -658,7 +674,7 @@ void AlchemyManager::Draw(void)
         }
         else
         {
-            font.DrawDefaultText(rightTextX, startTextY, "2種類以上の素材を選択して錬金開始", GetColor(150, 150, 150), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
+            font.DrawDefaultText(rightTextX, startTextY, "2種類以上の素材を選択して錬金開始", GetColor(255, 255, 255), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
         }
     }
 
@@ -670,18 +686,18 @@ void AlchemyManager::Draw(void)
         helpText = "Enter：選択 Tab：編集 Space：錬金実行 X：閉じる";
         break;
     case 1:
-        helpText = "↑↓：個数変更 Enter：決定 X：キャンセル";
+        helpText = "↑↓：個数変更 Enter：決定";
         break;
     case 2:
-        helpText = "↑↓：素材選択 Enter：個数変更 Del：削除 Tab/X：戻る";
+        helpText = "↑↓：素材選択 Enter：個数変更 Tab：戻る";
         break;
     case 3:
-        helpText = "↑↓：個数変更 Enter：決定 X：キャンセル";
+        helpText = "↑↓：個数変更 Enter";
         break;
     }
 
     int helpTextWidth = font.GetDefaultTextWidth(helpText.c_str());
-    font.DrawDefaultText((screenWidth - helpTextWidth) / 2, screenHeight - 60, helpText.c_str(), GetColor(150, 150, 150), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
+    font.DrawDefaultText((screenWidth - helpTextWidth) / 2 + 50, screenHeight - 60, helpText.c_str(), GetColor(255, 255, 255), 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
 
     // --- 結果メッセージ（画面下） ---
     if (resultMessageTimer_ > 0)
@@ -743,6 +759,8 @@ void AlchemyManager::ExecuteAlchemy()
                 ItemManager::GetInstance().SubtractQuantity(m.item, m.amount);
             }
 
+            alchemyResult_ = ALCHEMYRESULT::SUCCESS;
+
             selectedMaterials_.clear();
 
             resultMessage_ = item->GetName() + " を作成しました！";
@@ -760,6 +778,10 @@ void AlchemyManager::ExecuteAlchemy()
     {
         ItemManager::GetInstance().SubtractQuantity(m.item, m.amount);
     }
+
+    alchemyResult_ = ALCHEMYRESULT::FAILURE;
+
+    SoundManager::GetInstance().Play(SoundManager::SOUND::SE_ALCHEMY_FAIL);
 
     ShowRecipeDifferenceMessage(selectedMap);
 

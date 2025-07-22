@@ -11,6 +11,15 @@
 class AlchemyManager
 {
 public:
+
+	enum class ALCHEMYRESULT
+	{
+		NONE,
+		SUCCESS,
+		FAILURE
+	};
+
+
 	const int MAX_COLUMNS = 5;
 
 	static void CreateInstance();
@@ -90,5 +99,6 @@ private:
 	// 表示タイマー（フレーム数）
 	int resultMessageTimer_;       
 
+	ALCHEMYRESULT alchemyResult_;
 };
 

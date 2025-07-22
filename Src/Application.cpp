@@ -93,6 +93,9 @@ void Application::Init(void)
 
 	//FPS制御初期化
 	fps_->FpsControll_Initialize();
+
+	pauseMenu_ = new PauseMenu();
+	pauseMenu_->Init();
 }
 
 void Application::Run(void)
@@ -100,7 +103,7 @@ void Application::Run(void)
 	auto& inputManager = InputManager::GetInstance();
 	auto& sceneManager = SceneManager::GetInstance();
 
-	PauseMenu pauseMenu;  // ← 追加：ポーズメニューインスタンス
+	
 
 	MSG msg;
 
@@ -117,23 +120,23 @@ void Application::Run(void)
 		fps_->FpsControll_Update();
 
 		// --- ESCキーでポーズ表示 ---
-		if (!pauseMenu.IsVisible() && CheckHitKey(KEY_INPUT_ESCAPE) == 1)
+		if (!pauseMenu_->IsVisible() && CheckHitKey(KEY_INPUT_ESCAPE) == 1)
 		{
-			pauseMenu.Show();  // メニュー表示
+			pauseMenu_->Show();  // メニュー表示
 		}
 
 		inputManager.Update();
 
-		if (pauseMenu.IsVisible())
+		if (pauseMenu_->IsVisible())
 		{
-			pauseMenu.Update();
-			if (pauseMenu.IsDecisionMade())
+			pauseMenu_->Update();
+			if (pauseMenu_->IsDecisionMade())
 			{
-				int index = pauseMenu.GetSelectedIndex();
+				int index = pauseMenu_->GetSelectedIndex();
 				switch (index)
 				{
 				case 0: // 続ける
-					pauseMenu.Hide();
+					pauseMenu_->Hide();
 					break;
 
 				case 1: // 遊び方
@@ -159,9 +162,9 @@ void Application::Run(void)
 		// 描画
 		sceneManager.Draw();
 
-		if (pauseMenu.IsVisible())
+		if (pauseMenu_->IsVisible())
 		{
-			pauseMenu.Draw();  // ポーズメニュー前面に
+			pauseMenu_->Draw();  // ポーズメニュー前面に
 		}
 
 		ScreenFlip();

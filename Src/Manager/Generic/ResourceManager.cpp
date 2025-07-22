@@ -27,24 +27,30 @@ ResourceManager& ResourceManager::GetInstance(void)
 // 共通初期化処理（今は空）
 void ResourceManager::Init(void)
 {
-
+	
 }
-
 // タイトルシーン用リソースの初期化
 void ResourceManager::InitTitle(void)
 {
 	Resource res;
+	// 操作説明画像を登録
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/sousa.png");
+	resourcesMap_.emplace(SRC::OPERATION, res);
+
+	//遊び方画像1
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/asobikata.png");
+	resourcesMap_.emplace(SRC::PLAY_GUIDE, res);
+
+	//遊び方画像2
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/asobikata2.png");
+	resourcesMap_.emplace(SRC::PLAY_GUIDE2, res);
 
 	// タイトルロゴ画像を登録
 	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/titleRog.png");
 	resourcesMap_.emplace(SRC::TYTLE_LOGO, res);
 
-	// 操作説明画像を登録
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/sousa.png");
-	resourcesMap_.emplace(SRC::OPERATION, res);
-
 	// タイトルBGMを登録
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_BGM + "");
+	res = Resource(Resource::TYPE::SOUND, Application::PATH_BGM + "nc49298.mp3");
 	resourcesMap_.emplace(SRC::BGM_TITLE, res);
 
 	// 決定音を登録
@@ -64,7 +70,7 @@ void ResourceManager::InitTitle(void)
 void ResourceManager::InitGame(void)
 {
 	Resource res;
-
+	
 	// ゲームBGMを登録
 	res = Resource(Resource::TYPE::SOUND, Application::PATH_BGM + "");
 	resourcesMap_.emplace(SRC::BGM_GAME, res);
@@ -196,10 +202,40 @@ void ResourceManager::ResourceAtelier(void)
 	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/BlueHerb.png");
 	resourcesMap_.emplace(SRC::MAGIC_FLOWER, res);
 
+	//回復ポーション
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/GreenTriangularPotion.png");
+	resourcesMap_.emplace(SRC::RECOVERY_POTION, res);
+
+	//解毒ポーション
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/PurpleTriangularPotion.png");
+	resourcesMap_.emplace(SRC::ANTIDOTE_POTION, res);
+
+	//魔力ポーション
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/BlueTriangularPotion.png");
+	resourcesMap_.emplace(SRC::MAGIC_POTION, res);
+
+	//水
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Water.png");
+	resourcesMap_.emplace(SRC::WATER, res);
+
+
 	//効果音
 	// 錬金音を登録
 	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "renkin.mp3");
 	resourcesMap_.emplace(SRC::SE_ALCHEMY, res);
+
+	// 錬金失敗音を登録
+	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "nc46976.mp3");
+	resourcesMap_.emplace(SRC::SE_ALCHEMY_FAIL, res);
+
+	// 錬金成功音を登録
+	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "fanfare3.mp3");
+	resourcesMap_.emplace(SRC::SE_ALCHEMY_SUCCESS, res);
+
+	//BGM
+	// アトリエのBGMを登録
+	res = Resource(Resource::TYPE::SOUND, Application::PATH_BGM + "m2.mp3");
+	resourcesMap_.emplace(SRC::BGM_ATELIER, res);
 	
 }
 
@@ -207,6 +243,8 @@ void ResourceManager::ResourceAtelier(void)
 void ResourceManager::ResourceGuild(void)
 {
 	Resource res;
+
+	
 
 	//掲示板オブジェクトの登録
 	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "/GuildObject/BulletinBoard.mv1");
@@ -235,6 +273,11 @@ void ResourceManager::ResourceGuild(void)
 	//種
 	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Seed.png");
 	resourcesMap_.emplace(SRC::SEED, res);
+	
+	//BGM
+	// ゲームBGMを登録
+	res = Resource(Resource::TYPE::SOUND, Application::PATH_BGM + "maou_bgm_ethnic10.mp3");
+	resourcesMap_.emplace(SRC::BGM_GUILD, res);
 }
 
 void ResourceManager::ResourceGarden(void)
@@ -267,6 +310,13 @@ void ResourceManager::ResourceGarden(void)
 	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GardenObject/Dowa.mv1");
 	resourcesMap_.emplace(SRC::DOWA_MODEL, res);
 
+	//BGM
+	// 庭の朝昼のBGMを登録
+	res = Resource(Resource::TYPE::SOUND, Application::PATH_BGM + "nc86886.mp3");
+	resourcesMap_.emplace(SRC::BGM_GARDEN_DAY, res);
+
+	res = Resource(Resource::TYPE::SOUND, Application::PATH_BGM + "nc141198_plant_girl.wav");
+	resourcesMap_.emplace(SRC::BGM_GARDEN_NIGHT, res);
 }
 
 // プレイヤー用リソース初期化（未実装）

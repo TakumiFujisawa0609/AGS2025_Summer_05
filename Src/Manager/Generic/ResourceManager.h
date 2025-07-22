@@ -68,6 +68,8 @@ public:
 		NIGHT,                  //夜のアイコン
 		MANEY,					//お金のアイコン
 		OPERATION,              //操作説明の画像
+		PLAY_GUIDE,             //遊び方の画像1
+		PLAY_GUIDE2,            //遊び方の画像2
 
 		//ミニマップ関係
 		MAP_FRAME,				//ミニマップ枠
@@ -81,6 +83,10 @@ public:
 		BGM_GAME,				//ゲームBGM
 		BGM_GAMEOVER,			//ゲームオーバーBGM
 		BGM_GAMECLEAR,			//ゲームクリアBGM
+		BGM_GARDEN_DAY,         //庭の朝昼のBGM
+		BGM_GARDEN_NIGHT,       //庭の夕方夜のBGM
+		BGM_ATELIER,            //アトリエのBGM
+		BGM_GUILD,              //ギルドのBGM
 
 		SE_PUSH,				//ボタン決定音
 		SE_SELECT,              //カーソル移動音
@@ -88,6 +94,8 @@ public:
 		SE_DAMAGE,				//ダメージ音
 		SE_GET,					//アイテム取得音
 		SE_ALCHEMY,             //錬金音
+		SE_ALCHEMY_FAIL,        //錬金失敗音	
+		SE_ALCHEMY_SUCCESS,     //錬金成功音
 	};
 
 	//明示的にインスタンスを生成する

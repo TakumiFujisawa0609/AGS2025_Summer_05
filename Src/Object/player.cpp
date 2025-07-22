@@ -184,6 +184,10 @@ void Player::ResetBlockDirs(void)
 void Player::SetMovementEnabled(bool enabled)
 {
 	movementEnabled_ = enabled;
+	if (!movementEnabled_)
+	{
+		PlayAnim(ANIM_TYPE::IDLE, true);
+	}
 }
 
 bool Player::IsMovementEnabled(void) const
@@ -191,7 +195,7 @@ bool Player::IsMovementEnabled(void) const
 	return movementEnabled_;
 }
 
-// Player.cpp ‚É’Ç‰Á
+
 void Player::PlayAnim(ANIM_TYPE type, bool loop)
 {
 	int animIndex = static_cast<int>(type);
@@ -205,6 +209,7 @@ void Player::PlayAnim(ANIM_TYPE type, bool loop)
 
 void Player::ProcessMove(void)
 {
+
 	if (!movementEnabled_) return;
 
 	InputManager& ins = InputManager::GetInstance();

@@ -261,7 +261,7 @@ void Shop::Draw(void)
     const int boxWidth = screenWidth / 2 - 100;
     const int leftX = (screenWidth / 2 - boxWidth) / 2;
     const int leftY = 100;
-    const int fontSize = 14;
+    const int fontSize = 24;
 
     if (currentPhase_ == SHOP_PHASE::SELECT_AMOUNT)
     {
@@ -278,24 +278,24 @@ void Shop::Draw(void)
             int bottom = centerY + boxHeight / 2;
 
             SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
-            DrawBox(left, top, right, bottom, GetColor(40, 40, 40), TRUE);
+            DrawBox(left - 70, top, right + 70, bottom, GetColor(0, 0, 0), TRUE);
             SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-            DrawBox(left, top, right, bottom, GetColor(255, 255, 255), FALSE);
+            DrawBox(left - 70, top, right + 70, bottom, GetColor(255, 255, 255), FALSE);
 
             std::string text = item->GetName() + " 数量: " + std::to_string(selectedQuantity_);
             Font::GetInstance().DrawDefaultText(left + 20, top + 30, text.c_str(), GetColor(255, 255, 0), 24);
 
-            std::string help = "↑↓: 数量変更  Enter: 決定  X: キャンセル";
+            std::string help = "↑↓: 数量変更  Enter: 決定";
             Font::GetInstance().DrawDefaultText(left + 20, top + 70, help.c_str(), GetColor(200, 200, 200), 18);
         }
         return;
     }
 
     // 左側ショップ画面描画
-    DrawBox(leftX, leftY, leftX + boxWidth, leftY + 500, GetColor(30, 30, 30), TRUE);
-    DrawBox(leftX, leftY, leftX + boxWidth, leftY + 500, GetColor(255, 255, 255), FALSE);
-    Font::GetInstance().DrawDefaultText(leftX + 10, leftY - 30, "ショップ（種）", GetColor(255, 255, 255), 20);
+    DrawBox(leftX, leftY, leftX + boxWidth, leftY + 700, GetColor(30, 30, 30), TRUE);
+    DrawBox(leftX, leftY, leftX + boxWidth, leftY + 700, GetColor(255, 255, 255), FALSE);
+    //Font::GetInstance().DrawDefaultText(leftX + 10, leftY - 30, "ショップ（種）", GetColor(0, 255, 255), 20);
 
     int startX = leftX + 10;
     int startY = leftY + 10;
@@ -314,14 +314,14 @@ void Shop::Draw(void)
         bool selected = (currentArea_ == SHOP_AREA::ITEM_LIST && i == selectedItemIndex_);
         if (selected)
         {
-            DrawBox(x - 5, y - 5, x + SHOP_ITEM_WIDTH + 5, y + SHOP_ITEM_HEIGHT + 5, GetColor(255, 255, 0), FALSE);
+            DrawBox(x - 5, y - 5, x + SHOP_ITEM_WIDTH + 5, y + SHOP_ITEM_HEIGHT + 10, GetColor(255, 255, 0), FALSE);
         }
 
         DrawGraph(x, y, item->GetImageHandle(), TRUE);
-        Font::GetInstance().DrawDefaultText(x, y + SHOP_ICON_SIZE + 2, item->GetName().c_str(), GetColor(255, 255, 255), 12);
+        Font::GetInstance().DrawDefaultText(x, y + SHOP_ICON_SIZE + 2, item->GetName().c_str(), GetColor(255, 255, 255), 24);
 
         std::string quantityText = "x" + std::to_string(purchaseQuantities_[item->GetId()]);
-        Font::GetInstance().DrawDefaultText(x, y + SHOP_ICON_SIZE + 18, quantityText.c_str(), GetColor(200, 200, 0), 12);
+        Font::GetInstance().DrawDefaultText(x, y + SHOP_ICON_SIZE + 32, quantityText.c_str(), GetColor(200, 200, 0), 24);
     }
 
     if (auto selected = GetSelectedItem())
@@ -329,13 +329,15 @@ void Shop::Draw(void)
         const std::string& desc = selected->GetDescription();
         int descWidth = Font::GetInstance().GetDefaultTextWidth(desc);
         int descX = leftX + (boxWidth - descWidth) / 2;
-        int descY = leftY + 500 + 20;
+        int descY = leftY + (Application::DEFA_SCREEN_SZIE_Y / 2) + 200;
 
-        SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180);
-        DrawBox(descX - 10, descY - 5, descX + descWidth + 10, descY + fontSize + 10, GetColor(50, 50, 50), TRUE);
-        SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+       
+        DrawBox(descX - 300, descY - 5, descX + descWidth + 300, descY + 200, GetColor(0, 0, 0), TRUE);
 
-        Font::GetInstance().DrawDefaultText(descX, descY, desc.c_str(), GetColor(255, 255, 255), fontSize);
+        DrawBox(descX - 300, descY - 5, descX + descWidth + 300, descY + 200, GetColor(255, 255, 255),false);
+
+
+        Font::GetInstance().DrawDefaultText(descX -300, descY + 10, desc.c_str(), GetColor(255, 255, 255), fontSize);
     }
 
     DrawRightSideUI();
@@ -348,9 +350,9 @@ void Shop::DrawRightSideUI()
     const int boxWidth = screenWidth / 2 - 100;
     const int rightX = screenWidth / 2 + (screenWidth / 2 - boxWidth) / 2;
 
-    DrawBox(rightX, leftY, rightX + boxWidth, leftY + 500, GetColor(10, 10, 10), TRUE);
-    DrawBox(rightX, leftY, rightX + boxWidth, leftY + 500, GetColor(255, 255, 255), FALSE);
-    Font::GetInstance().DrawDefaultText(rightX + 10, leftY - 30, "購入リスト", 0xffffff, 20);
+    DrawBox(rightX, leftY, rightX + boxWidth, leftY + 700, GetColor(10, 10, 10), TRUE);
+    DrawBox(rightX, leftY, rightX + boxWidth, leftY + 700, GetColor(255, 255, 255), FALSE);
+   // Font::GetInstance().DrawDefaultText(rightX + 10, leftY - 30, "購入リスト", 0xffffff, 20);
 
     int yOffset = 10;
     int index = 0;
@@ -368,13 +370,13 @@ void Shop::DrawRightSideUI()
 
             if (currentArea_ == SHOP_AREA::PURCHASE_LIST && purchaseListSelectedIndex_ == index)
             {
-                DrawBox(rightX + 5, y - 2, rightX + boxWidth - 5, y + 20, GetColor(255, 255, 0), FALSE);
+                DrawBox(rightX + 5, y - 10, rightX + boxWidth - 5, y + 30, GetColor(255, 255, 0), FALSE);
             }
 
             std::string line = seed->GetName() + " x" + std::to_string(entry.second)
                 + "（" + std::to_string(seed->GetPrice() * entry.second) + "G）";
 
-            Font::GetInstance().DrawDefaultText(rightX + 10, y, line.c_str(), 0xffffff, 16);
+            Font::GetInstance().DrawDefaultText(rightX + 10, y, line.c_str(), 0xffffff, 24);
             index++;
         }
     }
@@ -384,16 +386,16 @@ void Shop::DrawRightSideUI()
     bool isSelected = (currentArea_ == SHOP_AREA::PURCHASE_LIST) && (purchaseListSelectedIndex_ == itemCount);
     if (isSelected)
     {
-        DrawBox(rightX + 5, buttonY - 2, rightX + boxWidth - 5, buttonY + 20, GetColor(255, 255, 0), FALSE);
+        DrawBox(rightX + 5, buttonY - 10, rightX + boxWidth - 5, buttonY + 30, GetColor(255, 255, 0), FALSE);
     }
-    Font::GetInstance().DrawDefaultText(rightX + 10, buttonY, "[購入]", 0xffffff, 16);
+    Font::GetInstance().DrawDefaultText(rightX + 10, buttonY, "[購入]", 0xffffff, 24);
 
     int playerMoney = player_ ? player_->GetMoney() : 0;
     int totalPrice = GetTotalPrice();
 
-    Font::GetInstance().DrawDefaultText(rightX + 10, leftY + 420, ("所持金: " + std::to_string(playerMoney) + " G").c_str(), 0xffffff, 18);
-    Font::GetInstance().DrawDefaultText(rightX + 10, leftY + 450, ("合計: " + std::to_string(totalPrice) + " G").c_str(), GetColor(255, 200, 0), 20);
-    Font::GetInstance().DrawDefaultText(rightX + 10, leftY + 480, "[Tab] フォーカス切替 [Enter] 決定 [X] 閉じる", 0xcccccc, 16);
+    Font::GetInstance().DrawDefaultText(rightX + 10, leftY + 600, ("所持金: " + std::to_string(playerMoney) + " G").c_str(), 0xffffff, 24);
+    Font::GetInstance().DrawDefaultText(rightX + 10, leftY + 650, ("合計: " + std::to_string(totalPrice) + " G").c_str(), GetColor(255, 200, 0), 24);
+    Font::GetInstance().DrawDefaultText(rightX + 10, leftY + 680, "[Tab] フォーカス切替 [Enter] 決定 [X] 閉じる", 0xcccccc, 20);
 }
 
 std::shared_ptr<SeedItem> Shop::GetSelectedItem(void) const

@@ -11,10 +11,19 @@ class FenceManager;
 class OreManager;
 class Warp;
 class WellObject;
+class DateTimeManager;
 
 class GardenStage : public StageBase
 {
 public:
+	enum class TimeZone
+	{
+		MORNING,
+		DAY,
+		EVENING,
+		NIGHT
+	};
+
 	//コンストラクタ
 	GardenStage(StageManager* stageManager);
 
@@ -45,7 +54,12 @@ private:
 
 	FenceManager* fenceManager_;
 
+	DateTimeManager* dateTimeManager_;
+
 	std::shared_ptr<Warp> warp_;
 
 	std::shared_ptr<WellObject> well_;
+
+	TimeZone currentTimeZone_;
+
 };

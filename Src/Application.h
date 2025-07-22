@@ -2,18 +2,19 @@
 #include<string>
 #include<windows.h>
 class Fps;
+class PauseMenu;
 
 class Application
 {
 public:
 
 	//ウインドサイズ
-	static constexpr int SCREEN_SIZE_X = 1540;
-	static constexpr int SCREEN_SIZE_Y = 900;
+	static constexpr int SCREEN_SIZE_X = 1920;
+	static constexpr int SCREEN_SIZE_Y = 1080;
 
 	//フルスクリーンサイズ
-	static constexpr int DEFA_SCREEN_SIZE_X = 1540;
-	static constexpr int DEFA_SCREEN_SZIE_Y = 900;
+	static constexpr int DEFA_SCREEN_SIZE_X = 1920;
+	static constexpr int DEFA_SCREEN_SZIE_Y = 1080;
 
 	
 
@@ -70,6 +71,8 @@ private:
 
 	//フレームレート制御
 	Fps* fps_;
+
+	PauseMenu* pauseMenu_;
 
 	//エフェクシアの初期化
 	void InitEffekseer(void);

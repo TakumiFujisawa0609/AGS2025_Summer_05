@@ -83,14 +83,24 @@ void SceneGame::Init(void)
 	auto& sound = SoundManager::GetInstance();
 	auto& res = ResourceManager::GetInstance();
 
-	sound.Add(SoundManager::TYPE::BGM, SoundManager::SOUND::BGM_TITLE, res.Load(ResourceManager::SRC::BGM_TITLE).handleId_);
+	
+
+	//SEâπÇÃí«â¡
 	sound.Add(SoundManager::TYPE::SE, SoundManager::SOUND::SE_PUSH, res.Load(ResourceManager::SRC::SE_PUSH).handleId_);
 	sound.Add(SoundManager::TYPE::SE, SoundManager::SOUND::SE_CANCEL, res.Load(ResourceManager::SRC::SE_CANCEL).handleId_);
 	sound.Add(SoundManager::TYPE::SE, SoundManager::SOUND::SE_ALCHEMY, res.Load(ResourceManager::SRC::SE_ALCHEMY).handleId_);
-	sound.AdjustVolume(SoundManager::SOUND::BGM_TITLE, 30);
+	sound.Add(SoundManager::TYPE::SE, SoundManager::SOUND::SE_ALCHEMY_FAIL, res.Load(ResourceManager::SRC::SE_ALCHEMY_FAIL).handleId_);
+	sound.Add(SoundManager::TYPE::SE, SoundManager::SOUND::SE_ALCHEMY_SUCCESS, res.Load(ResourceManager::SRC::SE_ALCHEMY_SUCCESS).handleId_);
+
+	
+	//SEÇÃâπó í≤êÆ
 	sound.AdjustVolume(SoundManager::SOUND::SE_CANCEL, 30);
 	sound.AdjustVolume(SoundManager::SOUND::SE_PUSH, 30);
 	sound.AdjustVolume(SoundManager::SOUND::SE_ALCHEMY, 30);
+	sound.AdjustVolume(SoundManager::SOUND::SE_ALCHEMY_FAIL, 100);
+	sound.AdjustVolume(SoundManager::SOUND::SE_ALCHEMY_SUCCESS, 30);
+
+	
 
 	// UIÇÃê∂ê¨
 	inventoryUI_ = new InventoryUI();

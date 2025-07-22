@@ -63,24 +63,21 @@ void TeleportMovement::Draw(void)
 	MV1DrawModel(trans_.modelId);
 
 	const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
-	const int screenHeight = Application::DEFA_SCREEN_SIZE_X;
+	const int screenHeight = Application::DEFA_SCREEN_SZIE_Y;
 
 	if (isShowUI_)
 	{
-		// テキスト内容
 		const char* text = "移動";
-		int fontSize = 14;
-		int textWidth = GetDrawStringWidth(text, strlen(text), -1);
-		int boxWidth = textWidth + 30; // 余白を加える
-		int boxHeight = 20;
-
+		int fontSize = 24;
+		int textWidth = GetDrawStringWidth(text, strlen(text), fontSize);
+		int boxWidth = textWidth + 30;
+		int boxHeight = 30;
 		int boxX = (screenWidth - boxWidth) / 2;
-		int boxY = boxY = (screenHeight / 4) + boxHeight;
+		int boxY = screenHeight / 2 + 100;
 
-		// UI表示（中央）
-		DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(0, 0, 0), TRUE);
-		DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(255, 255, 255), FALSE);
-		Font::GetInstance().DrawDefaultText(boxX + 20, boxY + 5, text, 0xffffff, fontSize);
+		DrawBox(boxX - 20, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(0, 0, 0), TRUE);
+		DrawBox(boxX - 20, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(255, 255, 255), FALSE);
+		Font::GetInstance().DrawDefaultText(boxX + 10, boxY + 5, text, GetColor(255, 255, 255), fontSize);
 	}
 
 	if (teleportUI_)

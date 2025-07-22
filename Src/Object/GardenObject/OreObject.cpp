@@ -84,10 +84,10 @@ void OreObject::Draw(void)
             text = "çÃå@ïsâ¬";
         }
 
-        int screenWidth = Application::SCREEN_SIZE_X;
-        int screenHeight = Application::SCREEN_SIZE_Y;
+        const int screenWidth = Application::SCREEN_SIZE_X;
+        const int screenHeight = Application::SCREEN_SIZE_Y;
 
-        int fontSize = 18;
+        int fontSize = 24;
         int textWidth = GetDrawStringWidth(text, strlen(text), fontSize);
         int boxWidth = textWidth + 30;
         int boxHeight = 30;
@@ -95,10 +95,13 @@ void OreObject::Draw(void)
         int boxX = screenWidth / 2 - boxWidth / 2;
         int boxY = screenHeight / 2 + 100;
 
-        DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(0, 0, 0), TRUE);
-        DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(255, 255, 255), FALSE);
-        Font::GetInstance().DrawDefaultText(boxX + 15, boxY + 5, text, GetColor(255, 255, 255), fontSize);
+        DrawBox(boxX - 20, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(0, 0, 0), TRUE);
+        DrawBox(boxX - 20, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(255, 255, 255), FALSE);
+
+        Font::GetInstance().DrawDefaultText(boxX + 10, boxY + 5, text, GetColor(255, 255, 255), fontSize);
     }
+
+
 
 #ifdef _DEBUG
     DrawSphere3D(trans_.pos, radius_, 8, GetColor(0, 255, 0), GetColor(0, 255, 0), FALSE);

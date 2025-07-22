@@ -54,7 +54,7 @@ void PlantObject::Init(void)
     trans_.scl = VGet(0.04, 0.03, 0.04);
     trans_.rot = VGet(0, 0, 0);
 
-    radius_ = 1;
+    radius_ = 0.1;
 }
 
 // ‰ð•ú
@@ -177,7 +177,7 @@ void PlantObject::Draw(void)
             const int screenWidth = Application::SCREEN_SIZE_X;
             const int screenHeight = Application::SCREEN_SIZE_Y;
 
-            int fontSize = 18;
+            int fontSize = 24;
             int textWidth = GetDrawStringWidth(text, strlen(text), fontSize);
             int boxWidth = textWidth + 30;
             int boxHeight = 30;
@@ -185,10 +185,10 @@ void PlantObject::Draw(void)
             int boxX = screenWidth / 2 - boxWidth / 2;
             int boxY = screenHeight / 2 + 100;
 
-            DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(0, 0, 0), TRUE);
-            DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(255, 255, 255), FALSE);
+            DrawBox(boxX - 20, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(0, 0, 0), TRUE);
+            DrawBox(boxX - 20, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(255, 255, 255), FALSE);
 
-            Font::GetInstance().DrawDefaultText(boxX + 15, boxY + 5, text, GetColor(255, 255, 255), fontSize);
+            Font::GetInstance().DrawDefaultText(boxX + 10, boxY + 5, text, GetColor(255, 255, 255), fontSize);
         }
     }
 

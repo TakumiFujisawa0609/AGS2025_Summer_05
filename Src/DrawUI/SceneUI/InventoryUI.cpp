@@ -122,7 +122,7 @@ void InventoryUI::Draw(void)
 	auto& font = Font::GetInstance();
 
 	// 各種定数
-	const int fontSize = 18;
+	const int fontSize = 24;
 	const int iconSize = ICON_SIZE;
 	const int padding = PADDING;
 
@@ -154,31 +154,31 @@ void InventoryUI::Draw(void)
 	const int gridHeight = rowCount * (iconSize * 2 + padding); // アイコン+名前+数量のため2倍
 
 	// 中央揃えの描画開始位置
-	const int startX = (Application::SCREEN_SIZE_X - gridWidth) / 2;
-	const int startY = (Application::SCREEN_SIZE_Y - gridHeight) / 2;
+	const int startX = 150;
+	const int startY = 150;
 
 	// ここでグリッド描画領域の背景を黒く半透明に塗る
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
-	DrawBox(startX - 10, 80, startX + gridWidth + 10, startY + gridHeight + 30, GetColor(0, 0, 0), TRUE);
+	DrawBox(startX - 100, 140, startX + gridWidth + 200, startY + gridHeight + (Application::DEFA_SCREEN_SZIE_Y / 2) + 200, GetColor(0, 0, 0), TRUE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-	DrawBox(startX - 10, 80, startX + gridWidth + 10, startY + gridHeight + 30, GetColor(255, 255, 255), FALSE);
+	DrawBox(startX - 100, 140, startX + gridWidth + 200, startY + gridHeight + (Application::DEFA_SCREEN_SZIE_Y / 2) + 200, GetColor(255, 255, 255), FALSE);
 
 	// タブ表示
 	const std::string materialText = "素材アイテム";
 	const std::string productText = "完成品アイテム";
 
-	int tabY = 40;
-	int tabX = (Application::SCREEN_SIZE_X - font.GetDefaultTextWidth(materialText)) / 2;
+	int tabY = 100;
+	int tabX = (Application::SCREEN_SIZE_X / 2) - font.GetDefaultTextWidth(materialText);
 
 	if (currentTab_ == TAB::Material)
 	{
-		font.DrawDefaultText(tabX, tabY, materialText.c_str(), GetColor(255, 255, 0), 24);
+		font.DrawDefaultText(tabX, tabY, materialText.c_str(), GetColor(255, 255, 0), 28, Font::FONT_TYPE_ANTIALIASING_EDGE);
 	}
 	else if (currentTab_ == TAB::Product)
 	{
 		tabX = (Application::SCREEN_SIZE_X - font.GetDefaultTextWidth(productText)) / 2;
-		font.DrawDefaultText(tabX, tabY, productText.c_str(), GetColor(255, 255, 0), 24);
+		font.DrawDefaultText(tabX, tabY, productText.c_str(), GetColor(255, 255, 0), 28, Font::FONT_TYPE_ANTIALIASING_EDGE);
 	}
 
 	// アイテム描画ループ
@@ -194,10 +194,10 @@ void InventoryUI::Draw(void)
 		int y = startY + row * (iconSize * 2 + padding);
 
 		DrawGraph(x, y, item->GetImageHandle(), true);
-		font.DrawDefaultText(x, y + iconSize + 4, item->GetName().c_str(), GetColor(255, 255, 255), 12);
+		font.DrawDefaultText(x, y + iconSize + 4, item->GetName().c_str(), GetColor(255, 255, 255), 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
 
 		std::string quantityStr = "x" + std::to_string(item->GetQuantity());
-		font.DrawDefaultText(x, y + iconSize + 24, quantityStr.c_str(), GetColor(200, 200, 200), 12);
+		font.DrawDefaultText(x, y + iconSize + 24, quantityStr.c_str(), GetColor(200, 200, 200), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
 
 		if (i == selectedItemIndex_)
 		{
@@ -215,12 +215,14 @@ void InventoryUI::Draw(void)
 		{
 			const std::string& description = selectedItem->GetDescription();
 			int descWidth = font.GetDefaultTextWidth(description);
-			int descX = (Application::SCREEN_SIZE_X - descWidth) / 2;
-			int descY = startY + gridHeight + 80;
+			int descX = (Application::SCREEN_SIZE_X/ 2) + 120;
+			int descY = Application::DEFA_SCREEN_SZIE_Y / 2;
 
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180);
-			DrawBox(descX - 10, descY - 5, descX + descWidth + 10, descY + fontSize + 10, GetColor(60, 60, 60), true);
+			DrawBox(descX, descY - 5, Application::DEFA_SCREEN_SIZE_X - 50, descY + fontSize + (Application::DEFA_SCREEN_SZIE_Y / 2) - 100, GetColor(0, 0, 0), true);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+			DrawBox(descX, descY - 5, Application::DEFA_SCREEN_SIZE_X - 50, descY + fontSize + (Application::DEFA_SCREEN_SZIE_Y / 2) - 100, GetColor(255, 255, 255), false);
 
 			font.DrawDefaultText(descX, descY, description.c_str(), GetColor(255, 255, 255), fontSize);
 		}

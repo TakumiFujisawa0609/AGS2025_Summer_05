@@ -3,6 +3,7 @@
 #include <DxLib.h>
 #include <cassert>
 
+#include "../../Manager/Decoration/SoundManager.h"
 #include "../../Stage/StageBase.h"
 #include "../../Stage/AtelierStage.h"
 #include "../../Stage/GardenStage.h"
@@ -120,6 +121,24 @@ void StageManager::ChangeStage(STAGE_ID nextId)
 //ステージ遷移本体
 void StageManager::DoChangeStage(STAGE_ID stageId)
 {
+	auto& sound = SoundManager::GetInstance();
+
+	//現在のステージがアトリエならBGMを停止する
+	if (stageId_ == STAGE_ID::ATELIER)
+	{
+		sound.Stop(SoundManager::SOUND::BGM_ATELIER);
+	}
+	else if (stageId_ == STAGE_ID::GUILD)
+	{
+		sound.Stop(SoundManager::SOUND::BGM_GUILD);
+	}
+	else if (stageId_ == STAGE_ID::GARDEN)
+	{
+		sound.Stop(SoundManager::SOUND::BGM_GARDEN_DAY);
+		sound.Stop(SoundManager::SOUND::BGM_GARDEN_NIGHT);
+	}
+
+
 	// 既存のステージを削除
 	if (stage_ != nullptr)
 	{

@@ -18,6 +18,11 @@ SceneTitle::SceneTitle(void)
     isDecided_ = false;
     blackAlpha_ = 0;
     operationHandle_ = -1;
+    movieHandle_ = -1;
+	showBlackBackground_ = false;
+	playHandle_ = -1;
+	playHandle2_ = -1;
+	isPlay_ = false;
 }
 
 void SceneTitle::Init(void)
@@ -43,7 +48,7 @@ void SceneTitle::Init(void)
     sound.Add(SoundManager::TYPE::SE, SoundManager::SOUND::SE_PUSH, res.Load(ResourceManager::SRC::SE_PUSH).handleId_);
     sound.Add(SoundManager::TYPE::SE, SoundManager::SOUND::SE_SELECT, res.Load(ResourceManager::SRC::SE_SELECT).handleId_);
     sound.AdjustVolume(SoundManager::SOUND::BGM_TITLE, 40);
-    sound.AdjustVolume(SoundManager::SOUND::SE_PUSH, 30);
+    sound.AdjustVolume(SoundManager::SOUND::SE_PUSH, 20);
     sound.AdjustVolume(SoundManager::SOUND::SE_SELECT, 30);
 
     sound.Play(SoundManager::SOUND::BGM_TITLE);
@@ -55,6 +60,14 @@ void SceneTitle::Init(void)
 
     logo_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::TYTLE_LOGO).handleId_;
     operationHandle_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::OPERATION).handleId_;
+	playHandle_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::PLAY_GUIDE).handleId_;
+	playHandle2_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::PLAY_GUIDE2).handleId_;
+
+	// ‰ŠúƒJ[ƒ\ƒ‹ˆÊ’u
+	ui_->SetCurrentIndex(0);
+	// •”wŒi•\Ž¦ƒtƒ‰ƒO‰Šú‰»
+	showBlackBackground_ = false;
+    isPlay_ = true;
 }
 
 void SceneTitle::Update(void)
@@ -108,6 +121,8 @@ void SceneTitle::Update(void)
         }
     }
 
+    
+
     ui_->FontBlinking();
 }
 
@@ -119,7 +134,7 @@ void SceneTitle::Draw(void)
 #endif
 
     // ”wŒi“®‰æ
-    DrawRotaGraph3(0, 0, 0, 0, 0.8f, 0.8f, 0, movieHandle_, FALSE);
+    DrawRotaGraph3(0, 0, 0, 0, 1.0f, 1.0f, 0, movieHandle_, FALSE);
 
     // •”wŒi•\Ž¦
     if (showBlackBackground_)
@@ -139,7 +154,22 @@ void SceneTitle::Draw(void)
 
     if (ui_->GetCurrentIndex() == 2 && showBlackBackground_)
     {
-        DrawRotaGraph3(20,20, 0, 0, 1.2f, 1.2f, 0,operationHandle_, true);
+        DrawRotaGraph3(5,20, 0, 0, 1.0f, 1.0f, 0,operationHandle_, true);
+    }
+
+
+    if (ui_->GetCurrentIndex() == 1 && showBlackBackground_)
+    {
+        if (isPlay_)
+        {
+            DrawRotaGraph3(5, 20, 0, 0, 1.0f, 1.0f, 0, playHandle_, true);
+        }
+        else
+        {
+            DrawRotaGraph3(5, 20, 0, 0, 1.0f, 1.0f, 0, playHandle2_, true);
+        }
+
+       
     }
 }
 

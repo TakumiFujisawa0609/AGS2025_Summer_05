@@ -13,7 +13,7 @@ public:
 
 	void Init(const std::vector<std::vector<int>>& mapData, float blockSize);
 
-	void Update(void);
+	void Update(const VECTOR& playerPos);
 
 	void Draw(void);
 

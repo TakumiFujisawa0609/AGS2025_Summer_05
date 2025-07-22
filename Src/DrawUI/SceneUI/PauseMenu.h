@@ -22,8 +22,10 @@ public:
 	bool IsVisible(void) const;
 
 	// XVE•`‰æ
+	void Init(void);
 	void Update(void);
 	void Draw(void);
+	void Release(void);
 
 	// Œ‹‰Êæ“¾
 	bool IsDecisionMade(void) const;
@@ -36,6 +38,8 @@ private:
 	int currentIndex_;
 	bool visible_;
 	bool decisionMade_;
+
+	int controlHandle_;
 
 	MODE_POUSE mode_;
 };

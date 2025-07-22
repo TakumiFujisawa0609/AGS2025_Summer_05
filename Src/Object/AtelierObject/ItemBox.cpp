@@ -75,23 +75,24 @@ void ItemBox::Draw(void)
 
 void ItemBox::DrawUI(void)
 {
+
+	const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
+	const int screenHeight = Application::DEFA_SCREEN_SZIE_Y;
+
 	// UIメッセージ表示（インベントリが未表示のとき）
 	if (isShowUI_ && !isInventoryOpen_)
 	{
 		const char* text = "アイテムボックス";
-		int fontSize = 18;
-		int textWidth = GetDrawStringWidth(text, strlen(text), -1);
+		int fontSize = 24;
+		int textWidth = GetDrawStringWidth(text, strlen(text), fontSize);
 		int boxWidth = textWidth + 30;
 		int boxHeight = 30;
-
-		int screenWidth = Application::SCREEN_SIZE_X;
-		int screenHeight = Application::SCREEN_SIZE_Y;
 		int boxX = (screenWidth - boxWidth) / 2;
-		int boxY = (screenHeight / 4) + 150;
+		int boxY = screenHeight / 2 + 180;
 
-		DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(0, 0, 0), TRUE);
-		DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(255, 255, 255), FALSE);
-		Font::GetInstance().DrawDefaultText(boxX + 15, boxY + 5, text, 0xffffff, fontSize);
+		DrawBox(boxX - 20, boxY - 10, boxX + boxWidth + 60, boxY + boxHeight + 10, GetColor(0, 0, 0), TRUE);
+		DrawBox(boxX - 20, boxY - 10, boxX + boxWidth + 60, boxY + boxHeight + 10, GetColor(255, 255, 255), FALSE);
+		Font::GetInstance().DrawDefaultText(boxX + 10, boxY + 5, text, GetColor(255, 255, 255), fontSize);
 	}
 
 	// インベントリ表示中

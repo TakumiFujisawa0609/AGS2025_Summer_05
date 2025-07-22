@@ -60,21 +60,22 @@ void Teleport::Update(void)
 
 void Teleport::Draw(void)
 {
-
+	const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
+	const int screenHeight = Application::DEFA_SCREEN_SZIE_Y;
 
 	if (isShowUI_)
 	{
 		const char* text = "ˆÚ“®";
-		int fontSize = 14;
-		int textWidth = GetDrawStringWidth(text, strlen(text), -1);
+		int fontSize = 24;
+		int textWidth = GetDrawStringWidth(text, strlen(text), fontSize);
 		int boxWidth = textWidth + 30;
-		int boxHeight = 20;
-		int boxX = (Application::DEFA_SCREEN_SIZE_X - boxWidth) / 2;
-		int boxY = (Application::DEFA_SCREEN_SZIE_Y / 4) + boxHeight;
+		int boxHeight = 30;
+		int boxX = (screenWidth - boxWidth) / 2;
+		int boxY = screenHeight / 2 + 100;
 
-		DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(0, 0, 0), TRUE);
-		DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(255, 255, 255), FALSE);
-		Font::GetInstance().DrawDefaultText(boxX + 20, boxY + 5, text, 0xffffff, fontSize);
+		DrawBox(boxX - 20, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(0, 0, 0), TRUE);
+		DrawBox(boxX - 20, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(255, 255, 255), FALSE);
+		Font::GetInstance().DrawDefaultText(boxX + 10, boxY + 5, text, GetColor(255, 255, 255), fontSize);
 	}
 
 	if (teleportUI_)

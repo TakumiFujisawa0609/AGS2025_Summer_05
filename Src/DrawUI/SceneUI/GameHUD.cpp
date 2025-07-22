@@ -58,7 +58,7 @@ void GameHUD::Draw(void)
     int iconY = margin;
 
     DrawRotaGraph3(iconX, iconY - 60, 0, 0, 0.27f, 0.27f,0,moneyIconHandle_, true);
-    font.DrawDefaultText(iconX + 180, iconY + 15, std::to_string(money).c_str(), 0xffffff, 28, Font::FONT_TYPE_ANTIALIASING_EDGE);
+    font.DrawDefaultText(iconX + 180, iconY + 15, std::to_string(money).c_str(), 0xffffff, 32, Font::FONT_TYPE_ANTIALIASING_EDGE);
 
     // ==== 時間帯表示 ====
     DateTimeManager::TIME_ZONE timeZone = dateTimeManager_->GetTimeZone();
@@ -69,20 +69,22 @@ void GameHUD::Draw(void)
 
     int completedCount = QuestUI::GetInstance().GetCompletedQuestCount();
     std::string completeText = "達成依頼数 : " + std::to_string(completedCount) + " / " + std::to_string(100);
-    font.DrawDefaultText(Application::DEFA_SCREEN_SIZE_X / 2 - 100, iconY + 30, completeText.c_str(), GetColor(255, 255, 255), 22, Font::FONT_TYPE_ANTIALIASING_EDGE);
+    font.DrawDefaultText(Application::DEFA_SCREEN_SIZE_X / 2 - 100, iconY + 30, completeText.c_str(), GetColor(255, 255, 255), 28, Font::FONT_TYPE_ANTIALIASING_EDGE);
 
     // MAXに達したら全画面に文字を表示
     if (maxCompleteMessageTimer_ > 0)
     {
+       
         std::string msg = "あなたは錬金術師として有名になった!!";
         int msgWidth = font.GetDefaultTextWidth(msg.c_str());
-        int screenW = Application::DEFA_SCREEN_SIZE_X;
+        int screenW = Application::DEFA_SCREEN_SIZE_X / 2;
         int screenH = Application::DEFA_SCREEN_SZIE_Y;
-
-        font.DrawDefaultText((screenW / 2) - msgWidth, screenH / 2, msg.c_str(), 0xffffff, 32, Font::FONT_TYPE_ANTIALIASING_EDGE);
-
+        font.DrawDefaultText(screenW / 2, screenH / 2, msg.c_str(), 0xffffff, 58, Font::FONT_TYPE_ANTIALIASING_EDGE);
         maxCompleteMessageTimer_--;
     }
+
+   
+    
 
    
 

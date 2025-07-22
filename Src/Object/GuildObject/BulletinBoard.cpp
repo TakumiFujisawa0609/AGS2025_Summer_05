@@ -150,16 +150,16 @@ void BulletinBoard::DrawUI(void)
 	if (!isShowQuestList_)
 	{
 		const char* text = "依頼";
-		int fontSize = 18;
+		int fontSize = 24;
 		int textWidth = GetDrawStringWidth(text, strlen(text), fontSize);
 		int boxWidth = textWidth + 30;
 		int boxHeight = 30;
 		int boxX = (screenWidth - boxWidth) / 2;
 		int boxY = screenHeight / 2 + 100;
 
-		DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(0, 0, 0), TRUE);
-		DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(255, 255, 255), FALSE);
-		Font::GetInstance().DrawDefaultText(boxX + 15, boxY + 5, text, GetColor(255, 255, 255), fontSize);
+		DrawBox(boxX - 20, boxY-10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(0, 0, 0), TRUE);
+		DrawBox(boxX - 20, boxY-10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(255, 255, 255), FALSE);
+		Font::GetInstance().DrawDefaultText(boxX + 10, boxY + 5, text, GetColor(255, 255, 255), fontSize);
 	}
 	else
 	{
@@ -173,16 +173,16 @@ void BulletinBoard::DrawUI(void)
 		const int startX = (screenWidth - (3 * boxWidth + 2 * spacing)) / 2;
 		const int startY = 200;
 
-		DrawRotaGraph3(-5, -5, 0, 0, 1.0f, 1.0f, 0, imageBoardId_, TRUE);
+		DrawRotaGraph3(-5, -5, 0, 0, 1.23f, 1.23f, 0, imageBoardId_, TRUE);
 
-		Font::GetInstance().DrawDefaultText(startX, startY - 100, "===== 納品依頼一覧 =====", 0xffffff, 24);
+		Font::GetInstance().DrawDefaultText(startX, startY - 100, "===== 納品依頼一覧 =====", 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
 
 		for (int i = 0; i < 3; i++)
 		{
 			int xPos = startX + i * (boxWidth + spacing);
 			int boxColor = (i == selectedQuest_) ? GetColor(50, 50, 80) : GetColor(0, 0, 0);
 			int borderColor = (i == selectedQuest_) ? GetColor(255, 0, 255) : GetColor(255, 255, 255);
-			int textColor = (i == selectedQuest_) ? 0xff00ff : 0xffffff;
+			int textColor = (i == selectedQuest_) ? 0xffff00 : 0xffffff;
 
 			int imgW, imgH;
 			GetGraphSize(imageQuest_, &imgW, &imgH);
@@ -202,12 +202,12 @@ void BulletinBoard::DrawUI(void)
 				questText = quest.title + " x" + std::to_string(quest.requiredAmount);
 			}
 
-			Font::GetInstance().DrawDefaultText(xPos + 100, startY + boxHeight / 2 - 10,
-				questText.c_str(), textColor, 18);
+			Font::GetInstance().DrawDefaultText(xPos + 10, startY + boxHeight / 2 - 10,
+				questText.c_str(), textColor, 32);
 		}
 
 		Font::GetInstance().DrawDefaultText(startX, startY + boxHeight + 30,
-			"←→キー: 選択  Enter: 決定  X: 閉じる", 0xcccccc, 16);
+			"←→キー: 選択  Enter: 決定  X: 閉じる", 0xcccccc, 24);
 	}
 
 	// UI描画終了後はZバッファを元に戻す

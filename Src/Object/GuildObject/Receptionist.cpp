@@ -126,7 +126,7 @@ void Receptionist::DrawModel(void)
     if (trans_.modelId >= 0)
     {
         MV1SetScale(trans_.modelId, trans_.scl);
-        MV1SetPosition(trans_.modelId, {trans_.pos.x, trans_.pos.y,trans_.pos.z + 60});
+        MV1SetPosition(trans_.modelId, { trans_.pos.x, trans_.pos.y,trans_.pos.z + 60 });
         MV1SetRotationXYZ(trans_.modelId, trans_.rot);
         MV1DrawModel(trans_.modelId);
     }
@@ -296,7 +296,7 @@ void Receptionist::UpdateDeliveryMenu(void)
 {
     auto& input = InputManager::GetInstance();
 
-    if (!isSelectingQuantity_ && !deliverableItems_.empty())
+    /*if (!isSelectingQuantity_ && !deliverableItems_.empty())
     {
         int itemCount = static_cast<int>(deliverableItems_.size());
         if (input.IsTrgDown(KEY_INPUT_UP))
@@ -322,7 +322,7 @@ void Receptionist::UpdateDeliveryMenu(void)
                 selectedQuantity_ = std::max(selectedQuantity_ - 1, 1);
             }
         }
-    }
+    }*/
 
     if (input.IsTrgDown(KEY_INPUT_RETURN))
     {
@@ -343,8 +343,9 @@ void Receptionist::UpdateDeliveryMenu(void)
         }
     }
 
-    if (input.IsTrgDown(KEY_INPUT_ESCAPE) || input.IsTrgDown(KEY_INPUT_X))
+    if (input.IsTrgDown(KEY_INPUT_X))
     {
+        SoundManager::GetInstance().Play(SoundManager::SOUND::SE_CANCEL);
         if (isSelectingQuantity_)
         {
             isSelectingQuantity_ = false;
@@ -419,7 +420,9 @@ bool Receptionist::DeliverSelectedQuantity(void)
     }
 
     // êîó ï™ÇæÇØî[ïi
-    itemManager.SubtractQuantity(item, selectedQuantity_);
+    itemManager.SubtractQuantity(item, matchedQuest->requiredAmount);
+    matchedQuest->isCompleted = true;
+    questUI.CompleteQuest(matchedQuest->id);
     matchedQuest->currentAmount += selectedQuantity_;
 
     if (matchedQuest->currentAmount >= matchedQuest->requiredAmount)
@@ -433,6 +436,8 @@ bool Receptionist::DeliverSelectedQuantity(void)
         }
 
         lastDeliveryMessage_ = std::string(GetItemName(itemType)) + " Çî[ïiÇµÇ‹ÇµÇΩÅIàÀóääÆóπÇ≈Ç∑ÅI";
+
+        PlayerStop::GetInstance().ResumeMovement();
     }
     else
     {
@@ -450,7 +455,7 @@ void Receptionist::DrawMainMenu()
 
     const char* menuItems[] = { "î[ïi", "çwì¸" };
     const int menuCount = sizeof(menuItems) / sizeof(menuItems[0]);
-    const int fontSize = 18;
+    const int fontSize = 24;
     const int boxHeight = 30;
 
     int startY = screenHeight / 2 + 100;
@@ -461,18 +466,18 @@ void Receptionist::DrawMainMenu()
         int textWidth = GetDrawStringWidth(text, strlen(text), fontSize);
         int boxWidth = textWidth + 30;
         int boxX = (screenWidth - boxWidth) / 2;
-        int boxY = startY + i * (boxHeight + 10);
+        int boxY = startY + i * (boxHeight + 50);
 
         if (i == mainMenuSelected_)
         {
-            DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(0, 0, 0), TRUE);
-            DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(255, 255, 255), FALSE);
+            DrawBox(boxX - 10, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(0, 0, 0), TRUE);
+            DrawBox(boxX - 10, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(255, 255, 255), FALSE);
             Font::GetInstance().DrawDefaultText(boxX + 15, boxY + 5, text, GetColor(255, 255, 255), fontSize);
         }
         else
         {
-            DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(64, 64, 64), TRUE);
-            DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(128, 128, 128), FALSE);
+            DrawBox(boxX - 10, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(64, 64, 64), TRUE);
+            DrawBox(boxX - 10, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(128, 128, 128), FALSE);
             Font::GetInstance().DrawDefaultText(boxX + 15, boxY + 5, text, GetColor(255, 255, 255), fontSize);
         }
     }
@@ -486,8 +491,8 @@ void Receptionist::DrawDeliveryMenu(void)
     const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
     const int screenHeight = Application::DEFA_SCREEN_SIZE_X;
 
-    const int boxWidth = 600;
-    const int boxHeight = 300;
+    const int boxWidth = 1000;
+    const int boxHeight = 800;
     const int boxX = (screenWidth - boxWidth) / 2;
     const int boxY = 150;
 
@@ -506,7 +511,7 @@ void Receptionist::DrawDeliveryMenu(void)
 
         if (i == selectedItem_)
         {
-            font.DrawDefaultText(boxX + 20, yPos, "Å®", 0xff00ff, 24);
+            // font.DrawDefaultText(boxX + 20, yPos, "Å®", 0xff00ff, 24);
         }
 
         int itemCount = GetItemCount(itemType);
@@ -523,7 +528,7 @@ void Receptionist::DrawDeliveryMenu(void)
         std::string itemInfo = std::string(GetItemName(itemType)) +
             " (èäéùêî: " + std::to_string(itemCount) + " / ïKóv: " + std::to_string(requiredCount) + ")";
 
-        font.DrawDefaultText(boxX + 50, yPos, itemInfo.c_str(), color, 20);
+        font.DrawDefaultText(boxX + 250, yPos + 350, itemInfo.c_str(), color, 32);
     }
 }
 
@@ -662,11 +667,3 @@ int Receptionist::GetRemainingDeliveryAmount(IETEM_TYPE itemType) const
     }
     return 0;
 }
-
-
-
-
-
-
-
-   

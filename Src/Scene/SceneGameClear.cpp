@@ -26,7 +26,7 @@ void SceneGameClear::Init(void)
 	sound.Add(SoundManager::TYPE::BGM, SoundManager::SOUND::BGM_TITLE, res.Load(ResourceManager::SRC::BGM_TITLE).handleId_);
 	sound.Add(SoundManager::TYPE::SE, SoundManager::SOUND::SE_PUSH, res.Load(ResourceManager::SRC::SE_PUSH).handleId_);
 	sound.AdjustVolume(SoundManager::SOUND::BGM_TITLE, 40);
-	sound.AdjustVolume(SoundManager::SOUND::SE_PUSH, 50);
+	sound.AdjustVolume(SoundManager::SOUND::SE_PUSH, 30);
 
 	//èâä˙BGM
 	sound.Play(SoundManager::SOUND::BGM_TITLE);
