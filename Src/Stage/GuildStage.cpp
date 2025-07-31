@@ -44,6 +44,9 @@ void GuildStage::Init(void)
 	// ステージの大きさ
 	MV1SetScale(modelId_, MODELID_SCALEA);
 
+
+	MV1SetRotationXYZ(modelId_, { 0, 0, 0 });
+
 	//カメラ設定
 	auto camera = SceneManager::GetInstance().GetCamera();
 

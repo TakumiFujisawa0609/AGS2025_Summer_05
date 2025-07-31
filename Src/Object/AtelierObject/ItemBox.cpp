@@ -92,7 +92,7 @@ void ItemBox::DrawUI(void)
 
 		DrawBox(boxX - 20, boxY - 10, boxX + boxWidth + 60, boxY + boxHeight + 10, GetColor(0, 0, 0), TRUE);
 		DrawBox(boxX - 20, boxY - 10, boxX + boxWidth + 60, boxY + boxHeight + 10, GetColor(255, 255, 255), FALSE);
-		Font::GetInstance().DrawDefaultText(boxX + 10, boxY + 5, text, GetColor(255, 255, 255), fontSize);
+		Font::GetInstance().DrawDefaultText(boxX + 5, boxY + 5, text, GetColor(255, 255, 255), fontSize);
 	}
 
 	// インベントリ表示中

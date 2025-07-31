@@ -51,6 +51,8 @@ void AtelierStage::Init(void)
 	MV1SetPosition(modelId_, modelIdPos_);
 	// 鍋の大きさ
 	MV1SetScale(modelId_, MODELID_SCALEA);
+
+	MV1SetRotationXYZ(modelId_, { 0, 0, 0 });
 	// 生存判定
 	isModelId_ = true;
 

@@ -12,6 +12,7 @@
 #include "../Item/Product/AntidotePotion.h"
 #include "../Item/Product/MagicPotion.h"
 #include "../Item/Product/Garbage.h"
+#include "../Item/Material/Herb.h"
 #include "../../Application.h"
 #include "../PlayerStop.h"
 
@@ -78,7 +79,6 @@ void AlchemyManager::Init(void)
         std::map < std::string, int>{{"ñÇóÕëê", 2}, { "êÖ", 1 }},
         std::make_shared<MagicPotion>()
     );
-
 }
 
 void AlchemyManager::Open(void)

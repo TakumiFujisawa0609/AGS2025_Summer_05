@@ -533,54 +533,54 @@ void Receptionist::DrawDeliveryMenu(void)
 }
 
 
-bool Receptionist::DeliverItem(IETEM_TYPE itemType)
-{
-    auto& itemManager = ItemManager::GetInstance();
-    std::string itemId = GetItemId(itemType);
-
-    auto& questUI = QuestUI::GetInstance();
-
-    DeliveryQuest* matchedQuest = nullptr;
-    for (auto& quest : questUI.GetActiveQuests())
-    {
-        if (quest.targetItemId == itemId)
-        {
-            matchedQuest = &quest;
-            break;
-        }
-    }
-
-    if (!matchedQuest)
-    {
-        lastDeliveryMessage_ = "このアイテムは依頼対象ではありません！";
-        deliveryMessageTimer_ = 120;
-        return false;
-    }
-
-    // 必要数チェック
-    auto item = itemManager.FindItemById(itemId);
-    if (!item || item->GetQuantity() < matchedQuest->requiredAmount)
-    {
-        lastDeliveryMessage_ = "必要な数がそろっていません！";
-        deliveryMessageTimer_ = 120;
-        return false;
-    }
-
-    // 一括納品
-    itemManager.SubtractQuantity(item, matchedQuest->requiredAmount);
-    matchedQuest->isCompleted = true;
-    questUI.CompleteQuest(matchedQuest->id);
-
-    if (player_)
-    {
-        player_->AddMoney(matchedQuest->rewardMoney);
-    }
-
-    lastDeliveryMessage_ = std::string(GetItemName(itemType)) + " を納品しました！依頼完了です！";
-    deliveryMessageTimer_ = 120;
-
-    return true;
-}
+//bool Receptionist::DeliverItem(IETEM_TYPE itemType)
+//{
+//    auto& itemManager = ItemManager::GetInstance();
+//    std::string itemId = GetItemId(itemType);
+//
+//    auto& questUI = QuestUI::GetInstance();
+//
+//    DeliveryQuest* matchedQuest = nullptr;
+//    for (auto& quest : questUI.GetActiveQuests())
+//    {
+//        if (quest.targetItemId == itemId)
+//        {
+//            matchedQuest = &quest;
+//            break;
+//        }
+//    }
+//
+//    if (!matchedQuest)
+//    {
+//        lastDeliveryMessage_ = "このアイテムは依頼対象ではありません！";
+//        deliveryMessageTimer_ = 120;
+//        return false;
+//    }
+//
+//    // 必要数チェック
+//    auto item = itemManager.FindItemById(itemId);
+//    if (!item || item->GetQuantity() < matchedQuest->requiredAmount)
+//    {
+//        lastDeliveryMessage_ = "必要な数がそろっていません！";
+//        deliveryMessageTimer_ = 120;
+//        return false;
+//    }
+//
+//    // 一括納品
+//    itemManager.SubtractQuantity(item, matchedQuest->requiredAmount);
+//    matchedQuest->isCompleted = true;
+//    questUI.CompleteQuest(matchedQuest->id);
+//
+//    if (player_)
+//    {
+//        player_->AddMoney(matchedQuest->rewardMoney);
+//    }
+//
+//    lastDeliveryMessage_ = std::string(GetItemName(itemType)) + " を納品しました！依頼完了です！";
+//    deliveryMessageTimer_ = 120;
+//
+//    return true;
+//}
 
 
 void Receptionist::SetItemCount(IETEM_TYPE itemType, int count)

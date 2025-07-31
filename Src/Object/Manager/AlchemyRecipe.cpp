@@ -1,33 +1,21 @@
 #include "AlchemyRecipe.h"
 
-AlchemyRecipe::AlchemyRecipe(const std::map<std::string, int>& materials, std::shared_ptr<ProductItem> result)
+AlchemyRecipe::AlchemyRecipe(const std::map<std::string, int>& materials, std::shared_ptr<ItemBase> result)
+    : requiredMaterials_(materials), result_(result)
 {
-	requiredMaterials_ = materials;
-
-	result_ = result;
 }
 
 bool AlchemyRecipe::Match(const std::map<std::string, int>& selected) const
 {
-	for (const auto& req : requiredMaterials_)
-	{
-		auto it = selected.find(req.first);
-		if (it == selected.end() || it->second < req.second)
-		{
-			return false;
-		}
-	}
-	return true;
+    return selected == requiredMaterials_;
 }
 
-std::shared_ptr<ProductItem> AlchemyRecipe::GetResult(void) const
+std::shared_ptr<ItemBase> AlchemyRecipe::GetResult(void) const
 {
-	return result_;
+    return result_;
 }
 
 const std::map<std::string, int>& AlchemyRecipe::GetMaterials(void) const
 {
-	return requiredMaterials_;
+    return requiredMaterials_;
 }
-
-
