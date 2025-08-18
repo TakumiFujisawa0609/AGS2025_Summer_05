@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClCompile Include="Src\DrawUI\SceneUI\GameHUD.cpp" />
     <ClCompile Include="Src\DrawUI\SceneUI\PauseMenu.cpp" />
+    <ClCompile Include="Src\Object\Item\Material\Emberstone.cpp" />
     <ClCompile Include="Src\Object\Manager\BookshelfManager.cpp" />
     <ClCompile Include="Src\Object\GuildObject\Counter.cpp" />
     <ClCompile Include="Src\Object\AtelierObject\ItemBox.cpp" />
@@ -241,6 +242,7 @@
   <ItemGroup>
     <ClInclude Include="Src\DrawUI\SceneUI\GameHUD.h" />
     <ClInclude Include="Src\DrawUI\SceneUI\PauseMenu.h" />
+    <ClInclude Include="Src\Object\Item\Material\Emberstone.h" />
     <ClInclude Include="Src\Object\Manager\BookshelfManager.h" />
     <ClInclude Include="Src\Object\GuildObject\Counter.h" />
     <ClInclude Include="Src\Object\AtelierObject\ItemBox.h" />

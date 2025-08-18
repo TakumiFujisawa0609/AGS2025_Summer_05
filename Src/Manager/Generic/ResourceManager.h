@@ -28,6 +28,7 @@ public:
 		ANTIDOTE_HERB,			//解毒草
 		MAGIC_FLOWER,			//魔力草
 		WATER,					//水
+		EMBER_STONE,            //エンバースト-ン
 
 		//種子
 		SEED,					//種

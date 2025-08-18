@@ -24,7 +24,7 @@ public:
     /// </summary>
     enum class EFFECT
     {
-    
+
     };
 
     /// <summary>
