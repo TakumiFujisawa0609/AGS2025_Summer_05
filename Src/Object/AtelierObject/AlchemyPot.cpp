@@ -15,6 +15,7 @@
 AlchemyPot::AlchemyPot(void)
 {
 	isShowUI_ = false;
+	
 }
 
 AlchemyPot::~AlchemyPot(void)
@@ -37,6 +38,7 @@ void AlchemyPot::Init(void)
 	trans_.scl = SCALE;
 	trans_.rot = { 0.0f, 0.0f, 0.0f };
 
+
 	
 }
 
@@ -50,6 +52,7 @@ void AlchemyPot::Update(void)
 	// エンターキーが押された時の処理
 	if (isShowUI_ && input.IsTrgDown(KEY_INPUT_RETURN))
 	{
+		Application::GetInstance().SetActiveUI(true);
 		SoundManager::GetInstance().Play(SoundManager::SOUND::SE_PUSH);
 		// 錬金メニューが閉じている時のみ開く
 		if (!alchemy.IsOpen())
@@ -152,4 +155,9 @@ void AlchemyPot::OnPlayerHit(void)
 void AlchemyPot::OnPlayerExit(void)
 {
 	HideUI();
+}
+
+bool AlchemyPot::isOpen(void) const
+{
+	return AlchemyManager::GetInstance().IsOpen();
 }

@@ -42,6 +42,8 @@ public:
 	void OnPlayerHit(void) override;
 	void OnPlayerExit(void) override;
 
+	bool IsVisible(void) const;
+
 private:
 
 	bool isShowUI_ = false;          // UI接近表示（"アイテムボックス"）

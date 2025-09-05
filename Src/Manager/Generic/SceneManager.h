@@ -63,6 +63,8 @@ public:
 	//デルタタイムの取得
 	float GetDeltaTime(void) const;
 
+	SceneBase* GetScene(void) const;
+
 	//カメラの取得
 	std::shared_ptr<Camera> GetCamera(void) const;
 
@@ -99,6 +101,7 @@ private:
 
 	//デストラクタも同様
 	~SceneManager(void) = default;
+
 
 
 	//デルタタイムをリセットする

@@ -93,7 +93,7 @@ void PauseMenu::Update(void)
     else
     {
         // X‚Å–ß‚é
-        if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_X))
+        if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_ESCAPE))
         {
             sound.Play(SoundManager::SOUND::SE_CANCEL);
             mode_ = MODE_POUSE::SELECT;

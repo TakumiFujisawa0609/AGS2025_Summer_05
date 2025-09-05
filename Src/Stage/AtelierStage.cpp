@@ -56,6 +56,8 @@ void AtelierStage::Init(void)
 	// 生存判定
 	isModelId_ = true;
 
+	pauseUiCount_ = PAUSE_UI_COUNT;
+
 	alchemyPot_ = std::make_shared<AlchemyPot>();
 	alchemyPot_->Init();
 	alchemyPot_->SetPlayer(stageManager_->GetPlayer());
@@ -129,6 +131,22 @@ void AtelierStage::Update(void)
 	wallZZ_->Update();
 	itemBox_->Update();
 	tableSetAtelier_->Update();
+
+	if (itemBox_->IsVisible() == false && alchemyPot_->isOpen() == false)
+	{
+		pauseUiCount_--;
+	}
+	else if (itemBox_->IsVisible() == true || alchemyPot_->isOpen() == true)
+	{
+		pauseUiCount_ = PAUSE_UI_COUNT;
+	}
+	
+
+	if (pauseUiCount_ <= 0)
+	{
+		Application::GetInstance().SetActiveUI(false);
+		pauseUiCount_ = PAUSE_UI_COUNT;
+	}
 
 	
 #ifdef _DEBUG

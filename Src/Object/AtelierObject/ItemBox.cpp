@@ -44,6 +44,7 @@ void ItemBox::Update(void)
 	{
 		if (input.IsTrgDown(KEY_INPUT_RETURN))
 		{
+			Application::GetInstance().SetActiveUI(true);
 			SoundManager::GetInstance().Play(SoundManager::SOUND::SE_PUSH);
 			isInventoryOpen_ = true;
 			if (inventoryUI_) inventoryUI_->Show(); // © ZƒL[§Œä‚È‚µ‚Å•\Ž¦
@@ -53,8 +54,9 @@ void ItemBox::Update(void)
 	if (isInventoryOpen_ && inventoryUI_)
 	{
 		inventoryUI_->Update();
-		if (input.IsTrgDown(KEY_INPUT_X))
+		if (input.IsTrgDown(KEY_INPUT_ESCAPE))
 		{
+			Application::GetInstance().SetActiveUI(true);
 			SoundManager::GetInstance().Play(SoundManager::SOUND::SE_CANCEL);
 			isInventoryOpen_ = false;
 			inventoryUI_->Hide();
@@ -154,4 +156,9 @@ void ItemBox::OnPlayerHit(void)
 void ItemBox::OnPlayerExit(void)
 {
 	HideUI();
+}
+
+bool ItemBox::IsVisible(void) const
+{
+	return inventoryUI_->IsVisible();
 }

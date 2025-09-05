@@ -185,6 +185,11 @@ float SceneManager::GetDeltaTime(void)const
 	return deltaTime_;
 }
 
+SceneBase* SceneManager::GetScene(void) const
+{
+	return scene_;
+}
+
 std::shared_ptr<Camera> SceneManager::GetCamera(void) const
 {
 	return camera_;

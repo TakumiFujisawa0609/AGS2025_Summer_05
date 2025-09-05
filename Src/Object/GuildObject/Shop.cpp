@@ -137,7 +137,7 @@ void Shop::Update()
                 if (selectedQuantity_ <= 0) selectedQuantity_ = 1;
             }
 
-            if (input.IsTrgDown(KEY_INPUT_X))
+            if (input.IsTrgDown(KEY_INPUT_ESCAPE))
             {
                 sound.Play(SoundManager::SOUND::SE_CANCEL);
                 Hide();
@@ -197,7 +197,7 @@ void Shop::Update()
                 }
             }
 
-            if (input.IsTrgDown(KEY_INPUT_X))
+            if (input.IsTrgDown(KEY_INPUT_ESCAPE))
             {
                 sound.Play(SoundManager::SOUND::SE_CANCEL);
                 Hide();
@@ -237,7 +237,7 @@ void Shop::Update()
             purchaseListSelectedIndex_ = 0;
         }
 
-        if (input.IsTrgDown(KEY_INPUT_X))
+        if (input.IsTrgDown(KEY_INPUT_ESCAPE))
         {
             sound.Play(SoundManager::SOUND::SE_CANCEL);
             currentPhase_ = SHOP_PHASE::SELECT_ITEM;
@@ -395,7 +395,7 @@ void Shop::DrawRightSideUI()
 
     Font::GetInstance().DrawDefaultText(rightX + 10, leftY + 600, ("所持金: " + std::to_string(playerMoney) + " G").c_str(), 0xffffff, 24);
     Font::GetInstance().DrawDefaultText(rightX + 10, leftY + 650, ("合計: " + std::to_string(totalPrice) + " G").c_str(), GetColor(255, 200, 0), 24);
-    Font::GetInstance().DrawDefaultText(rightX + 10, leftY + 680, "[Tab] フォーカス切替 [Enter] 決定 [X] 閉じる", 0xcccccc, 20);
+    Font::GetInstance().DrawDefaultText(rightX + 10, leftY + 680, "[Tab] フォーカス切替 [Enter] 決定 [ESC] 閉じる", 0xcccccc, 20);
 }
 
 std::shared_ptr<SeedItem> Shop::GetSelectedItem(void) const

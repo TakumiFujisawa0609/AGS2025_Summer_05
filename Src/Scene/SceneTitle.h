@@ -9,6 +9,9 @@ class SceneUi;
 class SceneTitle : public SceneBase
 {
 public:
+
+    static constexpr int PAUSE_UI_COUNT = 2;
+
     SceneTitle(void);
     ~SceneTitle(void) = default;
 
@@ -17,21 +20,30 @@ public:
     void Draw(void) override;
     void Release(void) override;
 
+    bool IsExitRequested(void) const;
+
 private:
+    Grid* grid_;
+
+    std::unique_ptr<SceneUi> uiMain_;      // メインメニュー
+    std::unique_ptr<SceneUi> uiHowToPlay_; // 遊び方サブメニュー
+
     int logo_;
     int movieHandle_;
     int operationHandle_;
     int playHandle_;
-	int playHandle2_;
-    Grid* grid_;
-    std::unique_ptr<SceneUi> ui_;
-
-    // ↓ 追加
-    bool isDecided_;
+    int playHandle2_;
     int blackAlpha_;
-    bool showBlackBackground_ = false;
+    int pauseUiCount_;
 
+    bool inHowToPlayMenu_;
+    bool isDecided_;
+    bool showBlackBackground_;
+    bool exitRequested_;
     bool isPlay_;
 
+    int howToPlayPage_; // 0=なし, 1=目標, 2=錬金
+
     void DrawDebug(void);
+
 };

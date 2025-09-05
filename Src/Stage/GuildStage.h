@@ -30,6 +30,9 @@ public:
 	// ステージの接触判定用半径
 	static constexpr float RADIUS_MODELID = 120.0f;
 
+	//ポーズUIカウント最大値
+	static constexpr int PAUSE_UI_COUNT = 2.0f;
+
 	//コンストラクタ
 	GuildStage(StageManager* stageManager);
 
@@ -51,6 +54,9 @@ public:
 private:
 	//ステージモデル
 	int modelId_;
+
+	//UIの表示カウント
+	int pauseUiCount_;
 
 	VECTOR modelIdPos_;
 

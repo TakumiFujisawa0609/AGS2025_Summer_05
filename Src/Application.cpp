@@ -11,6 +11,7 @@
 #include "DrawUI/Font.h"
 #include "Fps/FpsControll.h"
 #include "DrawUI/SceneUI/PauseMenu.h"
+#include "Scene/SceneTitle.h"
 
 
 Application* Application::instance_ = nullptr;
@@ -120,10 +121,14 @@ void Application::Run(void)
 		fps_->FpsControll_Update();
 
 		// --- ESCキーでポーズ表示 ---
-		if (!pauseMenu_->IsVisible() && CheckHitKey(KEY_INPUT_ESCAPE) == 1)
+		if (isActiveUI_ == false)
 		{
-			pauseMenu_->Show();  // メニュー表示
+			if (!pauseMenu_->IsVisible() && inputManager.IsTrgDown(KEY_INPUT_ESCAPE) == 1)
+			{
+				pauseMenu_->Show();  // メニュー表示
+			}
 		}
+		
 
 		inputManager.Update();
 
@@ -157,6 +162,12 @@ void Application::Run(void)
 			// 通常ゲーム処理
 			sceneManager.Update();
 			QuestUI::GetInstance().Update();
+
+			auto scene = dynamic_cast<SceneTitle*>(sceneManager.GetScene());
+			if (scene && scene->IsExitRequested())
+			{
+				return;
+			}
 		}
 
 		// 描画
@@ -203,6 +214,16 @@ bool Application::IsInitFail(void) const
 bool Application::IsReleaseFail(void) const
 {
 	return isReleaseFail_;
+}
+
+bool Application::IsActiveUI(void) const
+{
+	return isActiveUI_;
+}
+
+void Application::SetActiveUI(bool isActive)
+{
+	isActiveUI_ = isActive;
 }
 
 void Application::InitEffekseer(void)

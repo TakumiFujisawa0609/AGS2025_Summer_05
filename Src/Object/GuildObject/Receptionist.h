@@ -83,6 +83,10 @@ public:
     //ˆË—Š‚Ìc‚è”[•i”‚ğæ“¾
     int GetRemainingDeliveryAmount(IETEM_TYPE itemType) const;
 
+    bool GetShopUiVisible(void) const;
+
+    bool GetDeliveryMenu(void) const;
+
 private:
 
     enum class MENU_MODE

@@ -96,6 +96,9 @@ public:
 		SE_ALCHEMY,             //錬金音
 		SE_ALCHEMY_FAIL,        //錬金失敗音	
 		SE_ALCHEMY_SUCCESS,     //錬金成功音
+
+		//エフェクト
+		EFFECT_ALCHEMY,         //錬金エフェクト
 	};
 
 	//明示的にインスタンスを生成する

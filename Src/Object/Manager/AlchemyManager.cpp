@@ -203,7 +203,7 @@ void AlchemyManager::Update()
     }
 
 
-    if (input.IsTrgDown(KEY_INPUT_X))
+    if (input.IsTrgDown(KEY_INPUT_ESCAPE))
     {
         sound.Play(SoundManager::SOUND::SE_CANCEL);
         Close();
@@ -384,7 +384,7 @@ void AlchemyManager::Update()
             selectedMaterials_.push_back({ material, currentAmount_ });
             currentPhase_ = 0;
         }
-        if (input.IsTrgDown(KEY_INPUT_X))
+        if (input.IsTrgDown(KEY_INPUT_ESCAPE))
         {
             sound.Play(SoundManager::SOUND::SE_CANCEL);
             currentPhase_ = 0; // ƒLƒƒƒ“ƒZƒ‹
@@ -484,7 +484,7 @@ void AlchemyManager::Update()
                 currentPhase_ = 2;
             }
         }
-        if (input.IsTrgDown(KEY_INPUT_X))
+        if (input.IsTrgDown(KEY_INPUT_ESCAPE))
         {
             sound.Play(SoundManager::SOUND::SE_CANCEL);
             currentPhase_ = 2;

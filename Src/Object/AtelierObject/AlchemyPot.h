@@ -9,7 +9,6 @@
 
 class Player;
 
-
 class AlchemyPot : public HitObject, public UnitBase
 {
 public:
@@ -60,6 +59,8 @@ public:
 	void OnPlayerHit(void) override;
 
 	void OnPlayerExit(void) override;
+
+	bool isOpen(void) const;
 
 private:
 	bool isShowUI_;

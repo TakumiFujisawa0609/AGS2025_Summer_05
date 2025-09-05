@@ -236,6 +236,10 @@ void ResourceManager::ResourceAtelier(void)
 	// アトリエのBGMを登録
 	res = Resource(Resource::TYPE::SOUND, Application::PATH_BGM + "m2.mp3");
 	resourcesMap_.emplace(SRC::BGM_ATELIER, res);
+
+	//エフェクト
+	res = Resource(Resource::TYPE::EFFEKSEER, Application::PATH_EFFECT + "Simple_Sprite_FixedYAxis.efkefc");
+	resourcesMap_.emplace(SRC::EFFECT_ALCHEMY, res);
 	
 }
 

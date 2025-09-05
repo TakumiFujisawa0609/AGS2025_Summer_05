@@ -58,6 +58,11 @@ public:
 	//解放成功/失敗の判定
 	bool IsReleaseFail(void)const;
 
+	//UIの表示状態
+	bool IsActiveUI(void) const;
+
+	void SetActiveUI(bool isActive);
+
 private:
 
 	//性的インスタンス
@@ -68,6 +73,8 @@ private:
 
 	//解放処理
 	bool isReleaseFail_;
+
+	bool isActiveUI_;
 
 	//フレームレート制御
 	Fps* fps_;

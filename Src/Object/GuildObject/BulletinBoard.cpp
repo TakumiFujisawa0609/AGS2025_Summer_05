@@ -70,6 +70,7 @@ void BulletinBoard::Update(void)
 	// エンターキーが押された時の処理
 	if (isShowUI_ && input.IsTrgDown(KEY_INPUT_RETURN))
 	{
+		Application::GetInstance().SetActiveUI(true);
 		sound.Play(SoundManager::SOUND::SE_PUSH);
 		if (!isShowQuestList_)
 		{
@@ -109,7 +110,7 @@ void BulletinBoard::Update(void)
 		}
 
 		// ESCキーで依頼リストを閉じる
-		if (input.IsTrgDown(KEY_INPUT_X))
+		if (input.IsTrgDown(KEY_INPUT_ESCAPE))
 		{
 			sound.Play(SoundManager::SOUND::SE_CANCEL);
 			isShowQuestList_ = false;
@@ -310,4 +311,9 @@ void BulletinBoard::UpdateUIVisibility(bool isHit)
 			OnPlayerExit();
 		}
 	}
+}
+
+bool BulletinBoard::GetQuestList(void) const
+{
+	return isShowQuestList_;
 }

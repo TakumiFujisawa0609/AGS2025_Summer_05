@@ -193,8 +193,6 @@ void Receptionist::ShowUI(void)
     isShowUI_ = true;
     currentMode_ = MENU_MODE::MAIN_SELECT;
     mainMenuSelected_ = 0;
-
-    isShowUI_ = true;
     isShowDeliveryMenu_ = false;
     isSelectingQuantity_ = false;
 
@@ -259,11 +257,13 @@ void Receptionist::UpdateMainMenu()
 
     if (input.IsTrgDown(KEY_INPUT_RETURN))
     {
+        Application::GetInstance().SetActiveUI(true);
         sound.Play(SoundManager::SOUND::SE_PUSH);
         if (mainMenuSelected_ == 0)
         {
             // 納品メニューへ
             currentMode_ = MENU_MODE::DELIVERY_MENU;
+            isShowDeliveryMenu_ = true;
         }
         else if (mainMenuSelected_ == 1)
         {
@@ -279,9 +279,9 @@ void Receptionist::UpdateShopMenu(void)
     auto& sound = SoundManager::GetInstance();
     auto& input = InputManager::GetInstance();
 
-    // ショップメニューの入力処理を今後実装
+    // ショップメニューの入力処理
 
-    if (input.IsTrgDown(KEY_INPUT_X))
+    if (input.IsTrgDown(KEY_INPUT_ESCAPE))
     {
         sound.Play(SoundManager::SOUND::SE_CANCEL);
         currentMode_ = MENU_MODE::MAIN_SELECT;
@@ -324,26 +324,36 @@ void Receptionist::UpdateDeliveryMenu(void)
         }
     }*/
 
+    //if (input.IsTrgDown(KEY_INPUT_RETURN))
+    //{
+    //    if (!isSelectingQuantity_)
+    //    {
+    //        isSelectingQuantity_ = true;
+    //        selectedQuantity_ = 1;
+    //    }
+    //    else
+    //    {
+    //        // 数量確定 → 納品実行
+    //        if (DeliverSelectedQuantity())
+    //        {
+    //            isSelectingQuantity_ = false;
+    //            isShowDeliveryMenu_ = false;
+    //            currentMode_ = MENU_MODE::MAIN_SELECT;
+    //        }
+    //    }
+    //}
+
     if (input.IsTrgDown(KEY_INPUT_RETURN))
     {
-        if (!isSelectingQuantity_)
+        // いきなり納品実行
+        if (DeliverSelectedQuantity())
         {
-            isSelectingQuantity_ = true;
-            selectedQuantity_ = 1;
-        }
-        else
-        {
-            // 数量確定 → 納品実行
-            if (DeliverSelectedQuantity())
-            {
-                isSelectingQuantity_ = false;
-                isShowDeliveryMenu_ = false;
-                currentMode_ = MENU_MODE::MAIN_SELECT;
-            }
+            isShowDeliveryMenu_ = false;
+            currentMode_ = MENU_MODE::MAIN_SELECT;
         }
     }
 
-    if (input.IsTrgDown(KEY_INPUT_X))
+    if (input.IsTrgDown(KEY_INPUT_ESCAPE))
     {
         SoundManager::GetInstance().Play(SoundManager::SOUND::SE_CANCEL);
         if (isSelectingQuantity_)
@@ -666,4 +676,14 @@ int Receptionist::GetRemainingDeliveryAmount(IETEM_TYPE itemType) const
         }
     }
     return 0;
+}
+
+bool Receptionist::GetShopUiVisible(void) const
+{
+    return shop_->IsVisible();
+}
+
+bool Receptionist::GetDeliveryMenu(void) const
+{
+    return isShowDeliveryMenu_;
 }

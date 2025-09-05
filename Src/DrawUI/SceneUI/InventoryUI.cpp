@@ -107,7 +107,7 @@ void InventoryUI::Update(void)
 		if (newIndex < itemCount) selectedItemIndex_ = newIndex;
 	}
 
-	if (input.IsTrgDown(KEY_INPUT_X))
+	if (input.IsTrgDown(KEY_INPUT_ESCAPE))
 	{
 		sound.Play(SoundManager::SOUND::SE_CANCEL);
 		Hide();

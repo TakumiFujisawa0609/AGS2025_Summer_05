@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <algorithm>
+#include "../../Application.h"
 #include "../player.h"
 
 void HitObject::OnPlayerHitSphere(VECTOR& playerPos, float playerRadius)

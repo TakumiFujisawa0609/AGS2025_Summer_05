@@ -73,6 +73,8 @@ public:
 
 	void UpdateUIVisibility(bool isHit) override;
 
+	bool GetQuestList(void) const;
+
 private:
 	//ŒfŽ¦”Â‚Ì”wŒi‰æ‘œ‚ÌID
 	int imageBoardId_;

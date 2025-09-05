@@ -38,6 +38,8 @@ void GuildStage::Init(void)
 
 	modelIdPos_ = INIT_MODELID_POS;
 
+	pauseUiCount_ = PAUSE_UI_COUNT;
+
 	// À•W‚ðƒ‚ƒfƒ‹‚ÉÝ’è
 	MV1SetPosition(modelId_, modelIdPos_);
 
@@ -136,6 +138,21 @@ void GuildStage::Update(void)
 	wallZ_->Update();
 	wallZZ_->Update();
 	tableSetGuildManager_->Update();
+
+	if (bulletinBoard_->GetQuestList() == false && receptionist_->GetShopUiVisible() == false && receptionist_->GetDeliveryMenu() == false)
+	{
+		pauseUiCount_--;
+	}
+	else if (bulletinBoard_->GetQuestList() == true || receptionist_->GetShopUiVisible() == true || receptionist_->GetDeliveryMenu() == true)
+	{
+		pauseUiCount_ = PAUSE_UI_COUNT;
+	}
+
+	if (pauseUiCount_ <= 0)
+	{
+		Application::GetInstance().SetActiveUI(false);
+		pauseUiCount_ = PAUSE_UI_COUNT;
+	}
 }
 
 //•`‰æˆ—
