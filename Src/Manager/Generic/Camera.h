@@ -94,6 +94,8 @@ public:
 	//À•W‚Ìİ’è
 	void SetPos(const VECTOR& pos, const VECTOR& target);
 
+	VECTOR GetFrontVec(void) const;
+
 private:
 
 	//’Ç]‘ÎÛ

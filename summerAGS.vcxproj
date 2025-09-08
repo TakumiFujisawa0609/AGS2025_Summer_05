@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\DrawUI\SceneUI\LibraryUI.cpp" />
     <ClCompile Include="Src\DrawUI\SceneUI\GameHUD.cpp" />
     <ClCompile Include="Src\DrawUI\SceneUI\PauseMenu.cpp" />
     <ClCompile Include="Src\Object\Manager\BookshelfManager.cpp" />
@@ -239,6 +240,7 @@
     <ClCompile Include="Src\Object\Manager\TableSetGuildManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\DrawUI\SceneUI\LibraryUI.h" />
     <ClInclude Include="Src\DrawUI\SceneUI\GameHUD.h" />
     <ClInclude Include="Src\DrawUI\SceneUI\PauseMenu.h" />
     <ClInclude Include="Src\Object\Manager\BookshelfManager.h" />

@@ -90,6 +90,8 @@ private:
 
 	bool waitingForSEFinish_;
 
+	bool effectPlayedDuringAlchemy_;
+
 	static AlchemyManager* instance_;
 
 	bool start_;

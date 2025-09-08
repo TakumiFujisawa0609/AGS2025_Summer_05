@@ -4,6 +4,7 @@
 
 #include <algorithm>
 
+#include "../../Manager/Decoration/EffectManager.h"
 #include "ItemManager.h"
 #include "../../Manager/Generic/InputManager.h"
 #include "../../Manager/Decoration/SoundManager.h"
@@ -49,6 +50,7 @@ AlchemyManager::AlchemyManager(void)
 	isOpen_ = false;
     start_ = false;
     waitingForSEFinish_ = false;
+    effectPlayedDuringAlchemy_ = false;
     alchemyResult_ = ALCHEMYRESULT::NONE;
 }
 
@@ -179,10 +181,18 @@ void AlchemyManager::Update()
     {
         if (sound.IsPlaying(SoundManager::SOUND::SE_ALCHEMY))
         {
+            if (!effectPlayedDuringAlchemy_)
+            {
+                EffectManager::GetInstance().Play(EffectManager::EFFECT::EFFECT_ALCHENY, { 0.0f, 70.0f, -50.0f }, { 0.0f, 0.0f, 0.0f,1.0f }, 15.0f, SoundManager::SOUND::NONE);
+
+                effectPlayedDuringAlchemy_ = true;
+            }
+           
             return; // òBã‡SEÇ™çƒê∂íÜ Å® Ç‹Çæë“Ç¬
         }
         else
         {
+            effectPlayedDuringAlchemy_ = false;
             // òBã‡SEÇ™èIÇÌÇ¡ÇΩ Å® åãâ SEÇçƒê∂
             if (alchemyResult_ == ALCHEMYRESULT::SUCCESS)
             {
@@ -784,6 +794,9 @@ void AlchemyManager::ExecuteAlchemy()
     SoundManager::GetInstance().Play(SoundManager::SOUND::SE_ALCHEMY_FAIL);
 
     ShowRecipeDifferenceMessage(selectedMap);
+
+    effectPlayedDuringAlchemy_ = true;
+    EffectManager::GetInstance().Play(EffectManager::EFFECT::EFFECT_BLAST, { 0.0f, 70.0f, -50.0f }, { 0.0f, 0.0f, 0.0f,1.0f }, 50.0f, SoundManager::SOUND::NONE);
 
     selectedMaterials_.clear();
 }

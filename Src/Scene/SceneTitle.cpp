@@ -212,7 +212,7 @@ void SceneTitle::Draw(void)
         DrawRotaGraph(Application::SCREEN_SIZE_X / 2 + 55,
             Application::SCREEN_SIZE_Y / 2,
             1.0, 0.0, logo_, true);
-        uiMain_->Draw();
+        uiMain_->Draw(Application::DEFA_SCREEN_SZIE_Y / 2);
 
         // 操作説明やクレジットを選んだとき
         if (showBlackBackground_)
@@ -244,7 +244,10 @@ void SceneTitle::Draw(void)
             Application::DEFA_SCREEN_SZIE_Y,
             GetColor(0, 0, 0), TRUE);
 
-        uiHowToPlay_->Draw();
+        int centerY = Application::DEFA_SCREEN_SZIE_Y / 2;
+        int offsetY = centerY - 100;  // 上にずらす
+
+        uiHowToPlay_->Draw(offsetY);
     }
 }
 

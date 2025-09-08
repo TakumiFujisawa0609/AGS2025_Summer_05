@@ -7,13 +7,15 @@
 class BookshelfManager
 {
 public:
-    BookshelfManager();
-    ~BookshelfManager();
+    BookshelfManager(void);
+    ~BookshelfManager(void);
 
-    void Init();
-    void Update();
-    void Draw();
-    void Release();
+    void Init(void);
+    void Update(void);
+    void Draw(void);
+    void DrawUI(void);
+    void Release(void);
+    bool IsValid(void) const;
 
     const std::vector<std::shared_ptr<Bookshelf>>& GetGetBookSets(void) const;
 

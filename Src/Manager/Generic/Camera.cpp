@@ -308,6 +308,20 @@ void Camera::SetPos(const VECTOR& pos, const VECTOR& target)
 	targetPos_ = target;
 }
 
+VECTOR Camera::GetFrontVec(void) const
+{
+	// pos_ → targetPos_ の方向ベクトルを正規化
+	VECTOR front = VSub(targetPos_, pos_);
+	float length = sqrtf(front.x * front.x + front.y * front.y + front.z * front.z);
+	if (length > 0.0001f)
+	{
+		front.x /= length;
+		front.y /= length;
+		front.z /= length;
+	}
+	return front;
+}
+
 //カメラの初期設定
 void Camera::SetDefault(void)
 {

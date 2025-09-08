@@ -54,6 +54,17 @@ void BookshelfManager::Draw()
     }
 }
 
+void BookshelfManager::DrawUI(void)
+{
+    for (auto& shelf : bookshelves_)
+    {
+        if (shelf && shelf->IsValid())
+        {
+            shelf->DrawUI();
+        }
+    }
+}
+
 void BookshelfManager::Release()
 {
     for (auto& shelf : bookshelves_)
@@ -64,6 +75,15 @@ void BookshelfManager::Release()
         }
     }
     bookshelves_.clear();
+}
+
+bool BookshelfManager::IsValid(void) const
+{
+    for (auto& shelf : bookshelves_)
+    {
+        return shelf->isVisible();
+    }
+    return false;
 }
 
 const std::vector<std::shared_ptr<Bookshelf>>& BookshelfManager::GetGetBookSets(void) const

@@ -1,11 +1,5 @@
 #pragma once
-#include <memory>
-#include <vector>
-#include <string>
-
-class ItemBase;
-
-class InventoryUI
+class LibraryUI
 {
 public:
     // 横に並べる最大数
@@ -24,12 +18,15 @@ public:
         Product     // 完成品アイテム
     };
 
-    InventoryUI(void);
-    ~InventoryUI(void);
+    LibraryUI(void);
+    ~LibraryUI(void);
 
     void Init(void);      // 初期化
+
     void Show(void);
+
     void Hide(void);
+
     void Update(void);    // 更新
     void Draw(void);      // 描画
 
@@ -39,8 +36,7 @@ private:
     bool isVisible_;          // インベントリ表示フラグ
     int selectedItemIndex_;   // 選択中のアイテムインデックス
     TAB currentTab_;          // 現在選択中のタブ（素材 or 完成品）
-    int frameCount_;          // フレームカウンタ
+    int frameCount_;          // フレームカウンタ（任意で利用）
 
-    // 数量 > 0 のアイテムのみ表示対象にする
-    std::vector<std::shared_ptr<ItemBase>> visibleItems_;
 };
+

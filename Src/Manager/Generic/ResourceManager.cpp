@@ -238,8 +238,13 @@ void ResourceManager::ResourceAtelier(void)
 	resourcesMap_.emplace(SRC::BGM_ATELIER, res);
 
 	//エフェクト
+	//錬金成功エフェクトを登録
 	res = Resource(Resource::TYPE::EFFEKSEER, Application::PATH_EFFECT + "Simple_Sprite_FixedYAxis.efkefc");
 	resourcesMap_.emplace(SRC::EFFECT_ALCHEMY, res);
+
+	//錬金失敗エフェクトを登録
+	res = Resource(Resource::TYPE::EFFEKSEER, Application::PATH_EFFECT + "BlastHit.efkefc");
+	resourcesMap_.emplace(SRC::EFFECT_BLAST, res);
 	
 }
 

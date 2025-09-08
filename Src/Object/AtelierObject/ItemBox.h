@@ -46,8 +46,8 @@ public:
 
 private:
 
-	bool isShowUI_ = false;          // UI接近表示（"アイテムボックス"）
-	bool isInventoryOpen_ = false;   // インベントリUI表示
+	bool isShowUI_;          // UI接近表示（"アイテムボックス"）
+	bool isInventoryOpen_;   // インベントリUI表示
 
 	InventoryUI* inventoryUI_;
 	std::shared_ptr<Player> player_;

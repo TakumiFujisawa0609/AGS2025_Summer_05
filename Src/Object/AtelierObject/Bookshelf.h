@@ -5,6 +5,8 @@
 #include "../UnitBase.h"
 #include "../../Utility/Utility.h"
 
+class LibraryUI;
+
 class Bookshelf : public HitObject, public UnitBase
 {
 public:
@@ -18,6 +20,7 @@ public:
     void Init(void) override;
     void Update(void) override;
     void Draw(void) override;
+    void DrawUI(void);
     void Release(void) override;
 
     VECTOR GetHitMin(void) const override;
@@ -36,10 +39,17 @@ public:
     void OnPlayerHit(void) override;
     void OnPlayerExit(void) override;
 
+    bool isVisible(void) const;
+
     Transform& GetTransform(void);
 
 private:
     VECTOR hitMin_;
     VECTOR hitMax_;
+
+    LibraryUI* libraryUI_;
+
     bool isValid_;
+    bool isShowUI_;          // UI接近表示（"アイテムボックス"）
+    bool isLibraryOpen_;     // UI表示
 };

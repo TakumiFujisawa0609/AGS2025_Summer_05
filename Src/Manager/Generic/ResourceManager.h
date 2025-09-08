@@ -99,6 +99,7 @@ public:
 
 		//エフェクト
 		EFFECT_ALCHEMY,         //錬金エフェクト
+		EFFECT_BLAST,          //爆発エフェクト
 	};
 
 	//明示的にインスタンスを生成する

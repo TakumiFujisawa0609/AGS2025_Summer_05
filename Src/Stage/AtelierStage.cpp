@@ -1,6 +1,10 @@
-﻿#include<DxLib.h>
-#include "AtelierStage.h"
+﻿#include "AtelierStage.h"
+
+#include<DxLib.h>
+#include<EffekseerForDXLib.h>
+
 #include "../Application.h"
+#include "../Manager/Decoration/EffectManager.h"
 #include "../Manager/Generic/Resource.h"
 #include "../Manager/Generic/ResourceManager.h"
 #include "../Manager/Generic/InputManager.h"
@@ -115,6 +119,10 @@ void AtelierStage::Init(void)
 	{ 
 		sound.Play(SoundManager::SOUND::BGM_ATELIER);
 	}
+
+	//エフェクトの追加
+	EffectManager::GetInstance().Add(EffectManager::EFFECT::EFFECT_ALCHENY, res.Load(ResourceManager::SRC::EFFECT_ALCHEMY).handleId_);
+	EffectManager::GetInstance().Add(EffectManager::EFFECT::EFFECT_BLAST, res.Load(ResourceManager::SRC::EFFECT_BLAST).handleId_);
 	
 
 }
@@ -132,11 +140,11 @@ void AtelierStage::Update(void)
 	itemBox_->Update();
 	tableSetAtelier_->Update();
 
-	if (itemBox_->IsVisible() == false && alchemyPot_->isOpen() == false)
+	if (itemBox_->IsVisible() == false && alchemyPot_->isOpen() == false && bookshelfManager_->IsValid() == false)
 	{
 		pauseUiCount_--;
 	}
-	else if (itemBox_->IsVisible() == true || alchemyPot_->isOpen() == true)
+	else if (itemBox_->IsVisible() == true || alchemyPot_->isOpen() == true || bookshelfManager_->IsValid() == true)
 	{
 		pauseUiCount_ = PAUSE_UI_COUNT;
 	}
@@ -158,6 +166,12 @@ void AtelierStage::Update(void)
 		{
 			stageManager_->ChangeStage(StageManager::STAGE_ID::GARDEN);
 		}
+	}
+
+	// デバッグ用エフェクト再生
+	if (input.IsTrgDown(KEY_INPUT_E))
+	{
+		EffectManager::GetInstance().Play(EffectManager::EFFECT::EFFECT_ALCHENY, {0.0f, 70.0f, -50.0f}, {0.0f, 0.0f, 0.0f,1.0f}, 15.0f, SoundManager::SOUND::SE_SELECT);
 	}
 #endif // _DEBUG
 
@@ -181,6 +195,7 @@ void AtelierStage::Draw(void)
 	alchemyPot_->Draw();
 	teleportt_->Draw();
 	itemBox_->DrawUI();
+	bookshelfManager_->DrawUI();
 	wall_->Draw();
 	wall2_->Draw();
 	wallZ_->Draw();

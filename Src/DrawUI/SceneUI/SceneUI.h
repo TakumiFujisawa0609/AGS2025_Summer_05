@@ -14,9 +14,9 @@ public:
     SceneUi(void);
     ~SceneUi(void);
 
-    void Draw(void);
+    void Draw(int baseYOverride = -1);
     void FontBlinking(void);
-    void DrawFont(void);
+    void DrawFont(int baseYOverride);
 
     void AddCharctor(const char* _char);
     void SetCurrentIndex(int index);

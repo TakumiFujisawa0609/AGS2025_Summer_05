@@ -12,10 +12,10 @@
 #include "../../Application.h"
 
 InventoryUI::InventoryUI(void)
-	: isVisible_(false)
-	, selectedItemIndex_(-1)
-	, currentTab_(TAB::Material) // 初期は素材タブ
-	, frameCount_(0)
+    : isVisible_(false)
+    , selectedItemIndex_(-1)
+    , currentTab_(TAB::Material) // 初期は素材タブ
+    , frameCount_(0)
 {
 }
 
@@ -25,206 +25,170 @@ InventoryUI::~InventoryUI(void)
 
 void InventoryUI::Init(void)
 {
-	isVisible_ = false;
-	selectedItemIndex_ = -1;
-	currentTab_ = TAB::Material; // 初期タブは素材
-	frameCount_ = 0;
+    isVisible_ = false;
+    selectedItemIndex_ = -1;
+    currentTab_ = TAB::Material;
+    frameCount_ = 0;
 }
 
 void InventoryUI::Show(void)
 {
-	isVisible_ = true;
-	selectedItemIndex_ = 0;
-	currentTab_ = TAB::Material;
+    isVisible_ = true;
+    selectedItemIndex_ = 0;
+    currentTab_ = TAB::Material;
 }
 
 void InventoryUI::Hide(void)
 {
-	isVisible_ = false;
+    isVisible_ = false;
 }
-
 
 void InventoryUI::Update(void)
 {
-	auto& input = InputManager::GetInstance();
-	auto& itemManager = ItemManager::GetInstance();
-	auto& sound = SoundManager::GetInstance();
+    auto& input = InputManager::GetInstance();
+    auto& itemManager = ItemManager::GetInstance();
+    auto& sound = SoundManager::GetInstance();
 
-	if (!isVisible_) return;
+    if (!isVisible_) return;
 
-	frameCount_++;
+    frameCount_++;
 
-	// タブ切り替え（TABキーで切り替え）
-	if (input.IsTrgDown(KEY_INPUT_TAB))
-	{
-		sound.Play(SoundManager::SOUND::SE_PUSH);
-		currentTab_ = (currentTab_ == TAB::Material) ? TAB::Product : TAB::Material;
-		selectedItemIndex_ = 0;
-	}
+    // --- 表示対象アイテムリストを作成 ---
+    visibleItems_.clear();
+    int itemCount = (currentTab_ == TAB::Material)
+        ? itemManager.GetMaterialItemCount()
+        : itemManager.GetProductItemCount();
 
-	int itemCount = (currentTab_ == TAB::Material)
-		? itemManager.GetMaterialItemCount()
-		: itemManager.GetProductItemCount();
+    for (int i = 0; i < itemCount; ++i) {
+        std::shared_ptr<ItemBase> item;
+        if (currentTab_ == TAB::Material) {
+            item = itemManager.GetMaterialItem(i);
+        }
+        else {
+            item = itemManager.GetProductItem(i);
+        }
 
-	// 選択が範囲外なら修正
-	selectedItemIndex_ = std::clamp(selectedItemIndex_, 0, std::max(0, itemCount - 1));
+        if (item && item->GetQuantity() > 0) {
+            visibleItems_.push_back(item);
+        }
+    }
 
-	int row = selectedItemIndex_ / MAX_COLUMNS;
-	int col = selectedItemIndex_ % MAX_COLUMNS;
+    // --- 入力処理 ---
+    if (visibleItems_.empty()) return; // 表示アイテムがなければ終了
 
-	if (input.IsTrgDown(KEY_INPUT_UP))
-	{
-		sound.Play(SoundManager::SOUND::SE_SELECT);
-		int newRow = row - 1;
-		if (newRow >= 0)
-		{
-			int newIndex = newRow * MAX_COLUMNS + col;
-			if (newIndex < itemCount) selectedItemIndex_ = newIndex;
-		}
-	}
-	if (input.IsTrgDown(KEY_INPUT_DOWN))
-	{
-		sound.Play(SoundManager::SOUND::SE_SELECT);
-		int newRow = row + 1;
-		int newIndex = newRow * MAX_COLUMNS + col;
-		if (newIndex < itemCount) selectedItemIndex_ = newIndex;
-	}
-	if (input.IsTrgDown(KEY_INPUT_LEFT))
-	{
-		sound.Play(SoundManager::SOUND::SE_SELECT);
-		int newCol = col - 1;
-		if (newCol >= 0)
-		{
-			int newIndex = row * MAX_COLUMNS + newCol;
-			if (newIndex < itemCount) selectedItemIndex_ = newIndex;
-		}
-	}
-	if (input.IsTrgDown(KEY_INPUT_RIGHT))
-	{
-		sound.Play(SoundManager::SOUND::SE_SELECT);
-		int newCol = col + 1;
-		int newIndex = row * MAX_COLUMNS + newCol;
-		if (newIndex < itemCount) selectedItemIndex_ = newIndex;
-	}
+    selectedItemIndex_ = std::clamp(selectedItemIndex_, 0, (int)visibleItems_.size() - 1);
 
-	if (input.IsTrgDown(KEY_INPUT_ESCAPE))
-	{
-		sound.Play(SoundManager::SOUND::SE_CANCEL);
-		Hide();
-	}
+    int row = selectedItemIndex_ / MAX_COLUMNS;
+    int col = selectedItemIndex_ % MAX_COLUMNS;
+
+    if (input.IsTrgDown(KEY_INPUT_UP)) {
+        sound.Play(SoundManager::SOUND::SE_SELECT);
+        if (row > 0) selectedItemIndex_ -= MAX_COLUMNS;
+    }
+    if (input.IsTrgDown(KEY_INPUT_DOWN)) {
+        sound.Play(SoundManager::SOUND::SE_SELECT);
+        if (selectedItemIndex_ + MAX_COLUMNS < (int)visibleItems_.size())
+            selectedItemIndex_ += MAX_COLUMNS;
+    }
+    if (input.IsTrgDown(KEY_INPUT_LEFT)) {
+        sound.Play(SoundManager::SOUND::SE_SELECT);
+        if (col > 0) selectedItemIndex_ -= 1;
+    }
+    if (input.IsTrgDown(KEY_INPUT_RIGHT)) {
+        sound.Play(SoundManager::SOUND::SE_SELECT);
+        if (col < MAX_COLUMNS - 1 && selectedItemIndex_ + 1 < (int)visibleItems_.size())
+            selectedItemIndex_ += 1;
+    }
+
+    if (input.IsTrgDown(KEY_INPUT_ESCAPE)) {
+        sound.Play(SoundManager::SOUND::SE_CANCEL);
+        Hide();
+    }
 }
 
 void InventoryUI::Draw(void)
 {
-	if (!isVisible_) return;
+    if (!isVisible_) return;
 
-	auto& itemManager = ItemManager::GetInstance();
-	auto& font = Font::GetInstance();
+    auto& font = Font::GetInstance();
 
-	// 各種定数
-	const int fontSize = 24;
-	const int iconSize = ICON_SIZE;
-	const int padding = PADDING;
+    // 各種定数
+    const int fontSize = 24;
+    const int iconSize = ICON_SIZE;
+    const int padding = PADDING;
 
-	// アイテム取得
-	int itemCount = 0;
-	std::function<std::shared_ptr<ItemBase>(int)> getItemFunc;
+    // 表示行数と列数の決定
+    const int maxColumns = MAX_COLUMNS;
+    const int rowCount = (visibleItems_.size() + maxColumns - 1) / maxColumns;
 
-	if (currentTab_ == TAB::Material)
-	{
-		itemCount = itemManager.GetMaterialItemCount();
-		getItemFunc = [&](int i) -> std::shared_ptr<ItemBase> {
-			return itemManager.GetMaterialItem(i);
-			};
-	}
-	else
-	{
-		itemCount = itemManager.GetProductItemCount();
-		getItemFunc = [&](int i) -> std::shared_ptr<ItemBase> {
-			return itemManager.GetProductItem(i);
-			};
-	}
+    // グリッド全体のサイズ
+    const int gridWidth = maxColumns * (iconSize + padding) - padding;
+    const int gridHeight = rowCount * (iconSize * 2 + padding);
 
-	// 表示行数と列数の決定
-	const int maxColumns = MAX_COLUMNS;
-	const int rowCount = (itemCount + maxColumns - 1) / maxColumns;
+    // 中央揃えの描画開始位置
+    const int startX = 150;
+    const int startY = 150;
 
-	// グリッド全体のサイズ
-	const int gridWidth = maxColumns * (iconSize + padding) - padding;
-	const int gridHeight = rowCount * (iconSize * 2 + padding); // アイコン+名前+数量のため2倍
+    // 背景
+    SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
+    DrawBox(startX - 100, 140, startX + gridWidth + 200, startY + gridHeight + (Application::DEFA_SCREEN_SZIE_Y / 2) + 200, GetColor(0, 0, 0), TRUE);
+    SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-	// 中央揃えの描画開始位置
-	const int startX = 150;
-	const int startY = 150;
+    DrawBox(startX - 100, 140, startX + gridWidth + 200, startY + gridHeight + (Application::DEFA_SCREEN_SZIE_Y / 2) + 200, GetColor(255, 255, 255), FALSE);
 
-	// ここでグリッド描画領域の背景を黒く半透明に塗る
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
-	DrawBox(startX - 100, 140, startX + gridWidth + 200, startY + gridHeight + (Application::DEFA_SCREEN_SZIE_Y / 2) + 200, GetColor(0, 0, 0), TRUE);
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+    // アイテム描画ループ
+    for (int i = 0; i < (int)visibleItems_.size(); ++i)
+    {
+        auto item = visibleItems_[i];
+        if (!item) continue;
 
-	DrawBox(startX - 100, 140, startX + gridWidth + 200, startY + gridHeight + (Application::DEFA_SCREEN_SZIE_Y / 2) + 200, GetColor(255, 255, 255), FALSE);
+        int row = i / MAX_COLUMNS;
+        int col = i % MAX_COLUMNS;
 
-	// タブ表示
-	const std::string materialText = "素材アイテム";
-	const std::string productText = "完成品アイテム";
+        int x = startX + col * (iconSize + padding);
+        int y = startY + row * (iconSize * 2 + padding);
 
-	int tabY = 100;
-	int tabX = (Application::SCREEN_SIZE_X / 2) - font.GetDefaultTextWidth(materialText);
+        // アイコン
+        DrawGraph(x, y, item->GetImageHandle(), true);
 
-	if (currentTab_ == TAB::Material)
-	{
-		font.DrawDefaultText(tabX, tabY, materialText.c_str(), GetColor(255, 255, 0), 28, Font::FONT_TYPE_ANTIALIASING_EDGE);
-	}
-	else if (currentTab_ == TAB::Product)
-	{
-		tabX = (Application::SCREEN_SIZE_X - font.GetDefaultTextWidth(productText)) / 2;
-		font.DrawDefaultText(tabX, tabY, productText.c_str(), GetColor(255, 255, 0), 28, Font::FONT_TYPE_ANTIALIASING_EDGE);
-	}
+        // 名前
+        font.DrawDefaultText(x, y + iconSize + 4,
+            item->GetName().c_str(),
+            GetColor(255, 255, 255), 24,
+            Font::FONT_TYPE_ANTIALIASING_EDGE);
 
-	// アイテム描画ループ
-	for (int i = 0; i < itemCount; ++i)
-	{
-		auto item = getItemFunc(i);
-		if (!item) continue;
+        // 数量
+        std::string quantityStr = "x" + std::to_string(item->GetQuantity());
+        font.DrawDefaultText(x, y + iconSize + 24,
+            quantityStr.c_str(),
+            GetColor(200, 200, 200), 20,
+            Font::FONT_TYPE_ANTIALIASING_EDGE);
 
-		int row = i / maxColumns;
-		int col = i % maxColumns;
+        // 選択枠
+        if (i == selectedItemIndex_) {
+            const int border = 3;
+            int color = GetColor(255, 255, 0);
+            DrawBox(x - border, y - border, x + iconSize + border, y + iconSize + border, color, false);
+        }
+    }
 
-		int x = startX + col * (iconSize + padding);
-		int y = startY + row * (iconSize * 2 + padding);
+    // 説明文（選択中）
+    if (selectedItemIndex_ >= 0 && selectedItemIndex_ < (int)visibleItems_.size())
+    {
+        auto selectedItem = visibleItems_[selectedItemIndex_];
+        if (selectedItem)
+        {
+            const std::string& description = selectedItem->GetDescription();
+            int descX = (Application::SCREEN_SIZE_X / 2) + 120;
+            int descY = Application::DEFA_SCREEN_SZIE_Y / 2;
 
-		DrawGraph(x, y, item->GetImageHandle(), true);
-		font.DrawDefaultText(x, y + iconSize + 4, item->GetName().c_str(), GetColor(255, 255, 255), 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+            SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180);
+            DrawBox(descX, descY - 5, Application::DEFA_SCREEN_SIZE_X - 50, descY + fontSize + (Application::DEFA_SCREEN_SZIE_Y / 2) - 100, GetColor(0, 0, 0), true);
+            SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-		std::string quantityStr = "x" + std::to_string(item->GetQuantity());
-		font.DrawDefaultText(x, y + iconSize + 24, quantityStr.c_str(), GetColor(200, 200, 200), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
+            DrawBox(descX, descY - 5, Application::DEFA_SCREEN_SIZE_X - 50, descY + fontSize + (Application::DEFA_SCREEN_SZIE_Y / 2) - 100, GetColor(255, 255, 255), false);
 
-		if (i == selectedItemIndex_)
-		{
-			const int border = 3;
-			int color = GetColor(255, 255, 0);
-			DrawBox(x - border, y - border, x + iconSize + border, y + iconSize + border, color, false);
-		}
-	}
-
-	// 説明文（選択中）
-	if (selectedItemIndex_ >= 0 && selectedItemIndex_ < itemCount)
-	{
-		auto selectedItem = getItemFunc(selectedItemIndex_);
-		if (selectedItem)
-		{
-			const std::string& description = selectedItem->GetDescription();
-			int descWidth = font.GetDefaultTextWidth(description);
-			int descX = (Application::SCREEN_SIZE_X/ 2) + 120;
-			int descY = Application::DEFA_SCREEN_SZIE_Y / 2;
-
-			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180);
-			DrawBox(descX, descY - 5, Application::DEFA_SCREEN_SIZE_X - 50, descY + fontSize + (Application::DEFA_SCREEN_SZIE_Y / 2) - 100, GetColor(0, 0, 0), true);
-			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-
-			DrawBox(descX, descY - 5, Application::DEFA_SCREEN_SIZE_X - 50, descY + fontSize + (Application::DEFA_SCREEN_SZIE_Y / 2) - 100, GetColor(255, 255, 255), false);
-
-			font.DrawDefaultText(descX, descY, description.c_str(), GetColor(255, 255, 255), fontSize);
-		}
-	}
+            font.DrawDefaultText(descX, descY, description.c_str(), GetColor(255, 255, 255), fontSize);
+        }
+    }
 }

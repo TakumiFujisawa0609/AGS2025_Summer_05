@@ -86,10 +86,16 @@ void Resource::Load(void)
 		handleId_ = MV1LoadModel(path_.c_str());
 		break;
 
+	case Resource::TYPE::EFFEKSEER:
+		//エフェクト
+		handleId_ = LoadEffekseerEffect(path_.c_str());
+		break;
+
 	case Resource::TYPE::SOUND:
 		//サウンド
 		handleId_ = LoadSoundMem(path_.c_str());
 		break;
+
 	}
 }
 

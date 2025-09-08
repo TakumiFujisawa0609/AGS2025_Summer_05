@@ -24,7 +24,8 @@ public:
     /// </summary>
     enum class EFFECT
     {
-    
+		EFFECT_ALCHENY,   /// <summary>錬金エフェクト</summary>
+        EFFECT_BLAST,     /// <summary>爆発エフェクト</summary>
     };
 
     /// <summary>

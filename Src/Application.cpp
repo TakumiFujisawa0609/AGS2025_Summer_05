@@ -3,6 +3,7 @@
 #include<DxLib.h>
 #include<EffekseerForDXLib.h>
 
+#include "Manager/Decoration/EffectManager.h"
 #include "Manager/Generic/ResourceManager.h"
 #include "Manager/Generic/InputManager.h"
 #include "Manager/Generic/SceneManager.h"
@@ -88,6 +89,8 @@ void Application::Init(void)
 	//フォントの初期化
 	Font::CreateInstance();
 
+	EffectManager::CreateInstance();
+
 	std::string fontPath = Application::PATH_FONT + "NikkyouSans-mLKax.ttf";
 
  	Font::GetInstance().AddFont("GameFont","Nikkyou Sans", fontPath, 24, 6, Font::FONT_TYPE_EDGE);
@@ -103,7 +106,6 @@ void Application::Run(void)
 {
 	auto& inputManager = InputManager::GetInstance();
 	auto& sceneManager = SceneManager::GetInstance();
-
 	
 
 	MSG msg;
@@ -169,15 +171,19 @@ void Application::Run(void)
 				return;
 			}
 		}
+		// エフェクト更新
+		UpdateEffekseer3D();
+
 
 		// 描画
 		sceneManager.Draw();
+		// エフェクト描画
+		DrawEffekseer3D();
 
 		if (pauseMenu_->IsVisible())
 		{
 			pauseMenu_->Draw();  // ポーズメニュー前面に
 		}
-
 		ScreenFlip();
 		fps_->FpsControll_Wait();
 	}
@@ -192,6 +198,8 @@ void Application::Destroy(void)
 	Font::GetInstance().Destroy();
 	// QuestUI終了処理
 	QuestUI::Destroy();
+
+	EffectManager::GetInstance().Destroy();
 
 	//エフェクシアの終了
 	Effkseer_End();
@@ -228,7 +236,7 @@ void Application::SetActiveUI(bool isActive)
 
 void Application::InitEffekseer(void)
 {
-	if (Effekseer_Init(8000) == 1)
+	if (Effekseer_Init(8000) == -1)
 	{
 		DxLib_End();
 	}

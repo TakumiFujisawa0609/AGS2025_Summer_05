@@ -61,7 +61,7 @@ void GuildStage::Init(void)
 	sound.Add(SoundManager::TYPE::BGM, SoundManager::SOUND::BGM_GUILD, res.Load(ResourceManager::SRC::BGM_GUILD).handleId_);
 
 	//BGMÇÃâπó í≤êÆ
-	sound.AdjustVolume(SoundManager::SOUND::BGM_GUILD, 20);
+	sound.AdjustVolume(SoundManager::SOUND::BGM_GUILD, 15);
 
 	sound.Play(SoundManager::SOUND::BGM_GUILD);
 	
