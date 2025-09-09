@@ -6,7 +6,7 @@ DefensePotion::DefensePotion(void)
 	:ProductItem
 	(
 		"DefensePotion",
-		"防御ポーソン",
+		"硬化ポーソン",
 		"飲むと一時的に防御力が高まる効果がある\n 材料\n ・麻痺草×２\n ・水×1",
 		0,
 		ResourceManager::GetInstance().Load(ResourceManager::SRC::DEFENSE_POTION).handleId_,

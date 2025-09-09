@@ -141,6 +141,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\Item\Product\FireSword.cpp" />
+    <ClCompile Include="Src\Object\Item\Material\FireMagicStone.cpp" />
+    <ClCompile Include="Src\Object\Item\Material\IronOre.cpp" />
     <ClCompile Include="Src\Object\Item\Product\DefensePotion.cpp" />
     <ClCompile Include="Src\Object\Item\Material\HardbodyHerb.cpp" />
     <ClCompile Include="Src\Object\Item\Product\PowerPotion.cpp" />
@@ -246,8 +249,14 @@
     <ClCompile Include="Src\Object\AtelierObject\TableSetAtelier.cpp" />
     <ClCompile Include="Src\Object\GuildObject\TableSetGuild.cpp" />
     <ClCompile Include="Src\Object\Manager\TableSetGuildManager.cpp" />
+    <ClCompile Include="Src\Object\Item\Material\Sword.cpp" />
+    <ClCompile Include="Src\Object\Item\Material\WaterMagicStone.cpp" />
+    <ClCompile Include="Src\Object\Item\Product\WaterSword.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\Item\Product\FireSword.h" />
+    <ClInclude Include="Src\Object\Item\Material\FireMagicStone.h" />
+    <ClInclude Include="Src\Object\Item\Material\IronOre.h" />
     <ClInclude Include="Src\Object\Item\Product\DefensePotion.h" />
     <ClInclude Include="Src\Object\Item\Material\HardbodyHerb.h" />
     <ClInclude Include="Src\Object\Item\Product\PowerPotion.h" />
@@ -353,6 +362,9 @@
     <ClInclude Include="Src\Object\AtelierObject\TableSetAtelier.h" />
     <ClInclude Include="Src\Object\GuildObject\TableSetGuild.h" />
     <ClInclude Include="Src\Object\Manager\TableSetGuildManager.h" />
+    <ClInclude Include="Src\Object\Item\Material\Sword.h" />
+    <ClInclude Include="Src\Object\Item\Material\WaterMagicStone.h" />
+    <ClInclude Include="Src\Object\Item\Product\WaterSword.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

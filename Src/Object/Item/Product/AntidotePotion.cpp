@@ -7,7 +7,7 @@ AntidotePotion::AntidotePotion(void)
 	(
 		"AntidotePotion",
 		"‰ğ“Åƒ|[ƒ\ƒ“",
-		"ˆù‚Ş‚Æ“Å‚ÌŒø—Í‚ğ’†˜a‚·‚é\n Ş—¿\n E‰ğ“Å‘~‚Q\n E…~1",
+		"ˆù‚Ş‚Æ“Å‚ÌŒø—Í‚ğ’†˜a‚·‚é\n Ş—¿\n E‰ğ“Å‘~‚Q\n E…~‚P",
 		0,
 		ResourceManager::GetInstance().Load(ResourceManager::SRC::ANTIDOTE_POTION).handleId_,
 		0

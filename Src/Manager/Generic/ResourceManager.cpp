@@ -251,6 +251,29 @@ void ResourceManager::ResourceAtelier(void)
 	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Water.png");
 	resourcesMap_.emplace(SRC::WATER, res);
 
+	//ìSçzêŒ
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Iron.png");
+	resourcesMap_.emplace(SRC::IRON_ORE, res);
+
+	//âŒÇÃñÇêŒ
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/RedOre.png");
+	resourcesMap_.emplace(SRC::FIRE_MAGIC_STONE, res);
+
+	//êÖÇÃñÇêŒ
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/BlueOre.png");
+	resourcesMap_.emplace(SRC::WATER_MAGIC_STONE, res);
+
+	//åï
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Sword.png");
+	resourcesMap_.emplace(SRC::SWORD, res);
+
+	//âŒÇÃåï
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/RedSword.png");
+	resourcesMap_.emplace(SRC::FIRE_SORD, res);
+
+	//êÖÇÃåï
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/BlueSword.png");
+	resourcesMap_.emplace(SRC::WATER_SWORD, res);
 
 	//å¯â âπ
 	// òBã‡âπÇìoò^

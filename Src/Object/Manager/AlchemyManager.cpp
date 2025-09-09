@@ -15,6 +15,8 @@
 #include "../Item/Product/AntiParalysisPotion.h"
 #include "../Item/Product/Speed​​Potion.h"
 #include "../Item/Product/PowerPotion.h"
+#include "../Item/Product/DefensePotion.h"
+#include "../Item/Product/FireSword.h"
 #include "../Item/Product/Garbage.h"
 #include "../../Application.h"
 #include "../PlayerStop.h"
@@ -99,6 +101,18 @@ void AlchemyManager::Init(void)
     recipes_.emplace_back
     (
         std::map < std::string, int>{{"鬼力草", 2}, { "水", 1 }},
+        std::make_shared<PowerPotion>()
+    );
+
+    recipes_.emplace_back
+    (
+        std::map < std::string, int>{{"硬体草", 2}, { "水", 1 }},
+        std::make_shared<PowerPotion>()
+    );
+
+    recipes_.emplace_back
+    (
+        std::map < std::string, int>{{"火の魔石", 2}, { "剣", 1 }},
         std::make_shared<PowerPotion>()
     );
 }
@@ -565,7 +579,7 @@ void AlchemyManager::Draw(void)
     // 左背景 黒
     const int leftBgLeft = startX - 20;
     const int leftBgTop = startY - 40;
-    const int leftBgRight = startX + leftWidth + 20;
+    const int leftBgRight = startX + leftWidth + 40;
     const int leftBgBottom = startY + leftHeight + Application::DEFA_SCREEN_SZIE_Y / 2;
 
     DrawBox(leftBgLeft, leftBgTop, leftBgRight, leftBgBottom, GetColor(0, 0, 0), TRUE);

@@ -20,6 +20,7 @@ enum class IETEM_TYPE
     SPEED_POTION,
     POWER_POTION,
     DEFENSE_POTION,
+    FIRE_SWORD,
     ITEM_COUNT
 };
 

@@ -100,8 +100,16 @@ void QuestUI::InitializeQuests(void)
         "Garbage", 1, 500));
     availableQuests_.push_back(DeliveryQuest(4, "解麻痺ポーソン納品", "解麻痺ポーソンを納品",
         "AntiParalysisPotion", 1, 400));
-    availableQuests_.push_back(DeliveryQuest(4, "俊敏ポーソン納品", "俊敏ポーソンを納品",
+    availableQuests_.push_back(DeliveryQuest(5, "俊敏ポーソン納品", "俊敏ポーソンを納品",
         "SpeedPotion", 1, 400));
+    availableQuests_.push_back(DeliveryQuest(6, "力のポーソン納品", "力のポーソンを納品",
+        "PowerPotion", 1, 400));
+    availableQuests_.push_back(DeliveryQuest(7, "硬化ポーソン納品", "硬化ポーソンを納品",
+        "DefensePotion", 1, 400));
+    availableQuests_.push_back(DeliveryQuest(8, "火の剣の納品", "火の剣の納品",
+        "FireSword", 1, 800));
+    availableQuests_.push_back(DeliveryQuest(9, "水の剣の納品", "水の剣の納品",
+        "WaterSword", 1, 800));
 }
 
 //更新処理

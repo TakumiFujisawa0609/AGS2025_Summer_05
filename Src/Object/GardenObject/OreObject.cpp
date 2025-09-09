@@ -116,11 +116,17 @@ void OreObject::TryMine(void)
 {
     if (cooldownState_ != COOL_DOWNSTATE::READY) return;
 
+    // 確定アイテム
+    auto herbItem = std::dynamic_pointer_cast<MaterialItem>(
+        ItemManager::GetInstance().FindItemById("IronOre"));
+    if (herbItem) {
+        ItemManager::GetInstance().AddQuantity(herbItem, 1);
+    }
+
     // テスト用のダミーアイテムIDを追加
     std::vector<std::string> materials = {
-        "test_iron_ore",
-        "test_copper_ore",
-        "test_gold_ore"
+        "FireMagicStone"
+
         // TODO: 実際のアイテムIDに変更
     };
 

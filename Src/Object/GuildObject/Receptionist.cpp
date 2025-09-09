@@ -44,6 +44,7 @@ Receptionist::Receptionist(void)
     itemIds_[static_cast<int>(IETEM_TYPE::SPEED_POTION)] = "SpeedPotion";
     itemIds_[static_cast<int>(IETEM_TYPE::POWER_POTION)] = "PowerPotion";
     itemIds_[static_cast<int>(IETEM_TYPE::DEFENSE_POTION)] = "DefensePotion";
+    itemIds_[static_cast<int>(IETEM_TYPE::FIRE_SWORD)] = "FireSword";
 }
 
 Receptionist::~Receptionist(void)
@@ -83,7 +84,8 @@ void Receptionist::Init(void)
 	itemNames_[static_cast<int>(IETEM_TYPE::ANTIPARALYSIS_POTION)] = "解麻痺ポーソン";
 	itemNames_[static_cast<int>(IETEM_TYPE::SPEED_POTION)] = "俊敏ポーソン";
 	itemNames_[static_cast<int>(IETEM_TYPE::POWER_POTION)] = "力のポーソン";
-	itemNames_[static_cast<int>(IETEM_TYPE::DEFENSE_POTION)] = "防御力ポーソン";
+	itemNames_[static_cast<int>(IETEM_TYPE::DEFENSE_POTION)] = "硬化ポーソン";
+	itemNames_[static_cast<int>(IETEM_TYPE::FIRE_SWORD)] = "火の剣";
 
     // アイテムIDを初期化
     itemIds_[static_cast<int>(IETEM_TYPE::HEALTH_POTION)] = "RecoveryPotion";
@@ -94,6 +96,7 @@ void Receptionist::Init(void)
     itemIds_[static_cast<int>(IETEM_TYPE::SPEED_POTION)] = "SpeedPotion";
     itemIds_[static_cast<int>(IETEM_TYPE::POWER_POTION)] = "PowerPotion";
     itemIds_[static_cast<int>(IETEM_TYPE::DEFENSE_POTION)] = "DefensePotion";
+    itemIds_[static_cast<int>(IETEM_TYPE::FIRE_SWORD)] = "FireSword";
 
     shop_ = std::make_shared<Shop>();
     shop_->Init();

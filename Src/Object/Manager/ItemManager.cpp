@@ -8,6 +8,10 @@
 #include "../Item/Material/DemonPowerHerb.h"
 #include "../Item/Material/HardbodyHerb.h"
 #include "../Item/Material/Water.h"
+#include "../Item/Material/IronOre.h"
+#include "../Item/Material/FireMagicStone.h"
+#include "../Item/Material/WaterMagicStone.h"
+#include "../Item/Material/Sword.h"
 #include "../Item/Product/RecoveryPotion.h"
 #include "../Item/Product/AntidotePotion.h"
 #include "../Item/Product/AntiParalysisPotion.h"
@@ -15,6 +19,8 @@
 #include "../Item/Product/Speed​​Potion.h"
 #include "../Item/Product/PowerPotion.h"
 #include "../Item/Product/DefensePotion.h"
+#include "../Item/Product/FireSword.h"
+#include "../Item/Product/WaterSword.h"
 #include "../Item/Product/Garbage.h"
 #include "../Item/Seed/RandomSeed.h"
 
@@ -52,6 +58,10 @@ void ItemManager::Init()
     Register(std::make_shared<DemonPowerHerb>());
     Register(std::make_shared<HardbodyHerb>());
     Register(std::make_shared<Water>());
+    Register(std::make_shared<IronOre>());
+    Register(std::make_shared<FireMagicStone>());
+    Register(std::make_shared<WaterMagicStone>());
+    Register(std::make_shared<Sword>());
 
     // アイテム生成＆登録（完成品）
     Register(std::make_shared<RecoveryPotion>());
@@ -61,6 +71,8 @@ void ItemManager::Init()
     Register(std::make_shared<Speed​​Potion>());
     Register(std::make_shared<PowerPotion>());
     Register(std::make_shared<DefensePotion>());
+    Register(std::make_shared<FireSword>());
+    Register(std::make_shared<WaterSword>());
     Register(std::make_shared<Garbage>());
 
     //アイテム生成＆登録(種子)
@@ -85,14 +97,18 @@ void ItemManager::Init()
     }
 
     // 初期所持数設定（例）
-    AddQuantity(FindItemById("Herb"), 0); // HerbのIDが0なら
-    AddQuantity(FindItemById("AntidoteHerb"), 0); // AntidoteHerbのIDが1なら
-    AddQuantity(FindItemById("MagicFlower"), 0); // MagicFlowerのIDが2なら
-    AddQuantity(FindItemById("ParalysisHerb"), 0); // MagicFlowerのIDが2なら
-    AddQuantity(FindItemById("GaleHerb"), 0); // MagicFlowerのIDが2なら
-    AddQuantity(FindItemById("DemonPowerHerb"), 0); // MagicFlowerのIDが2なら
-    AddQuantity(FindItemById("HardbodyHerb"), 0); // MagicFlowerのIDが2なら
-    AddQuantity(FindItemById("Water"), 0); // WaterのIDが3なら
+    AddQuantity(FindItemById("Herb"), 0); 
+    AddQuantity(FindItemById("AntidoteHerb"), 0);
+    AddQuantity(FindItemById("MagicFlower"), 0);
+    AddQuantity(FindItemById("ParalysisHerb"), 0);
+    AddQuantity(FindItemById("GaleHerb"), 0);
+    AddQuantity(FindItemById("DemonPowerHerb"), 0); 
+    AddQuantity(FindItemById("HardbodyHerb"), 0);
+    AddQuantity(FindItemById("Water"), 0); 
+    AddQuantity(FindItemById("IronOre"), 0);
+    AddQuantity(FindItemById("FireMagicStone"), 0);
+    AddQuantity(FindItemById("WaterMagicStone"), 0);
+    AddQuantity(FindItemById("Sword"), 0);
 
     // 完成品は0スタート
 }

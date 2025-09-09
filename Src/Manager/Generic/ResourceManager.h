@@ -26,6 +26,8 @@ public:
 		POWER_POTION,           //力ポーション
 		DEFENSE_POTION,         //防御ポーション
 		GARBAGE,				//失敗の作品
+		FIRE_SORD,              //火の剣
+		WATER_SWORD,            //水の剣
 
 		//材料
 		HERB,					//薬草
@@ -36,6 +38,10 @@ public:
 		DEMON_POWER_HERB,       //鬼力草
 		HARD_BODY_HERB,         //硬体草
 		WATER,					//水
+		IRON_ORE,               //鉄鉱石
+		FIRE_MAGIC_STONE,       //火の魔石
+		WATER_MAGIC_STONE,      //水の魔石
+		SWORD,                  //剣
 
 		//種子
 		SEED,					//種
