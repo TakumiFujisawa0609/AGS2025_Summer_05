@@ -1,20 +1,18 @@
-// Shop.h
-
-#pragma once
+﻿#pragma once
 
 #include <vector>
 #include <memory>
 #include <unordered_map>
 #include <string>
 
-#include "../../Object/Item/Seed/SeedItem.h"
+#include "../../Object/Item/ItemBase.h"
 
 class Player;
+class DateTimeManager;
 
 class Shop
 {
 public:
-
     enum class SHOP_PHASE {
         SELECT_ITEM,
         SELECT_AMOUNT
@@ -44,9 +42,10 @@ public:
     void DrawRightSideUI(void);
 
     void SetPlayer(std::shared_ptr<Player> player);
+    void SetDateTimeManager(DateTimeManager* dt);
 
 private:
-    std::vector<std::shared_ptr<SeedItem>> seedItems_;
+    std::vector<std::shared_ptr<ItemBase>> shopItems_;
     std::unordered_map<std::string, int> purchaseQuantities_;
 
     int selectedItemIndex_;
@@ -54,16 +53,19 @@ private:
     bool skipFirstInputFrame_;
     SHOP_PHASE currentPhase_;
     int selectedQuantity_;
+    int lastDay_;
 
     SHOP_AREA currentArea_;
     int purchaseListSelectedIndex_;
 
     std::shared_ptr<Player> player_;
+    DateTimeManager* dateTimeManager_;
 
-    int GetPrice(std::shared_ptr<SeedItem> item) const;
+    int GetPrice(std::shared_ptr<ItemBase> item) const;
     int GetTotalPrice(void) const;
     int GetSelectedQuantity(void) const;
     void ConfirmPurchase(void);
+    void RefreshDailyItems(void);
 
-    std::shared_ptr<SeedItem> GetSelectedItem(void) const;
+    std::shared_ptr<ItemBase> GetSelectedItem(void) const;
 };

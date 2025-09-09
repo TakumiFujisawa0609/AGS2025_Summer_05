@@ -10,7 +10,8 @@ Water::Water(void)
 		"…",
 		"V‘N‚È…A—p‚Æ‚Í‚¢‚ë‚¢‚ë‚ ‚é‚æ",
 		0,
-		ResourceManager::GetInstance().Load(ResourceManager::SRC::WATER).handleId_
+		ResourceManager::GetInstance().Load(ResourceManager::SRC::WATER).handleId_,
+		0
 	)
 {
 }

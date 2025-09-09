@@ -141,6 +141,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\Item\Product\DefensePotion.cpp" />
+    <ClCompile Include="Src\Object\Item\Material\HardbodyHerb.cpp" />
+    <ClCompile Include="Src\Object\Item\Product\PowerPotion.cpp" />
+    <ClCompile Include="Src\Object\Item\Material\DemonPowerHerb.cpp" />
+    <ClCompile Include="Src\Object\Item\Product\Speed​​Potion.cpp" />
+    <ClCompile Include="Src\Object\Item\Material\GaleHerb.cpp" />
+    <ClCompile Include="Src\Object\Item\Product\AntiParalysisPotion.cpp" />
+    <ClCompile Include="Src\Object\Item\Material\ParalysisHerb.cpp" />
     <ClCompile Include="Src\DrawUI\SceneUI\LibraryUI.cpp" />
     <ClCompile Include="Src\DrawUI\SceneUI\GameHUD.cpp" />
     <ClCompile Include="Src\DrawUI\SceneUI\PauseMenu.cpp" />
@@ -240,6 +248,14 @@
     <ClCompile Include="Src\Object\Manager\TableSetGuildManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\Item\Product\DefensePotion.h" />
+    <ClInclude Include="Src\Object\Item\Material\HardbodyHerb.h" />
+    <ClInclude Include="Src\Object\Item\Product\PowerPotion.h" />
+    <ClInclude Include="Src\Object\Item\Material\DemonPowerHerb.h" />
+    <ClInclude Include="Src\Object\Item\Product\Speed​​Potion.h" />
+    <ClInclude Include="Src\Object\Item\Material\GaleHerb.h" />
+    <ClInclude Include="Src\Object\Item\Product\AntiParalysisPotion.h" />
+    <ClInclude Include="Src\Object\Item\Material\ParalysisHerb.h" />
     <ClInclude Include="Src\DrawUI\SceneUI\LibraryUI.h" />
     <ClInclude Include="Src\DrawUI\SceneUI\GameHUD.h" />
     <ClInclude Include="Src\DrawUI\SceneUI\PauseMenu.h" />

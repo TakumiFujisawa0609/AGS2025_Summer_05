@@ -202,6 +202,22 @@ void ResourceManager::ResourceAtelier(void)
 	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/BlueHerb.png");
 	resourcesMap_.emplace(SRC::MAGIC_FLOWER, res);
 
+	//麻痺草
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Yellowherb.png");
+	resourcesMap_.emplace(SRC::PARALYSIS_HERB, res);
+
+	//風走草
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Lightblueherb.png");
+	resourcesMap_.emplace(SRC::GALE_HERB, res);
+
+	//鬼力草
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Redherb.png");
+	resourcesMap_.emplace(SRC::DEMON_POWER_HERB, res);
+
+	//硬体草
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Orangeherb.png");
+	resourcesMap_.emplace(SRC::HARD_BODY_HERB, res);
+
 	//回復ポーション
 	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/GreenTriangularPotion.png");
 	resourcesMap_.emplace(SRC::RECOVERY_POTION, res);
@@ -210,9 +226,26 @@ void ResourceManager::ResourceAtelier(void)
 	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/PurpleTriangularPotion.png");
 	resourcesMap_.emplace(SRC::ANTIDOTE_POTION, res);
 
+	//解麻痺ポーション
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/YellowPotion.png");
+	resourcesMap_.emplace(SRC::ANTIPARALYSIS_POTION, res);
+
 	//魔力ポーション
 	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/BlueTriangularPotion.png");
 	resourcesMap_.emplace(SRC::MAGIC_POTION, res);
+
+	//俊敏ポーション
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/LightbluePotion.png");
+	resourcesMap_.emplace(SRC::SPEED_POTION, res);
+
+	//力のポーション
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/RedTriangularPotion.png");
+	resourcesMap_.emplace(SRC::POWER_POTION, res);
+
+	//防御ポーション
+	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/OrangePotion.png");
+	resourcesMap_.emplace(SRC::DEFENSE_POTION, res);
+	
 
 	//水
 	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Water.png");

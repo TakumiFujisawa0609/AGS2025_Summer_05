@@ -39,6 +39,11 @@ Receptionist::Receptionist(void)
     itemIds_[static_cast<int>(IETEM_TYPE::HEALTH_POTION)] = "RecoveryPotion";
     itemIds_[static_cast<int>(IETEM_TYPE::ANTIDOTE_POTION)] = "AntidotePotion";
     itemIds_[static_cast<int>(IETEM_TYPE::MAGIC_POTION)] = "MagicPotion";
+    itemIds_[static_cast<int>(IETEM_TYPE::GARBAGE)] = "Garbage";
+    itemIds_[static_cast<int>(IETEM_TYPE::ANTIPARALYSIS_POTION)] = "AntiParalysisPotion";
+    itemIds_[static_cast<int>(IETEM_TYPE::SPEED_POTION)] = "SpeedPotion";
+    itemIds_[static_cast<int>(IETEM_TYPE::POWER_POTION)] = "PowerPotion";
+    itemIds_[static_cast<int>(IETEM_TYPE::DEFENSE_POTION)] = "DefensePotion";
 }
 
 Receptionist::~Receptionist(void)
@@ -74,11 +79,21 @@ void Receptionist::Init(void)
     itemNames_[static_cast<int>(IETEM_TYPE::HEALTH_POTION)] = "回復ポーソン";
     itemNames_[static_cast<int>(IETEM_TYPE::ANTIDOTE_POTION)] = "解毒ポーソン";
     itemNames_[static_cast<int>(IETEM_TYPE::MAGIC_POTION)] = "魔法ポーソン";
+    itemNames_[static_cast<int>(IETEM_TYPE::MAGIC_POTION)] = "失敗の作品";
+	itemNames_[static_cast<int>(IETEM_TYPE::ANTIPARALYSIS_POTION)] = "解麻痺ポーソン";
+	itemNames_[static_cast<int>(IETEM_TYPE::SPEED_POTION)] = "俊敏ポーソン";
+	itemNames_[static_cast<int>(IETEM_TYPE::POWER_POTION)] = "力のポーソン";
+	itemNames_[static_cast<int>(IETEM_TYPE::DEFENSE_POTION)] = "防御力ポーソン";
 
     // アイテムIDを初期化
     itemIds_[static_cast<int>(IETEM_TYPE::HEALTH_POTION)] = "RecoveryPotion";
     itemIds_[static_cast<int>(IETEM_TYPE::ANTIDOTE_POTION)] = "AntidotePotion";
     itemIds_[static_cast<int>(IETEM_TYPE::MAGIC_POTION)] = "MagicPotion";
+    itemIds_[static_cast<int>(IETEM_TYPE::GARBAGE)] = "Garbage";
+    itemIds_[static_cast<int>(IETEM_TYPE::ANTIPARALYSIS_POTION)] = "AntiParalysisPotion";
+    itemIds_[static_cast<int>(IETEM_TYPE::SPEED_POTION)] = "SpeedPotion";
+    itemIds_[static_cast<int>(IETEM_TYPE::POWER_POTION)] = "PowerPotion";
+    itemIds_[static_cast<int>(IETEM_TYPE::DEFENSE_POTION)] = "DefensePotion";
 
     shop_ = std::make_shared<Shop>();
     shop_->Init();

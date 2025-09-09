@@ -8,9 +8,10 @@ Herb::Herb(void)
 	(
 		"Herb",
 		"薬草", 
-		"潰してエキスなどを負傷箇所にかけると治りが少し早くなる",
+		"体を癒す効果がある\n潰してエキスなどを負傷箇所にかけると治りが少し早くなる\n他の薬草をと混ぜるな危険",
 		0,
-		ResourceManager::GetInstance().Load(ResourceManager::SRC::HERB).handleId_
+		ResourceManager::GetInstance().Load(ResourceManager::SRC::HERB).handleId_,
+		1000
 	)
 {
 }

@@ -3,7 +3,7 @@
 #include <string>
 
 /// <summary>
-///アイテムの種別
+/// アイテムの種別
 /// </summary>
 enum class ITEM_TYPE
 {
@@ -24,12 +24,13 @@ class ItemBase
 {
 public:
     // コンストラクタ
-    ItemBase(const std::string& id, const std::string& name, const std::string& description, int quantity, int imageHandle);
+    ItemBase(const std::string& id, const std::string& name, const std::string& description,
+        int quantity, int imageHandle, int price);
 
     // デストラクタ（仮想）
     virtual ~ItemBase(void) = default;
 
-    //ID取得
+    // ID取得
     const std::string& GetId(void) const;
 
     // 名前を取得
@@ -44,13 +45,19 @@ public:
     // 画像ハンドルを取得
     int GetImageHandle(void) const;
 
+    // 価格を取得
+    int GetPrice(void) const;
+
+    // 価格を設定
+    void SetPrice(int price);
+
     // 所持数を増やす
     void AddQuantity(int amount);
 
     // 所持数を減らす（0未満にならない）
     void SubtractQuantity(int amount);
 
-    // 種別を取得（MaterialかProductか）
+    // 種別を取得（Seed, Material, Product）
     virtual ITEM_TYPE GetItemType(void) const = 0;
 
 protected:
@@ -59,4 +66,5 @@ protected:
     std::string description_;    // アイテムの説明
     int imageHandle_;            // アイテム画像
     int quantity_;               // 所持数
+    int price_;                  // 価格
 };

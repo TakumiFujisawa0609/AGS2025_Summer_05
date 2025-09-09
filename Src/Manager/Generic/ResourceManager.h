@@ -20,13 +20,21 @@ public:
 		//完成品アイテム
 		RECOVERY_POTION,		//回復ポーション
 		ANTIDOTE_POTION,		//解毒ポーション
+		ANTIPARALYSIS_POTION,   //解麻痺ポーション
 		MAGIC_POTION,			//魔力ポーション
+		SPEED_POTION,           //俊敏ポーション
+		POWER_POTION,           //力ポーション
+		DEFENSE_POTION,         //防御ポーション
 		GARBAGE,				//失敗の作品
 
 		//材料
 		HERB,					//薬草
 		ANTIDOTE_HERB,			//解毒草
 		MAGIC_FLOWER,			//魔力草
+		PARALYSIS_HERB,         //麻痺草
+		GALE_HERB,              //風走草
+		DEMON_POWER_HERB,       //鬼力草
+		HARD_BODY_HERB,         //硬体草
 		WATER,					//水
 
 		//種子

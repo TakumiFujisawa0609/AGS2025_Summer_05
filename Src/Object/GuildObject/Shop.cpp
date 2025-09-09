@@ -1,14 +1,14 @@
-// Shop.cpp
-
-#include "Shop.h"
+ï»¿#include "Shop.h"
 
 #include <DxLib.h>
 #include <algorithm>
+#include <random>
 
 #include "../../Manager/Generic/InputManager.h"
 #include "../../DrawUI/Font.h"
 #include "../../Object/Manager/ItemManager.h"
 #include "../../Manager/Decoration/SoundManager.h"
+#include "../../Manager/System/DateTimeManager.h"
 #include "../../Object/player.h"
 #include "../../Application.h"
 #include "../PlayerStop.h"
@@ -20,19 +20,10 @@ Shop::Shop(void)
     currentPhase_(SHOP_PHASE::SELECT_ITEM),
     selectedQuantity_(1),
     currentArea_(SHOP_AREA::ITEM_LIST),
-    purchaseListSelectedIndex_(0)
+    purchaseListSelectedIndex_(0),
+    lastDay_(-1),
+    dateTimeManager_(nullptr)
 {
-    auto& itemManager = ItemManager::GetInstance();
-    int seedCount = itemManager.GetSeedItemCount();
-
-    for (int i = 0; i < seedCount; i++)
-    {
-        auto seed = itemManager.GetSeedItem(i);
-        if (seed)
-        {
-            seedItems_.push_back(seed);
-        }
-    }
 }
 
 Shop::~Shop(void) {}
@@ -42,7 +33,12 @@ void Shop::SetPlayer(std::shared_ptr<Player> player)
     player_ = player;
 }
 
-int Shop::GetPrice(std::shared_ptr<SeedItem> item) const
+void Shop::SetDateTimeManager(DateTimeManager* dt)
+{
+    dateTimeManager_ = dt;
+}
+
+int Shop::GetPrice(std::shared_ptr<ItemBase> item) const
 {
     return item ? item->GetPrice() : 0;
 }
@@ -53,9 +49,9 @@ int Shop::GetTotalPrice(void) const
     for (const auto& entry : purchaseQuantities_)
     {
         auto item = ItemManager::GetInstance().FindItemById(entry.first);
-        if (auto seed = std::dynamic_pointer_cast<SeedItem>(item))
+        if (item)
         {
-            total += seed->GetPrice() * entry.second;
+            total += item->GetPrice() * entry.second;
         }
     }
     return total;
@@ -69,13 +65,14 @@ int Shop::GetSelectedQuantity(void) const
     return (it != purchaseQuantities_.end()) ? it->second : 0;
 }
 
-
 void Shop::Init(void)
 {
     purchaseQuantities_.clear();
     selectedItemIndex_ = 0;
     currentArea_ = SHOP_AREA::ITEM_LIST;
     purchaseListSelectedIndex_ = 0;
+
+    RefreshDailyItems();
 }
 
 void Shop::Show(void)
@@ -101,6 +98,17 @@ void Shop::Update()
     auto& input = InputManager::GetInstance();
     auto& sound = SoundManager::GetInstance();
 
+    // æ—¥æ›¿ã‚ã‚Šæ›´æ–°
+    if (dateTimeManager_)
+    {
+        int currentDay = dateTimeManager_->GetDay();
+        if (lastDay_ != currentDay)
+        {
+            lastDay_ = currentDay;
+            RefreshDailyItems();
+        }
+    }
+
     if (skipFirstInputFrame_)
     {
         skipFirstInputFrame_ = false;
@@ -113,7 +121,7 @@ void Shop::Update()
     {
         if (currentArea_ == SHOP_AREA::ITEM_LIST)
         {
-            int totalItems = static_cast<int>(seedItems_.size());
+            int totalItems = static_cast<int>(shopItems_.size());
             int row = selectedItemIndex_ / SHOP_COLUMNS;
             int col = selectedItemIndex_ % SHOP_COLUMNS;
 
@@ -144,20 +152,20 @@ void Shop::Update()
                 PlayerStop::GetInstance().ResumeMovement();
             }
 
-            if (input.IsTrgDown(KEY_INPUT_TAB)) // —áFTabƒL[‚Å¶‰EƒGƒŠƒAØ‚è‘Ö‚¦‚à‰Â”\
+            if (input.IsTrgDown(KEY_INPUT_TAB))
             {
                 sound.Play(SoundManager::SOUND::SE_PUSH);
                 currentArea_ = SHOP_AREA::PURCHASE_LIST;
                 purchaseListSelectedIndex_ = 0;
             }
         }
-        else // PURCHASE_LIST ƒGƒŠƒA‘€ì
+        else // PURCHASE_LIST
         {
             int itemCount = 0;
             for (const auto& entry : purchaseQuantities_)
                 if (entry.second > 0) itemCount++;
 
-            int listSize = itemCount + 1; // +1‚Íw“üƒ{ƒ^ƒ“
+            int listSize = itemCount + 1; // +1 ã¯è³¼å…¥ãƒœã‚¿ãƒ³
 
             if (input.IsTrgDown(KEY_INPUT_UP))
             {
@@ -172,7 +180,6 @@ void Shop::Update()
 
             if (purchaseListSelectedIndex_ < itemCount)
             {
-                // ƒAƒCƒeƒ€‘I‘ğ’†A¶‰E‚Å”—Ê’²®
                 auto it = std::next(purchaseQuantities_.begin(), purchaseListSelectedIndex_);
                 if (input.IsTrgDown(KEY_INPUT_LEFT) && it->second > 1)
                 {
@@ -188,7 +195,6 @@ void Shop::Update()
             }
             else
             {
-                // w“üƒ{ƒ^ƒ“‘I‘ğ’†
                 if (input.IsTrgDown(KEY_INPUT_RETURN))
                 {
                     sound.Play(SoundManager::SOUND::SE_PUSH);
@@ -243,7 +249,6 @@ void Shop::Update()
             currentPhase_ = SHOP_PHASE::SELECT_ITEM;
         }
         break;
-
     }
     }
 }
@@ -251,7 +256,6 @@ void Shop::Update()
 void Shop::Draw(void)
 {
     if (!isVisible_) return;
-
 
     PlayerStop::GetInstance().StopMovement();
 
@@ -283,28 +287,27 @@ void Shop::Draw(void)
 
             DrawBox(left - 70, top, right + 70, bottom, GetColor(255, 255, 255), FALSE);
 
-            std::string text = item->GetName() + " ”—Ê: " + std::to_string(selectedQuantity_);
+            std::string text = item->GetName() + " æ•°é‡: " + std::to_string(selectedQuantity_);
             Font::GetInstance().DrawDefaultText(left + 20, top + 30, text.c_str(), GetColor(255, 255, 0), 24);
 
-            std::string help = "ª«: ”—Ê•ÏX  Enter: Œˆ’è";
+            std::string help = "â†‘â†“: æ•°é‡å¤‰æ›´  Enter: æ±ºå®š";
             Font::GetInstance().DrawDefaultText(left + 20, top + 70, help.c_str(), GetColor(200, 200, 200), 18);
         }
         return;
     }
 
-    // ¶‘¤ƒVƒ‡ƒbƒv‰æ–Ê•`‰æ
+    // å·¦å´ã‚·ãƒ§ãƒƒãƒ—ç”»é¢æç”»
     DrawBox(leftX, leftY, leftX + boxWidth, leftY + 700, GetColor(30, 30, 30), TRUE);
     DrawBox(leftX, leftY, leftX + boxWidth, leftY + 700, GetColor(255, 255, 255), FALSE);
-    //Font::GetInstance().DrawDefaultText(leftX + 10, leftY - 30, "ƒVƒ‡ƒbƒviíj", GetColor(0, 255, 255), 20);
 
     int startX = leftX + 10;
     int startY = leftY + 10;
-    int totalItems = static_cast<int>(seedItems_.size());
+    int totalItems = static_cast<int>(shopItems_.size());
     int itemsPerRow = SHOP_COLUMNS;
 
     for (int i = 0; i < totalItems; ++i)
     {
-        auto item = seedItems_[i];
+        auto item = shopItems_[i];
         int row = i / itemsPerRow;
         int col = i % itemsPerRow;
 
@@ -331,13 +334,10 @@ void Shop::Draw(void)
         int descX = leftX + (boxWidth - descWidth) / 2;
         int descY = leftY + (Application::DEFA_SCREEN_SZIE_Y / 2) + 200;
 
-       
         DrawBox(descX - 300, descY - 5, descX + descWidth + 300, descY + 200, GetColor(0, 0, 0), TRUE);
+        DrawBox(descX - 300, descY - 5, descX + descWidth + 300, descY + 200, GetColor(255, 255, 255), false);
 
-        DrawBox(descX - 300, descY - 5, descX + descWidth + 300, descY + 200, GetColor(255, 255, 255),false);
-
-
-        Font::GetInstance().DrawDefaultText(descX -300, descY + 10, desc.c_str(), GetColor(255, 255, 255), fontSize);
+        Font::GetInstance().DrawDefaultText(descX - 300, descY + 10, desc.c_str(), GetColor(255, 255, 255), fontSize);
     }
 
     DrawRightSideUI();
@@ -352,7 +352,6 @@ void Shop::DrawRightSideUI()
 
     DrawBox(rightX, leftY, rightX + boxWidth, leftY + 700, GetColor(10, 10, 10), TRUE);
     DrawBox(rightX, leftY, rightX + boxWidth, leftY + 700, GetColor(255, 255, 255), FALSE);
-   // Font::GetInstance().DrawDefaultText(rightX + 10, leftY - 30, "w“üƒŠƒXƒg", 0xffffff, 20);
 
     int yOffset = 10;
     int index = 0;
@@ -364,7 +363,7 @@ void Shop::DrawRightSideUI()
         itemCount++;
 
         auto item = ItemManager::GetInstance().FindItemById(entry.first);
-        if (auto seed = std::dynamic_pointer_cast<SeedItem>(item))
+        if (item)
         {
             int y = leftY + yOffset + index * 30;
 
@@ -373,36 +372,36 @@ void Shop::DrawRightSideUI()
                 DrawBox(rightX + 5, y - 10, rightX + boxWidth - 5, y + 30, GetColor(255, 255, 0), FALSE);
             }
 
-            std::string line = seed->GetName() + " x" + std::to_string(entry.second)
-                + "i" + std::to_string(seed->GetPrice() * entry.second) + "Gj";
+            std::string line = item->GetName() + " x" + std::to_string(entry.second)
+                + "ï¼ˆ" + std::to_string(item->GetPrice() * entry.second) + "Gï¼‰";
 
             Font::GetInstance().DrawDefaultText(rightX + 10, y, line.c_str(), 0xffffff, 24);
             index++;
         }
     }
 
-    // uw“üvƒ{ƒ^ƒ“•`‰æ
+    // ã€Œè³¼å…¥ã€ãƒœã‚¿ãƒ³æç”»
     int buttonY = leftY + yOffset + itemCount * 30 + 10;
     bool isSelected = (currentArea_ == SHOP_AREA::PURCHASE_LIST) && (purchaseListSelectedIndex_ == itemCount);
     if (isSelected)
     {
         DrawBox(rightX + 5, buttonY - 10, rightX + boxWidth - 5, buttonY + 30, GetColor(255, 255, 0), FALSE);
     }
-    Font::GetInstance().DrawDefaultText(rightX + 10, buttonY, "[w“ü]", 0xffffff, 24);
+    Font::GetInstance().DrawDefaultText(rightX + 10, buttonY, "[è³¼å…¥]", 0xffffff, 24);
 
     int playerMoney = player_ ? player_->GetMoney() : 0;
     int totalPrice = GetTotalPrice();
 
-    Font::GetInstance().DrawDefaultText(rightX + 10, leftY + 600, ("Š‹à: " + std::to_string(playerMoney) + " G").c_str(), 0xffffff, 24);
-    Font::GetInstance().DrawDefaultText(rightX + 10, leftY + 650, ("‡Œv: " + std::to_string(totalPrice) + " G").c_str(), GetColor(255, 200, 0), 24);
-    Font::GetInstance().DrawDefaultText(rightX + 10, leftY + 680, "[Tab] ƒtƒH[ƒJƒXØ‘Ö [Enter] Œˆ’è [ESC] •Â‚¶‚é", 0xcccccc, 20);
+    Font::GetInstance().DrawDefaultText(rightX + 10, leftY + 600, ("æ‰€æŒé‡‘: " + std::to_string(playerMoney) + " G").c_str(), 0xffffff, 24);
+    Font::GetInstance().DrawDefaultText(rightX + 10, leftY + 650, ("åˆè¨ˆ: " + std::to_string(totalPrice) + " G").c_str(), GetColor(255, 200, 0), 24);
+    Font::GetInstance().DrawDefaultText(rightX + 10, leftY + 680, "[Tab] ãƒ•ã‚©ãƒ¼ã‚«ã‚¹åˆ‡æ›¿ [Enter] æ±ºå®š [ESC] é–‰ã˜ã‚‹", 0xcccccc, 20);
 }
 
-std::shared_ptr<SeedItem> Shop::GetSelectedItem(void) const
+std::shared_ptr<ItemBase> Shop::GetSelectedItem(void) const
 {
-    if (selectedItemIndex_ < 0 || selectedItemIndex_ >= static_cast<int>(seedItems_.size()))
+    if (selectedItemIndex_ < 0 || selectedItemIndex_ >= static_cast<int>(shopItems_.size()))
         return nullptr;
-    return seedItems_[selectedItemIndex_];
+    return shopItems_[selectedItemIndex_];
 }
 
 void Shop::ConfirmPurchase(void)
@@ -424,7 +423,39 @@ void Shop::ConfirmPurchase(void)
 
     player_->AddMoney(-total);
     purchaseQuantities_.clear();
-    // w“üŒã‚Í¶‘¤ƒŠƒXƒg‚É–ß‚·
     currentArea_ = SHOP_AREA::ITEM_LIST;
     purchaseListSelectedIndex_ = 0;
+}
+
+void Shop::RefreshDailyItems(void)
+{
+    shopItems_.clear();
+
+    auto& itemManager = ItemManager::GetInstance();
+    int seedCount = itemManager.GetSeedItemCount();
+
+    // é€šå¸¸ã®ç¨®ã‚¢ã‚¤ãƒ†ãƒ 
+    for (int i = 0; i < seedCount; i++)
+    {
+        auto seed = itemManager.GetSeedItem(i);
+        if (seed)
+        {
+            shopItems_.push_back(seed);
+        }
+    }
+
+    // --- æ—¥æ›¿ã‚ã‚Šè–¬è‰ï¼ˆ10%æŠ½é¸ï¼‰ ---
+    std::random_device rd;
+    std::mt19937 rng(rd());
+    std::uniform_int_distribution<int> dist(0, 99);
+
+    if (dist(rng) < 10)
+    {
+        auto herb = itemManager.FindItemById("Herb"); // è–¬è‰
+        if (herb)
+        {
+            herb->SetPrice(1000); // å›ºå®šä¾¡æ ¼
+            shopItems_.push_back(herb);
+        }
+    }
 }

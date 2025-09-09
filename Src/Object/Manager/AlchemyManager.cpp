@@ -1,4 +1,4 @@
-#define NOMINMAX
+ï»¿#define NOMINMAX
 
 #include "AlchemyManager.h"
 
@@ -12,8 +12,10 @@
 #include "../Item/Product/RecoveryPotion.h"
 #include "../Item/Product/AntidotePotion.h"
 #include "../Item/Product/MagicPotion.h"
+#include "../Item/Product/AntiParalysisPotion.h"
+#include "../Item/Product/Speedâ€‹â€‹Potion.h"
+#include "../Item/Product/PowerPotion.h"
 #include "../Item/Product/Garbage.h"
-#include "../Item/Material/Herb.h"
 #include "../../Application.h"
 #include "../PlayerStop.h"
 
@@ -66,20 +68,38 @@ void AlchemyManager::Init(void)
 
     recipes_.emplace_back
     (
-        std::map < std::string, int>{{"–ò‘", 2}, { "…", 1 }},
+        std::map < std::string, int>{{"è–¬è‰", 2}, { "æ°´", 1 }},
         std::make_shared<RecoveryPotion>()
     ); 
 
     recipes_.emplace_back
     (
-        std::map < std::string, int>{{"‰ğ“Å‘", 2}, { "…", 1 }},
+        std::map < std::string, int>{{"è§£æ¯’è‰", 2}, { "æ°´", 1 }},
         std::make_shared<AntidotePotion>()
     );
 
     recipes_.emplace_back
     (
-        std::map < std::string, int>{{"–‚—Í‘", 2}, { "…", 1 }},
+        std::map < std::string, int>{{"é­”åŠ›è‰", 2}, { "æ°´", 1 }},
         std::make_shared<MagicPotion>()
+    );
+
+    recipes_.emplace_back
+    (
+        std::map < std::string, int>{{"éº»ç—ºè‰", 2}, { "æ°´", 1 }},
+        std::make_shared<AntiParalysisPotion>()
+    );
+
+    recipes_.emplace_back
+    (
+        std::map < std::string, int>{{"é¢¨èµ°è‰", 2}, { "æ°´", 1 }},
+        std::make_shared<Speedâ€‹â€‹Potion>()
+    );
+
+    recipes_.emplace_back
+    (
+        std::map < std::string, int>{{"é¬¼åŠ›è‰", 2}, { "æ°´", 1 }},
+        std::make_shared<PowerPotion>()
     );
 }
 
@@ -103,7 +123,7 @@ bool AlchemyManager::IsOpen(void) const
 
 void AlchemyManager::ShowRecipeDifferenceMessage(const std::map<std::string, int>& selectedMap)
 {
-    std::string message = "˜B‹à¸”sF‘fŞ‚Ì·ˆÙ\n";
+    std::string message = "éŒ¬é‡‘å¤±æ•—ï¼šç´ æã®å·®ç•°\n";
     bool anyDifference = false;
 
     for (const auto& recipe : recipes_)
@@ -123,46 +143,46 @@ void AlchemyManager::ShowRecipeDifferenceMessage(const std::map<std::string, int
 
         if (!matched)
         {
-            // --- •s‘« ---
+            // --- ä¸è¶³ ---
             for (const auto& [name, amount] : required)
             {
                 int selectedAmount = selectedMap.count(name) ? selectedMap.at(name) : 0;
                 if (selectedAmount < amount)
                 {
-                    message += "- " + name + " ‚ª " + std::to_string(amount - selectedAmount) + " ŒÂ‘«‚è‚Ü‚¹‚ñ\n";
+                    message += "- " + name + " ãŒ " + std::to_string(amount - selectedAmount) + " å€‹è¶³ã‚Šã¾ã›ã‚“\n";
                     anyDifference = true;
                 }
             }
 
-            // --- ‰ßè ---
+            // --- éå‰° ---
             for (const auto& [name, amount] : selectedMap)
             {
                 int requiredAmount = required.count(name) ? required.at(name) : 0;
                 if (amount > requiredAmount)
                 {
-                    message += "- " + name + " ‚ª " + std::to_string(amount - requiredAmount) + " ŒÂ‘½‚¢‚Å‚·\n";
+                    message += "- " + name + " ãŒ " + std::to_string(amount - requiredAmount) + " å€‹å¤šã„ã§ã™\n";
                     anyDifference = true;
                 }
             }
 
-            // --- •s—v‚È‘fŞ ---
+            // --- ä¸è¦ãªç´ æ ---
             for (const auto& [name, amount] : selectedMap)
             {
                 if (!required.count(name))
                 {
-                    message += "- " + name + " ‚ÍƒŒƒVƒs‚ÉŠÜ‚Ü‚ê‚Ä‚¢‚Ü‚¹‚ñ\n";
+                    message += "- " + name + " ã¯ãƒ¬ã‚·ãƒ”ã«å«ã¾ã‚Œã¦ã„ã¾ã›ã‚“\n";
                     anyDifference = true;
                 }
             }
 
-            break;  // Å‰‚Éƒ}ƒbƒ`‚µ‚È‚©‚Á‚½ƒŒƒVƒs‚¾‚¯Šm”F‚µ‚ÄI—¹
+            break;  // æœ€åˆã«ãƒãƒƒãƒã—ãªã‹ã£ãŸãƒ¬ã‚·ãƒ”ã ã‘ç¢ºèªã—ã¦çµ‚äº†
         }
     }
 
     if (anyDifference)
     {
         resultMessage_ = message;
-        resultMessageTimer_ = 300; // 5•b•\¦
+        resultMessageTimer_ = 300; // 5ç§’è¡¨ç¤º
     }
 }
 
@@ -176,7 +196,7 @@ void AlchemyManager::Update()
 
     PlayerStop::GetInstance().StopMovement();
 
-    // SE‚ª–Â‚èI‚í‚é‚Ü‚Å‘Ò‚Âˆ—
+    // SEãŒé³´ã‚Šçµ‚ã‚ã‚‹ã¾ã§å¾…ã¤å‡¦ç†
     if (waitingForSEFinish_)
     {
         if (sound.IsPlaying(SoundManager::SOUND::SE_ALCHEMY))
@@ -188,12 +208,12 @@ void AlchemyManager::Update()
                 effectPlayedDuringAlchemy_ = true;
             }
            
-            return; // ˜B‹àSE‚ªÄ¶’† ¨ ‚Ü‚¾‘Ò‚Â
+            return; // éŒ¬é‡‘SEãŒå†ç”Ÿä¸­ â†’ ã¾ã å¾…ã¤
         }
         else
         {
             effectPlayedDuringAlchemy_ = false;
-            // ˜B‹àSE‚ªI‚í‚Á‚½ ¨ Œ‹‰ÊSE‚ğÄ¶
+            // éŒ¬é‡‘SEãŒçµ‚ã‚ã£ãŸ â†’ çµæœSEã‚’å†ç”Ÿ
             if (alchemyResult_ == ALCHEMYRESULT::SUCCESS)
             {
                 sound.Play(SoundManager::SOUND::SE_ALCHEMY_SUCCESS);
@@ -204,10 +224,10 @@ void AlchemyManager::Update()
             }
             
 
-            // Œ‹‰Ê‚ÌƒŠƒZƒbƒg‚Æ•\¦ŠÔ
+            // çµæœã®ãƒªã‚»ãƒƒãƒˆã¨è¡¨ç¤ºæ™‚é–“
             alchemyResult_ = ALCHEMYRESULT::NONE;
             waitingForSEFinish_ = false;
-            resultMessageTimer_ = 180; // 3•b•\¦
+            resultMessageTimer_ = 180; // 3ç§’è¡¨ç¤º
             return;
         }
     }
@@ -231,7 +251,7 @@ void AlchemyManager::Update()
         return;
     }
 
-    // ƒCƒ“ƒfƒbƒNƒX‚Ì”ÍˆÍ•â³
+    // ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ç¯„å›²è£œæ­£
     if (currentIndex_ < 0) currentIndex_ = 0;
     if (currentIndex_ >= materialCount) currentIndex_ = materialCount - 1;
 
@@ -239,9 +259,9 @@ void AlchemyManager::Update()
     int col = currentIndex_ % MAX_COLUMNS;
     int maxRow = (materialCount - 1) / MAX_COLUMNS;
 
-    if (currentPhase_ == 0) // ‘fŞ‘I‘ğƒtƒF[ƒY
+    if (currentPhase_ == 0) // ç´ æé¸æŠãƒ•ã‚§ãƒ¼ã‚º
     {
-        // --- ˆÚ“®ˆ—i•ÏX‚È‚µj ---
+        // --- ç§»å‹•å‡¦ç†ï¼ˆå¤‰æ›´ãªã—ï¼‰ ---
         if (input.IsTrgDown(KEY_INPUT_UP))
         {
             sound.Play(SoundManager::SOUND::SE_SELECT);
@@ -304,7 +324,7 @@ void AlchemyManager::Update()
             }
         }
 
-        // TABƒL[‚Å‘I‘ğÏ‚İ‘fŞ‚Ì•ÒWƒ‚[ƒh‚ÉØ‚è‘Ö‚¦
+        // TABã‚­ãƒ¼ã§é¸æŠæ¸ˆã¿ç´ æã®ç·¨é›†ãƒ¢ãƒ¼ãƒ‰ã«åˆ‡ã‚Šæ›¿ãˆ
         if (input.IsTrgDown(KEY_INPUT_TAB) && !selectedMaterials_.empty())
         {
             sound.Play(SoundManager::SOUND::SE_PUSH);
@@ -328,7 +348,7 @@ void AlchemyManager::Update()
                 auto material = itemManager.GetMaterialItem(currentIndex_);
                 if (material && selectedMaterials_.size() < 3)
                 {
-                    // ‘I‘ğÏ‚İ‚Ì“¯‚¶‘fŞ‚Ì‡Œv”‚ğŒvZ
+                    // é¸æŠæ¸ˆã¿ã®åŒã˜ç´ æã®åˆè¨ˆæ•°ã‚’è¨ˆç®—
                     int alreadySelectedAmount = 0;
                     for (const auto& selected : selectedMaterials_)
                     {
@@ -338,7 +358,7 @@ void AlchemyManager::Update()
                         }
                     }
 
-                    // —˜—p‰Â”\‚Èc‚èŒÂ”‚ğŒvZ
+                    // åˆ©ç”¨å¯èƒ½ãªæ®‹ã‚Šå€‹æ•°ã‚’è¨ˆç®—
                     int availableAmount = material->GetQuantity() - alreadySelectedAmount;
 
                     if (availableAmount > 0)
@@ -360,12 +380,12 @@ void AlchemyManager::Update()
             return;
         }
     }
-    else if (currentPhase_ == 1) // ŒÂ”‘I‘ğƒtƒF[ƒY
+    else if (currentPhase_ == 1) // å€‹æ•°é¸æŠãƒ•ã‚§ãƒ¼ã‚º
     {
         auto material = itemManager.GetMaterialItem(selectedMaterialIndex_);
         if (!material) return;
 
-        // ‘I‘ğÏ‚İ‚Ì“¯‚¶‘fŞ‚Ì‡Œv”‚ğŒvZ
+        // é¸æŠæ¸ˆã¿ã®åŒã˜ç´ æã®åˆè¨ˆæ•°ã‚’è¨ˆç®—
         int alreadySelectedAmount = 0;
         for (const auto& selected : selectedMaterials_)
         {
@@ -375,7 +395,7 @@ void AlchemyManager::Update()
             }
         }
 
-        // —˜—p‰Â”\‚ÈÅ‘åŒÂ”‚ğŒvZ
+        // åˆ©ç”¨å¯èƒ½ãªæœ€å¤§å€‹æ•°ã‚’è¨ˆç®—
         int maxAvailable = material->GetQuantity() - alreadySelectedAmount;
 
         if (input.IsTrgDown(KEY_INPUT_UP))
@@ -397,10 +417,10 @@ void AlchemyManager::Update()
         if (input.IsTrgDown(KEY_INPUT_ESCAPE))
         {
             sound.Play(SoundManager::SOUND::SE_CANCEL);
-            currentPhase_ = 0; // ƒLƒƒƒ“ƒZƒ‹
+            currentPhase_ = 0; // ã‚­ãƒ£ãƒ³ã‚»ãƒ«
         }
     }
-    else if (currentPhase_ == 2) // ‘I‘ğÏ‚İ‘fŞ•ÒWƒtƒF[ƒY
+    else if (currentPhase_ == 2) // é¸æŠæ¸ˆã¿ç´ æç·¨é›†ãƒ•ã‚§ãƒ¼ã‚º
     {
         int selectedCount = static_cast<int>(selectedMaterials_.size());
 
@@ -441,11 +461,11 @@ void AlchemyManager::Update()
             currentPhase_ = 0;
         }
     }
-    else if (currentPhase_ == 3) // ‘I‘ğÏ‚İ‘fŞ‚ÌŒÂ”•ÏXƒtƒF[ƒY
+    else if (currentPhase_ == 3) // é¸æŠæ¸ˆã¿ç´ æã®å€‹æ•°å¤‰æ›´ãƒ•ã‚§ãƒ¼ã‚º
     {
         auto material = selectedMaterials_[selectedMaterialEditIndex_].item;
 
-        // ‘¼‚Ì‘I‘ğÏ‚İ“¯–¼‘fŞ‚Ì‡Œv”‚ğŒvZi•ÒW’†‚Ì‚à‚Ì‚Íœ‚­j
+        // ä»–ã®é¸æŠæ¸ˆã¿åŒåç´ æã®åˆè¨ˆæ•°ã‚’è¨ˆç®—ï¼ˆç·¨é›†ä¸­ã®ã‚‚ã®ã¯é™¤ãï¼‰
         int otherSelectedAmount = 0;
         for (size_t i = 0; i < selectedMaterials_.size(); ++i)
         {
@@ -456,7 +476,7 @@ void AlchemyManager::Update()
             }
         }
 
-        // —˜—p‰Â”\‚ÈÅ‘åŒÂ”‚ğŒvZ
+        // åˆ©ç”¨å¯èƒ½ãªæœ€å¤§å€‹æ•°ã‚’è¨ˆç®—
         int maxAvailable = material->GetQuantity() - otherSelectedAmount;
 
         if (input.IsTrgDown(KEY_INPUT_UP))
@@ -515,8 +535,8 @@ void AlchemyManager::Draw(void)
     const int startX = 100;
     const int startY = 100;
 
-    // --- ƒ^ƒCƒgƒ‹ ---
-    font.DrawDefaultText(startX, startY - 30, "˜B‹àƒƒjƒ…[", 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+    // --- ã‚¿ã‚¤ãƒˆãƒ« ---
+    font.DrawDefaultText(startX, startY - 30, "éŒ¬é‡‘ãƒ¡ãƒ‹ãƒ¥ãƒ¼", 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
 
     const int iconSize = 64;
     const int padding = 50;
@@ -525,24 +545,24 @@ void AlchemyManager::Draw(void)
     int itemCount = itemManager.GetMaterialItemCount();
     int rowCount = (itemCount + maxColumns - 1) / maxColumns;
 
-    // ¶‘¤”wŒiƒTƒCƒY
+    // å·¦å´èƒŒæ™¯ã‚µã‚¤ã‚º
     int leftWidth = maxColumns * (iconSize + padding) - padding;
     int leftHeight = rowCount * (iconSize + padding + 20);
 
-    // ‰E‘¤‚ÌXŠJnˆÊ’ui‰E’[‚Ì1/3‚©‚çj
+    // å³å´ã®Xé–‹å§‹ä½ç½®ï¼ˆå³ç«¯ã®1/3ã‹ã‚‰ï¼‰
     const int rightX = screenWidth * 3 / 5;
 
-    // ‰E‘¤”wŒi
+    // å³å´èƒŒæ™¯
     const int rightBgLeft = rightX - 20;
     const int rightBgTop = startY - 40;
     const int rightBgRight = rightBgLeft + leftWidth + 40;
     const int rightBgBottom = rightBgTop + leftHeight + Application::DEFA_SCREEN_SZIE_Y / 2;
 
-    // --- ”wŒi•`‰æ ---
+    // --- èƒŒæ™¯æç”» ---
 
     SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
 
-    // ¶”wŒi •
+    // å·¦èƒŒæ™¯ é»’
     const int leftBgLeft = startX - 20;
     const int leftBgTop = startY - 40;
     const int leftBgRight = startX + leftWidth + 20;
@@ -550,25 +570,25 @@ void AlchemyManager::Draw(void)
 
     DrawBox(leftBgLeft, leftBgTop, leftBgRight, leftBgBottom, GetColor(0, 0, 0), TRUE);
 
-    // ‰E”wŒi •
+    // å³èƒŒæ™¯ é»’
     DrawBox(rightBgLeft, rightBgTop, rightBgRight, rightBgBottom, GetColor(0, 0, 0), TRUE);
 
     SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-    // --- ”’‚¢ŠO˜g ---
+    // --- ç™½ã„å¤–æ  ---
     const int borderThickness = 3;
     const int white = GetColor(255, 255, 255);
 
     for (int i = 0; i < borderThickness; ++i)
     {
-        // ¶‘¤ŠO˜g
+        // å·¦å´å¤–æ 
         DrawBox(leftBgLeft - i, leftBgTop - i, leftBgRight + i, leftBgBottom + i, white, FALSE);
 
-        // ‰E‘¤ŠO˜g
+        // å³å´å¤–æ 
         DrawBox(rightBgLeft - i, rightBgTop - i, rightBgRight + i, rightBgBottom + i, white, FALSE);
     }
 
-    // --- ¶‘¤F‘fŞˆê——•\¦ ---
+    // --- å·¦å´ï¼šç´ æä¸€è¦§è¡¨ç¤º ---
 
     auto getItemFunc = [&](int i) -> std::shared_ptr<ItemBase> {
         return itemManager.GetMaterialItem(i);
@@ -611,7 +631,7 @@ void AlchemyManager::Draw(void)
         }
     }
 
-    // --- g—p”‘I‘ğƒtƒF[ƒY ---
+    // --- ä½¿ç”¨æ•°é¸æŠãƒ•ã‚§ãƒ¼ã‚º ---
     if (currentPhase_ == 1)
     {
         auto item = itemManager.GetMaterialItem(selectedMaterialIndex_);
@@ -628,35 +648,35 @@ void AlchemyManager::Draw(void)
 
             int availableAmount = item->GetQuantity() - alreadySelectedAmount;
 
-            std::string text = item->GetName() + " g—p”F " + std::to_string(currentAmount_) +
-                " (—˜—p‰Â”\: " + std::to_string(availableAmount) + ")";
+            std::string text = item->GetName() + " ä½¿ç”¨æ•°ï¼š " + std::to_string(currentAmount_) +
+                " (åˆ©ç”¨å¯èƒ½: " + std::to_string(availableAmount) + ")";
             font.DrawDefaultText(startX, startY + 200, text.c_str(), 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
 
-            font.DrawDefaultText(startX, startY + 230, "ª«FŒÂ”•ÏX Enter", GetColor(150, 150, 150), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
+            font.DrawDefaultText(startX, startY + 230, "â†‘â†“ï¼šå€‹æ•°å¤‰æ›´ Enter", GetColor(150, 150, 150), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
         }
     }
 
-    // --- ŒÂ”•ÒWƒtƒF[ƒY ---
+    // --- å€‹æ•°ç·¨é›†ãƒ•ã‚§ãƒ¼ã‚º ---
     if (currentPhase_ == 3)
     {
         const int offsetY = 50;
         auto material = selectedMaterials_[selectedMaterialEditIndex_].item;
 
-        std::string text = material->GetName() + " ŒÂ”•ÏXF " + std::to_string(currentAmount_) + " (0‚Åíœ)";
+        std::string text = material->GetName() + " å€‹æ•°å¤‰æ›´ï¼š " + std::to_string(currentAmount_) + " (0ã§å‰Šé™¤)";
 
-        // ‰E‘¤‚Ì•¶š•\¦ˆÊ’u‚ğ‰E”wŒi‚Ì¶’[ + 20px‚É‡‚í‚¹‚é
+        // å³å´ã®æ–‡å­—è¡¨ç¤ºä½ç½®ã‚’å³èƒŒæ™¯ã®å·¦ç«¯ + 20pxã«åˆã‚ã›ã‚‹
         int rightTextX = rightBgLeft + 150;
 
         font.DrawDefaultText(rightTextX, offsetY + static_cast<int>(selectedMaterials_.size() * 40), text.c_str(), GetColor(255, 200, 100), 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
-        font.DrawDefaultText(rightTextX, offsetY + static_cast<int>(selectedMaterials_.size() * 40) + 30, "ª«FŒÂ”•ÏX EnterFŒˆ’è", GetColor(150, 150, 150), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
+        font.DrawDefaultText(rightTextX, offsetY + static_cast<int>(selectedMaterials_.size() * 40) + 30, "â†‘â†“ï¼šå€‹æ•°å¤‰æ›´ Enterï¼šæ±ºå®š", GetColor(150, 150, 150), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
     }
 
-    // --- ‰E‘¤F‘I‘ğ’†‘fŞƒŠƒXƒg ---
+    // --- å³å´ï¼šé¸æŠä¸­ç´ æãƒªã‚¹ãƒˆ ---
     {
         const int offsetY = 50;
         int rightTextX = rightBgLeft + 20;
 
-        font.DrawDefaultText(rightTextX, offsetY, "‘I‘ğ’†‚Ì‘fŞF", 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+        font.DrawDefaultText(rightTextX, offsetY, "é¸æŠä¸­ã®ç´ æï¼š", 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
 
         for (size_t i = 0; i < selectedMaterials_.size(); ++i)
         {
@@ -680,36 +700,36 @@ void AlchemyManager::Draw(void)
 
         if (selectedMaterials_.size() >= 2)
         {
-            font.DrawDefaultText(rightTextX, startTextY, "Space: ˜B‹àŠJn", GetColor(0, 255, 0), 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+            font.DrawDefaultText(rightTextX, startTextY, "Space: éŒ¬é‡‘é–‹å§‹", GetColor(0, 255, 0), 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
         }
         else
         {
-            font.DrawDefaultText(rightTextX, startTextY, "2í—ŞˆÈã‚Ì‘fŞ‚ğ‘I‘ğ‚µ‚Ä˜B‹àŠJn", GetColor(255, 255, 255), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
+            font.DrawDefaultText(rightTextX, startTextY, "2ç¨®é¡ä»¥ä¸Šã®ç´ æã‚’é¸æŠã—ã¦éŒ¬é‡‘é–‹å§‹", GetColor(255, 255, 255), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
         }
     }
 
-    // --- ƒtƒF[ƒY•Ê‘€ìà–¾ ---
+    // --- ãƒ•ã‚§ãƒ¼ã‚ºåˆ¥æ“ä½œèª¬æ˜ ---
     std::string helpText;
     switch (currentPhase_)
     {
     case 0:
-        helpText = "EnterF‘I‘ğ TabF•ÒW SpaceF˜B‹àÀs XF•Â‚¶‚é";
+        helpText = "Enterï¼šé¸æŠ Tabï¼šç·¨é›† Spaceï¼šéŒ¬é‡‘å®Ÿè¡Œ Xï¼šé–‰ã˜ã‚‹";
         break;
     case 1:
-        helpText = "ª«FŒÂ”•ÏX EnterFŒˆ’è";
+        helpText = "â†‘â†“ï¼šå€‹æ•°å¤‰æ›´ Enterï¼šæ±ºå®š";
         break;
     case 2:
-        helpText = "ª«F‘fŞ‘I‘ğ EnterFŒÂ”•ÏX TabF–ß‚é";
+        helpText = "â†‘â†“ï¼šç´ æé¸æŠ Enterï¼šå€‹æ•°å¤‰æ›´ Tabï¼šæˆ»ã‚‹";
         break;
     case 3:
-        helpText = "ª«FŒÂ”•ÏX Enter";
+        helpText = "â†‘â†“ï¼šå€‹æ•°å¤‰æ›´ Enter";
         break;
     }
 
     int helpTextWidth = font.GetDefaultTextWidth(helpText.c_str());
     font.DrawDefaultText((screenWidth - helpTextWidth) / 2 + 50, screenHeight - 60, helpText.c_str(), GetColor(255, 255, 255), 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
 
-    // --- Œ‹‰ÊƒƒbƒZ[ƒWi‰æ–Ê‰ºj ---
+    // --- çµæœãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ï¼ˆç”»é¢ä¸‹ï¼‰ ---
     if (resultMessageTimer_ > 0)
     {
         int resultTextWidth = font.GetDefaultTextWidth(resultMessage_.c_str());
@@ -773,17 +793,17 @@ void AlchemyManager::ExecuteAlchemy()
 
             selectedMaterials_.clear();
 
-            resultMessage_ = item->GetName() + " ‚ğì¬‚µ‚Ü‚µ‚½I";
+            resultMessage_ = item->GetName() + " ã‚’ä½œæˆã—ã¾ã—ãŸï¼";
 
             return;
         }
     }
 
-    // ¸”s‚ÍƒSƒ~ƒAƒCƒeƒ€‚ğ•t—^
+    // å¤±æ•—æ™‚ã¯ã‚´ãƒŸã‚¢ã‚¤ãƒ†ãƒ ã‚’ä»˜ä¸
     auto garbage = ItemManager::GetInstance().FindItemById("Garbage");
     ItemManager::GetInstance().AddQuantity(garbage, 1);
 
-    // ¸”s‚Å‚à‘fŞ‚ÍÁ”ï
+    // å¤±æ•—ã§ã‚‚ç´ æã¯æ¶ˆè²»
     for (const auto& m : selectedMaterials_)
     {
         ItemManager::GetInstance().SubtractQuantity(m.item, m.amount);
@@ -806,7 +826,7 @@ void AlchemyManager::ResetSelection(void)
 {
     selectedMaterials_.clear();
     currentIndex_ = 0;
-    currentAmount_ = 1; // ‰Šú’l1‚Ì•û‚ª©‘R
+    currentAmount_ = 1; // åˆæœŸå€¤1ã®æ–¹ãŒè‡ªç„¶
     currentPhase_ = 0;
     selectedMaterialIndex_ = 0;
     resultMessage_.clear();

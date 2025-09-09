@@ -288,6 +288,10 @@ void PlantObject::TryHarvest()
     std::vector<std::string> possibleItems = {
         "AntidoteHerb",
         "MagicFlower",
+        "ParalysisHerb",
+        "GaleHerb",
+        "DemonPowerHerb",
+        "HardbodyHerb",
         // ‚Ù‚©‚Éƒ‰ƒ“ƒ_ƒ€‚Å—^‚¦‚½‚¢‘fŞ‚ğ’Ç‰Á
     };
 

@@ -9,7 +9,8 @@ Garbage::Garbage(void)
 		"¸”s‚Ìì•i",
 		"‰½‚É‚àg‚¦‚È‚¢‚à‚Ì",
 		0,
-		ResourceManager::GetInstance().Load(ResourceManager::SRC::GARBAGE).handleId_
+		ResourceManager::GetInstance().Load(ResourceManager::SRC::GARBAGE).handleId_,
+		0
 	)
 {
 }

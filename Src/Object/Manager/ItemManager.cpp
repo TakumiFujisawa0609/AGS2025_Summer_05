@@ -1,17 +1,25 @@
-#include "ItemManager.h"
+ï»¿#include "ItemManager.h"
 
 #include "../Item/Material/Herb.h"
 #include "../Item/Material/AntidoteHerb.h"
 #include "../Item/Material/MagicFlower.h"
+#include "../Item/Material/ParalysisHerb.h"
+#include "../Item/Material/GaleHerb.h"
+#include "../Item/Material/DemonPowerHerb.h"
+#include "../Item/Material/HardbodyHerb.h"
 #include "../Item/Material/Water.h"
 #include "../Item/Product/RecoveryPotion.h"
 #include "../Item/Product/AntidotePotion.h"
+#include "../Item/Product/AntiParalysisPotion.h"
 #include "../Item/Product/MagicPotion.h"
+#include "../Item/Product/Speedâ€‹â€‹Potion.h"
+#include "../Item/Product/PowerPotion.h"
+#include "../Item/Product/DefensePotion.h"
 #include "../Item/Product/Garbage.h"
 #include "../Item/Seed/RandomSeed.h"
 
 
-// ƒVƒ“ƒOƒ‹ƒgƒ“ƒCƒ“ƒXƒ^ƒ“ƒX‚Ì‰Šú‰»
+// ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®åˆæœŸåŒ–
 ItemManager* ItemManager::instance_ = nullptr;
 
 void ItemManager::CreateInstance(void)
@@ -35,23 +43,31 @@ void ItemManager::Init()
     allItems_.clear();
     idItemMap_.clear();
 
-    // ƒAƒCƒeƒ€¶¬•“o˜^i‘fŞj
+    // ã‚¢ã‚¤ãƒ†ãƒ ç”Ÿæˆï¼†ç™»éŒ²ï¼ˆç´ æï¼‰
     Register(std::make_shared<Herb>());
     Register(std::make_shared<AntidoteHerb>());
     Register(std::make_shared<MagicFlower>());
+    Register(std::make_shared<ParalysisHerb>());
+    Register(std::make_shared<GaleHerb>());
+    Register(std::make_shared<DemonPowerHerb>());
+    Register(std::make_shared<HardbodyHerb>());
     Register(std::make_shared<Water>());
 
-    // ƒAƒCƒeƒ€¶¬•“o˜^iŠ®¬•ij
+    // ã‚¢ã‚¤ãƒ†ãƒ ç”Ÿæˆï¼†ç™»éŒ²ï¼ˆå®Œæˆå“ï¼‰
     Register(std::make_shared<RecoveryPotion>());
     Register(std::make_shared<AntidotePotion>());
+    Register(std::make_shared<AntiParalysisPotion>());
     Register(std::make_shared<MagicPotion>());
+    Register(std::make_shared<Speedâ€‹â€‹Potion>());
+    Register(std::make_shared<PowerPotion>());
+    Register(std::make_shared<DefensePotion>());
     Register(std::make_shared<Garbage>());
 
-    //ƒAƒCƒeƒ€¶¬•“o˜^(íq)
+    //ã‚¢ã‚¤ãƒ†ãƒ ç”Ÿæˆï¼†ç™»éŒ²(ç¨®å­)
     Register(std::make_shared<RandomSeed>());
 
 
-    // allItems_‚É“o˜^‚³‚ê‚½ƒAƒCƒeƒ€‚©‚çƒJƒeƒSƒŠ•Ê‚ÉU‚è•ª‚¯
+    // allItems_ã«ç™»éŒ²ã•ã‚ŒãŸã‚¢ã‚¤ãƒ†ãƒ ã‹ã‚‰ã‚«ãƒ†ã‚´ãƒªåˆ¥ã«æŒ¯ã‚Šåˆ†ã‘
     for (auto& item : allItems_)
     {
         if (auto material = std::dynamic_pointer_cast<MaterialItem>(item))
@@ -68,13 +84,17 @@ void ItemManager::Init()
         }
     }
 
-    // ‰ŠúŠ”İ’èi—áj
-    AddQuantity(FindItemById("Herb"), 0); // Herb‚ÌID‚ª0‚È‚ç
-    AddQuantity(FindItemById("AntidoteHerb"), 0); // AntidoteHerb‚ÌID‚ª1‚È‚ç
-    AddQuantity(FindItemById("MagicFlower"), 0); // MagicFlower‚ÌID‚ª2‚È‚ç
-    AddQuantity(FindItemById("Water"), 0); // Water‚ÌID‚ª3‚È‚ç
+    // åˆæœŸæ‰€æŒæ•°è¨­å®šï¼ˆä¾‹ï¼‰
+    AddQuantity(FindItemById("Herb"), 0); // Herbã®IDãŒ0ãªã‚‰
+    AddQuantity(FindItemById("AntidoteHerb"), 0); // AntidoteHerbã®IDãŒ1ãªã‚‰
+    AddQuantity(FindItemById("MagicFlower"), 0); // MagicFlowerã®IDãŒ2ãªã‚‰
+    AddQuantity(FindItemById("ParalysisHerb"), 0); // MagicFlowerã®IDãŒ2ãªã‚‰
+    AddQuantity(FindItemById("GaleHerb"), 0); // MagicFlowerã®IDãŒ2ãªã‚‰
+    AddQuantity(FindItemById("DemonPowerHerb"), 0); // MagicFlowerã®IDãŒ2ãªã‚‰
+    AddQuantity(FindItemById("HardbodyHerb"), 0); // MagicFlowerã®IDãŒ2ãªã‚‰
+    AddQuantity(FindItemById("Water"), 0); // Waterã®IDãŒ3ãªã‚‰
 
-    // Š®¬•i‚Í0ƒXƒ^[ƒg
+    // å®Œæˆå“ã¯0ã‚¹ã‚¿ãƒ¼ãƒˆ
 }
 
 void ItemManager::AddItem(std::shared_ptr<ItemBase> item)
@@ -124,7 +144,7 @@ void ItemManager::AddQuantity(std::shared_ptr<ItemBase> item, int amount)
     {
         item->AddQuantity(amount);
 
-        // ƒR[ƒ‹ƒoƒbƒNŒÄ‚Ño‚µ
+        // ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯å‘¼ã³å‡ºã—
         for (auto& cb : quantityChangeCallbacks_)
         {
             cb(item->GetId(), amount);
@@ -138,7 +158,7 @@ void ItemManager::SubtractQuantity(std::shared_ptr<ItemBase> item, int amount)
     {
         item->SubtractQuantity(amount);
 
-        // ƒR[ƒ‹ƒoƒbƒNŒÄ‚Ño‚µiŒ¸‚Á‚½—Ê‚Íƒ}ƒCƒiƒX’l‚Å’Ê’mj
+        // ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯å‘¼ã³å‡ºã—ï¼ˆæ¸›ã£ãŸé‡ã¯ãƒã‚¤ãƒŠã‚¹å€¤ã§é€šçŸ¥ï¼‰
         for (auto& cb : quantityChangeCallbacks_)
         {
             cb(item->GetId(), -amount);

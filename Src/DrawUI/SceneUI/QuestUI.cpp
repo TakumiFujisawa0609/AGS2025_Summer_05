@@ -98,6 +98,10 @@ void QuestUI::InitializeQuests(void)
         "MagicPotion", 1, 400));
     availableQuests_.push_back(DeliveryQuest(3, "失敗した作品納品", "失敗した作品を納品",
         "Garbage", 1, 500));
+    availableQuests_.push_back(DeliveryQuest(4, "解麻痺ポーソン納品", "解麻痺ポーソンを納品",
+        "AntiParalysisPotion", 1, 400));
+    availableQuests_.push_back(DeliveryQuest(4, "俊敏ポーソン納品", "俊敏ポーソンを納品",
+        "SpeedPotion", 1, 400));
 }
 
 //更新処理
