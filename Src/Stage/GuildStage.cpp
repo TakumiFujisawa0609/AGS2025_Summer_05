@@ -111,48 +111,63 @@ void GuildStage::Init(void)
 }
 
 //更新処理
+// 更新処理
 void GuildStage::Update(void)
 {
-	auto& input = InputManager::GetInstance();
+    auto& input = InputManager::GetInstance();
+    auto& app = Application::GetInstance();
 
 #ifdef _DEBUG
-	//ステージ遷移(デバッグ)
-	if (input.IsTrgDown(KEY_INPUT_P))
-	{
-		//ステージ遷移
-		if (stageManager_)
-		{
-			stageManager_->ChangeStage(StageManager::STAGE_ID::ATELIER);
-		}
-	}
+    if (input.IsTrgDown(KEY_INPUT_P) && stageManager_) {
+        stageManager_->ChangeStage(StageManager::STAGE_ID::ATELIER);
+    }
+#endif
 
-#endif // _DEBUG
+    // --- UI優先度管理 ---
+    switch (app.GetActiveUI()) {
+    case ActiveUI::NONE:
+        bulletinBoard_->Update();
+        receptionist_->Update();
+        teleportMovement_->Update();
+        break;
 
-	
-	bulletinBoard_->Update();
-	receptionist_->Update();
-	teleportMovement_->Update();
-	counter_->Update();
-	wall_->Update();
-	wall2_->Update();
-	wallZ_->Update();
-	wallZZ_->Update();
-	tableSetGuildManager_->Update();
+    case ActiveUI::QUEST:
+        bulletinBoard_->Update();
+        break;
 
-	if (bulletinBoard_->GetQuestList() == false && receptionist_->GetShopUiVisible() == false && receptionist_->GetDeliveryMenu() == false)
-	{
-		pauseUiCount_--;
-	}
-	else if (bulletinBoard_->GetQuestList() == true || receptionist_->GetShopUiVisible() == true || receptionist_->GetDeliveryMenu() == true)
-	{
-		pauseUiCount_ = PAUSE_UI_COUNT;
-	}
+    case ActiveUI::DELIVERY:
+    case ActiveUI::SHOP:
+        receptionist_->Update();
+        break;
 
-	if (pauseUiCount_ <= 0)
-	{
-		Application::GetInstance().SetActiveUI(false);
-		pauseUiCount_ = PAUSE_UI_COUNT;
-	}
+    case ActiveUI::TELEPORT:
+        // ★テレポート中は teleportMovement だけを更新
+        teleportMovement_->Update();
+        // receptionist_->Update() は呼ばない！
+        break;
+    }
+
+    counter_->Update();
+    wall_->Update();
+    wall2_->Update();
+    wallZ_->Update();
+    wallZZ_->Update();
+    tableSetGuildManager_->Update();
+
+    // UI非表示時のカウント管理
+    if (!bulletinBoard_->GetQuestList() &&
+        !receptionist_->GetShopUiVisible() &&
+        !receptionist_->GetDeliveryMenu()) {
+        pauseUiCount_--;
+    }
+    else {
+        pauseUiCount_ = PAUSE_UI_COUNT;
+    }
+
+    if (pauseUiCount_ <= 0) {
+        app.SetsActiveUI(ActiveUI::NONE);
+        pauseUiCount_ = PAUSE_UI_COUNT;
+    }
 }
 
 //描画処理

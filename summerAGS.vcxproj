@@ -141,6 +141,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\Item\Material\BloodBag.cpp" />
+    <ClCompile Include="Src\Object\Item\Product\DarkWand.cpp" />
+    <ClCompile Include="Src\Object\Item\Product\LightWand.cpp" />
+    <ClCompile Include="Src\Object\Item\Product\IceWand.cpp" />
+    <ClCompile Include="Src\Object\Item\Product\EarthWand.cpp" />
+    <ClCompile Include="Src\Object\Item\Product\FireWand.cpp" />
+    <ClCompile Include="Src\Object\Item\Product\DarkSword.cpp" />
+    <ClCompile Include="Src\Object\Item\Product\LightSword.cpp" />
+    <ClCompile Include="Src\Object\Item\Product\IceSword.cpp" />
+    <ClCompile Include="Src\Object\Item\Material\DarkMagicStone.cpp" />
+    <ClCompile Include="Src\Object\Item\Material\LightMagicStone.cpp" />
+    <ClCompile Include="Src\Object\Item\Material\IceMagicStone.cpp" />
+    <ClCompile Include="Src\Object\Item\Product\EarthSword.cpp" />
+    <ClCompile Include="Src\Object\Item\Material\EarthMagicStone.cpp" />
     <ClCompile Include="Src\Object\Item\Product\FireSword.cpp" />
     <ClCompile Include="Src\Object\Item\Material\FireMagicStone.cpp" />
     <ClCompile Include="Src\Object\Item\Material\IronOre.cpp" />
@@ -252,8 +266,27 @@
     <ClCompile Include="Src\Object\Item\Material\Sword.cpp" />
     <ClCompile Include="Src\Object\Item\Material\WaterMagicStone.cpp" />
     <ClCompile Include="Src\Object\Item\Product\WaterSword.cpp" />
+    <ClCompile Include="Src\Object\Item\Material\WindMagicStone.cpp" />
+    <ClCompile Include="Src\Object\Item\Product\WindSword.cpp" />
+    <ClCompile Include="Src\Object\Item\Material\Wand.cpp" />
+    <ClCompile Include="Src\Object\Item\Product\WaterWand.cpp" />
+    <ClCompile Include="Src\Object\Item\Product\WindWand.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\Item\Material\BloodBag.h" />
+    <ClInclude Include="Src\Object\Item\Product\DarkWand.h" />
+    <ClInclude Include="Src\Object\Item\Product\LightWand.h" />
+    <ClInclude Include="Src\Object\Item\Product\IceWand.h" />
+    <ClInclude Include="Src\Object\Item\Product\EarthWand.h" />
+    <ClInclude Include="Src\Object\Item\Product\FireWand.h" />
+    <ClInclude Include="Src\Object\Item\Product\DarkSword.h" />
+    <ClInclude Include="Src\Object\Item\Product\LightSword.h" />
+    <ClInclude Include="Src\Object\Item\Product\IceSword.h" />
+    <ClInclude Include="Src\Object\Item\Material\DarkMagicStone.h" />
+    <ClInclude Include="Src\Object\Item\Material\LightMagicStone.h" />
+    <ClInclude Include="Src\Object\Item\Material\IceMagicStone.h" />
+    <ClInclude Include="Src\Object\Item\Product\EarthSword.h" />
+    <ClInclude Include="Src\Object\Item\Material\EarthMagicStone.h" />
     <ClInclude Include="Src\Object\Item\Product\FireSword.h" />
     <ClInclude Include="Src\Object\Item\Material\FireMagicStone.h" />
     <ClInclude Include="Src\Object\Item\Material\IronOre.h" />
@@ -365,6 +398,11 @@
     <ClInclude Include="Src\Object\Item\Material\Sword.h" />
     <ClInclude Include="Src\Object\Item\Material\WaterMagicStone.h" />
     <ClInclude Include="Src\Object\Item\Product\WaterSword.h" />
+    <ClInclude Include="Src\Object\Item\Material\WindMagicStone.h" />
+    <ClInclude Include="Src\Object\Item\Product\WindSword.h" />
+    <ClInclude Include="Src\Object\Item\Material\Wand.h" />
+    <ClInclude Include="Src\Object\Item\Product\WaterWand.h" />
+    <ClInclude Include="Src\Object\Item\Product\WindWand.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

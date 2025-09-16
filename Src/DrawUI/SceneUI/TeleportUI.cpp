@@ -29,11 +29,13 @@ void TeleportUI::Init(void)
 void TeleportUI::Show(void)
 {
 	isVisible_ = true;
+	Application::GetInstance().SetsActiveUI(ActiveUI::TELEPORT);
 }
 
 void TeleportUI::Hide(void)
 {
 	isVisible_ = false;
+	Application::GetInstance().SetsActiveUI(ActiveUI::NONE); // Åöâèú
 	PlayerStop::GetInstance().ResumeMovement();
 }
 
@@ -92,7 +94,7 @@ void TeleportUI::Update(void)
 		Hide();  // UIÇï¬Ç∂ÇÈ
 	}
 
-	if (input.IsTrgDown(KEY_INPUT_X))
+	if (input.IsTrgDown(KEY_INPUT_ESCAPE))
 	{
 		sound.Play(SoundManager::SOUND::SE_CANCEL);
 		Hide();

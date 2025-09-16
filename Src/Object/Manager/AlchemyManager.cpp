@@ -17,7 +17,22 @@
 #include "../Item/Product/PowerPotion.h"
 #include "../Item/Product/DefensePotion.h"
 #include "../Item/Product/FireSword.h"
+#include "../Item/Product/WaterSword.h"
+#include "../Item/Product/WindSword.h"
+#include "../Item/Product/EarthSword.h"
+#include "../Item/Product/IceSword.h"
+#include "../Item/Product/LightSword.h"
+#include "../Item/Product/DarkSword.h"
+#include "../Item/Product/FireWand.h"
+#include "../Item/Product/WaterWand.h"
+#include "../Item/Product/WindWand.h"
+#include "../Item/Product/EarthWand.h"
+#include "../Item/Product/IceWand.h"
+#include "../Item/Product/LightWand.h"
+#include "../Item/Product/DarkWand.h"
 #include "../Item/Product/Garbage.h"
+#include "../Item/Material/Sword.h"
+#include "../Item/Material/Wand.h"
 #include "../../Application.h"
 #include "../PlayerStop.h"
 
@@ -107,13 +122,103 @@ void AlchemyManager::Init(void)
     recipes_.emplace_back
     (
         std::map < std::string, int>{{"硬体草", 2}, { "水", 1 }},
-        std::make_shared<PowerPotion>()
+        std::make_shared<DefensePotion>()
+    );
+    
+    recipes_.emplace_back
+    (
+        std::map < std::string, int>{{"鉄鉱石", 3}, { "水", 1 }},
+        std::make_shared<Sword>()
+    );
+
+    recipes_.emplace_back
+    (
+        std::map < std::string, int>{{"鉄鉱石", 2}, { "水", 1 }},
+        std::make_shared<Wand>()
     );
 
     recipes_.emplace_back
     (
         std::map < std::string, int>{{"火の魔石", 2}, { "剣", 1 }},
-        std::make_shared<PowerPotion>()
+        std::make_shared<FireSword>()
+    );
+
+    recipes_.emplace_back
+    (
+        std::map < std::string, int>{{"水の魔石", 2}, { "剣", 1 }},
+        std::make_shared<WaterSword>()
+    );
+
+    recipes_.emplace_back
+    (
+        std::map < std::string, int>{{"風の魔石", 2}, { "剣", 1 }},
+        std::make_shared<WindSword>()
+    );
+
+    recipes_.emplace_back
+    (
+        std::map < std::string, int>{{"土の魔石", 2}, { "剣", 1 }},
+        std::make_shared<EarthSword>()
+    );
+
+    recipes_.emplace_back
+    (
+        std::map < std::string, int>{{"氷の魔石", 2}, { "剣", 1 }},
+        std::make_shared<IceSword>()
+    );
+
+    recipes_.emplace_back
+    (
+        std::map < std::string, int>{{"光の魔石", 2}, { "剣", 1 }},
+        std::make_shared<LightSword>()
+    );
+
+    recipes_.emplace_back
+    (
+        std::map < std::string, int>{{"闇の魔石", 2}, { "剣", 1 }},
+        std::make_shared<DarkSword>()
+    );
+
+    recipes_.emplace_back
+    (
+        std::map < std::string, int>{{"火の魔石", 2}, { "杖", 1 }},
+        std::make_shared<FireWand>()
+    );
+
+    recipes_.emplace_back
+    (
+        std::map < std::string, int>{{"水の魔石", 2}, { "杖", 1 }},
+        std::make_shared<WaterWand>()
+    );
+
+    recipes_.emplace_back
+    (
+        std::map < std::string, int>{{"風の魔石", 2}, { "杖", 1 }},
+        std::make_shared<WindWand>()
+    );
+
+    recipes_.emplace_back
+    (
+        std::map < std::string, int>{{"土の魔石", 2}, { "杖", 1 }},
+        std::make_shared<EarthWand>()
+    );
+
+    recipes_.emplace_back
+    (
+        std::map < std::string, int>{{"氷の魔石", 2}, { "杖", 1 }},
+        std::make_shared<IceWand>()
+    );
+
+    recipes_.emplace_back
+    (
+        std::map < std::string, int>{{"光の魔石", 2}, { "杖", 1 }},
+        std::make_shared<LightWand>()
+    );
+
+    recipes_.emplace_back
+    (
+        std::map < std::string, int>{{"闇の魔石", 2}, { "杖", 1 }},
+        std::make_shared<DarkWand>()
     );
 }
 
@@ -135,71 +240,73 @@ bool AlchemyManager::IsOpen(void) const
 	return isOpen_;
 }
 
+// 改善されたShowRecipeDifferenceMessage関数
 void AlchemyManager::ShowRecipeDifferenceMessage(const std::map<std::string, int>& selectedMap)
 {
-    std::string message = "錬金失敗：素材の差異\n";
-    bool anyDifference = false;
+    std::string message = "錬金失敗\n";
+
+    // 最も近いレシピを見つける
+    const AlchemyRecipe* closestRecipe = FindClosestRecipe(selectedMap);
+
+    if (closestRecipe != nullptr)
+    {
+        message += "不足している素材:\n";
+
+        bool hasMissing = false;
+        for (const auto& [reqName, reqAmount] : closestRecipe->GetMaterials())
+        {
+            int selectedAmount = selectedMap.count(reqName) ? selectedMap.at(reqName) : 0;
+            if (selectedAmount < reqAmount)
+            {
+                int shortage = reqAmount - selectedAmount;
+                message += "- " + reqName + " あと" + std::to_string(shortage) + "個\n";
+                hasMissing = true;
+            }
+        }
+
+        if (!hasMissing)
+        {
+            message = "錬金失敗\n素材の組み合わせが正しくありません";
+        }
+    }
+    else
+    {
+        message = "錬金失敗\n該当するレシピが見つかりません";
+    }
+
+    resultMessage_ = message;
+    resultMessageTimer_ = 240; // 4秒表示
+}
+
+// 最も近いレシピを見つける関数
+const AlchemyRecipe* AlchemyManager::FindClosestRecipe(const std::map<std::string, int>& selectedMap)
+{
+    const AlchemyRecipe* bestMatch = nullptr;
+    int bestScore = -1;
 
     for (const auto& recipe : recipes_)
     {
-        const auto& required = recipe.GetMaterials();
+        int score = 0;
 
-        bool matched = true;
-        for (const auto& [reqName, reqAmount] : required)
+        // 選択した素材がレシピに含まれている数をカウント
+        for (const auto& [selName, selAmount] : selectedMap)
         {
-            int selAmount = selectedMap.count(reqName) ? selectedMap.at(reqName) : 0;
-            if (selAmount != reqAmount)
+            if (recipe.GetMaterials().count(selName) > 0)
             {
-                matched = false;
-                break;
+                score++;
             }
         }
 
-        if (!matched)
+        // より多くの素材が一致するレシピを優先
+        if (score > bestScore && score > 0)
         {
-            // --- 不足 ---
-            for (const auto& [name, amount] : required)
-            {
-                int selectedAmount = selectedMap.count(name) ? selectedMap.at(name) : 0;
-                if (selectedAmount < amount)
-                {
-                    message += "- " + name + " が " + std::to_string(amount - selectedAmount) + " 個足りません\n";
-                    anyDifference = true;
-                }
-            }
-
-            // --- 過剰 ---
-            for (const auto& [name, amount] : selectedMap)
-            {
-                int requiredAmount = required.count(name) ? required.at(name) : 0;
-                if (amount > requiredAmount)
-                {
-                    message += "- " + name + " が " + std::to_string(amount - requiredAmount) + " 個多いです\n";
-                    anyDifference = true;
-                }
-            }
-
-            // --- 不要な素材 ---
-            for (const auto& [name, amount] : selectedMap)
-            {
-                if (!required.count(name))
-                {
-                    message += "- " + name + " はレシピに含まれていません\n";
-                    anyDifference = true;
-                }
-            }
-
-            break;  // 最初にマッチしなかったレシピだけ確認して終了
+            bestScore = score;
+            bestMatch = &recipe;
         }
     }
 
-    if (anyDifference)
-    {
-        resultMessage_ = message;
-        resultMessageTimer_ = 300; // 5秒表示
-    }
+    return bestMatch;
 }
-
 void AlchemyManager::Update()
 {
     if (!isOpen_) return;
@@ -568,9 +675,9 @@ void AlchemyManager::Draw(void)
 
     // 右側背景
     const int rightBgLeft = rightX - 20;
-    const int rightBgTop = startY - 40;
-    const int rightBgRight = rightBgLeft + leftWidth + 40;
-    const int rightBgBottom = rightBgTop + leftHeight + Application::DEFA_SCREEN_SZIE_Y / 2;
+    const int rightBgTop = startY - 50;
+    const int rightBgRight = rightBgLeft + leftWidth;
+    const int rightBgBottom = rightBgTop + leftHeight + Application::DEFA_SCREEN_SZIE_Y / 2 - 50;
 
     // --- 背景描画 ---
 
@@ -580,7 +687,7 @@ void AlchemyManager::Draw(void)
     const int leftBgLeft = startX - 20;
     const int leftBgTop = startY - 40;
     const int leftBgRight = startX + leftWidth + 40;
-    const int leftBgBottom = startY + leftHeight + Application::DEFA_SCREEN_SZIE_Y / 2;
+    const int leftBgBottom = startY + leftHeight + Application::DEFA_SCREEN_SZIE_Y / 2 -100;
 
     DrawBox(leftBgLeft, leftBgTop, leftBgRight, leftBgBottom, GetColor(0, 0, 0), TRUE);
 
@@ -608,20 +715,67 @@ void AlchemyManager::Draw(void)
         return itemManager.GetMaterialItem(i);
         };
 
-    for (int i = 0; i < itemCount; ++i)
+   // --- 左側：素材一覧表示 ---
+for (int i = 0; i < itemCount; ++i)
+{
+    auto item = getItemFunc(i);
+    if (!item) continue;
+
+    int row = i / maxColumns;
+    int col = i % maxColumns;
+
+    int x = startX + col * (iconSize + padding);
+    int y = startY + row * (iconSize + padding + 20);
+
+    // アイコン
+    DrawGraph(x, y, item->GetImageHandle(), true);
+
+    // 名前
+    font.DrawDefaultText(x, y + iconSize + 2, item->GetName().c_str(),
+                         0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+
+    // --- 残り個数（shop 風に xN 表示） ---
+    int alreadySelectedAmount = 0;
+    for (const auto& selected : selectedMaterials_)
     {
-        auto item = getItemFunc(i);
-        if (!item) continue;
+        if (selected.item->GetName() == item->GetName())
+        {
+            alreadySelectedAmount += selected.amount;
+        }
+    }
+    int remainingQuantity = item->GetQuantity() - alreadySelectedAmount;
 
-        int row = i / maxColumns;
-        int col = i % maxColumns;
+    std::string quantityStr = "x" + std::to_string(remainingQuantity);
+    int quantityColor = (remainingQuantity > 0) ? GetColor(200, 200, 200)
+                                                : GetColor(255, 100, 100);
 
-        int x = startX + col * (iconSize + padding);
-        int y = startY + row * (iconSize + padding + 20);
+    font.DrawDefaultText(x, y + iconSize + 24, quantityStr.c_str(),
+                         quantityColor, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
 
-        DrawGraph(x, y, item->GetImageHandle(), true);
-        font.DrawDefaultText(x, y + iconSize + 2, item->GetName().c_str(), 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+    // --- 数量選択フェーズ（Shopみたいに数字だけ変化させる） ---
+    if (currentPhase_ == 1 && i == selectedMaterialIndex_)
+    {
+        std::string selectStr = "▶ x" + std::to_string(currentAmount_);
+        font.DrawDefaultText(x, y + iconSize + 50, selectStr.c_str(),
+                             GetColor(255, 255, 0), 28, Font::FONT_TYPE_ANTIALIASING_EDGE);
+    }
 
+    // 選択枠
+    if (i == currentIndex_ && currentPhase_ == 0)
+    {
+        const int border = 3;
+        int colYellow = GetColor(255, 255, 0);
+        DrawBox(x - border, y - border, x + iconSize + border, y + iconSize + border, colYellow, false);
+    }
+}
+
+
+    // --- 使用数選択フェーズ ---
+if (currentPhase_ == 1)
+{
+    auto item = itemManager.GetMaterialItem(selectedMaterialIndex_);
+    if (item)
+    {
         int alreadySelectedAmount = 0;
         for (const auto& selected : selectedMaterials_)
         {
@@ -631,44 +785,28 @@ void AlchemyManager::Draw(void)
             }
         }
 
-        int remainingQuantity = item->GetQuantity() - alreadySelectedAmount;
-        std::string quantityStr = "x" + std::to_string(remainingQuantity);
+        int availableAmount = item->GetQuantity() - alreadySelectedAmount;
 
-        int quantityColor = (remainingQuantity > 0) ? GetColor(200, 200, 200) : GetColor(255, 100, 100);
-        font.DrawDefaultText(x, y + iconSize + 24, quantityStr.c_str(), quantityColor, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+        std::string text = item->GetName() + " 使用数： " + std::to_string(currentAmount_) +
+            " (利用可能: " + std::to_string(availableAmount) + ")";
 
-        if (i == currentIndex_ && currentPhase_ == 0)
-        {
-            const int border = 3;
-            int colYellow = GetColor(255, 255, 0);
-            DrawBox(x - border, y - border, x + iconSize + border, y + iconSize + border, colYellow, false);
-        }
+        // --- 位置を画面中央に調整 ---
+        int textWidth = font.GetDefaultTextWidth(text.c_str());
+        int centerX = (screenWidth - textWidth) / 2;
+        int centerY = screenHeight / 2 + 100;   // 画面中央より少し下（+100px）
+
+        font.DrawDefaultText(centerX, centerY, text.c_str(),
+            0xffffff, 28, Font::FONT_TYPE_ANTIALIASING_EDGE);
+
+        // 操作説明も中央に
+        std::string help = "↑↓：個数変更 Enter：決定  Esc：キャンセル";
+        int helpWidth = font.GetDefaultTextWidth(help.c_str());
+        font.DrawDefaultText((screenWidth - helpWidth) / 2,
+            centerY + 40, help.c_str(),
+            GetColor(150, 150, 150), 22, Font::FONT_TYPE_ANTIALIASING_EDGE);
     }
+}
 
-    // --- 使用数選択フェーズ ---
-    if (currentPhase_ == 1)
-    {
-        auto item = itemManager.GetMaterialItem(selectedMaterialIndex_);
-        if (item)
-        {
-            int alreadySelectedAmount = 0;
-            for (const auto& selected : selectedMaterials_)
-            {
-                if (selected.item->GetName() == item->GetName())
-                {
-                    alreadySelectedAmount += selected.amount;
-                }
-            }
-
-            int availableAmount = item->GetQuantity() - alreadySelectedAmount;
-
-            std::string text = item->GetName() + " 使用数： " + std::to_string(currentAmount_) +
-                " (利用可能: " + std::to_string(availableAmount) + ")";
-            font.DrawDefaultText(startX, startY + 200, text.c_str(), 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
-
-            font.DrawDefaultText(startX, startY + 230, "↑↓：個数変更 Enter", GetColor(150, 150, 150), 20, Font::FONT_TYPE_ANTIALIASING_EDGE);
-        }
-    }
 
     // --- 個数編集フェーズ ---
     if (currentPhase_ == 3)
@@ -727,7 +865,7 @@ void AlchemyManager::Draw(void)
     switch (currentPhase_)
     {
     case 0:
-        helpText = "Enter：選択 Tab：編集 Space：錬金実行 X：閉じる";
+        helpText = "Enter：選択 Tab：編集 Space：錬金実行 ESC：閉じる";
         break;
     case 1:
         helpText = "↑↓：個数変更 Enter：決定";
@@ -736,7 +874,7 @@ void AlchemyManager::Draw(void)
         helpText = "↑↓：素材選択 Enter：個数変更 Tab：戻る";
         break;
     case 3:
-        helpText = "↑↓：個数変更 Enter";
+        helpText = "↑↓：個数変更 Enter：決定";
         break;
     }
 

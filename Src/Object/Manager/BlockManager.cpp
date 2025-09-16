@@ -53,6 +53,10 @@ void BlockManager::Init(const std::string& csvFilePath)
                 break;
 
 
+            case 6:
+                blocks_.emplace_back(std::make_unique<Block>(ResourceManager::SRC::BLOCK_LOOD, pos, blockSize_, 0.255f));
+                break;
+
             default:
                 break;
             }

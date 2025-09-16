@@ -28,6 +28,19 @@ public:
 		GARBAGE,				//失敗の作品
 		FIRE_SORD,              //火の剣
 		WATER_SWORD,            //水の剣
+		WIND_SWORD,             //風の剣
+		EARTH_SWORD,            //土の剣
+		ICE_SWORD,              //氷の剣
+		LIGHT_SWORD,            //光の剣
+		DARK_SWORD,             //闇の剣
+		FIRE_WAND,              //火の杖
+		WATER_WAND,             //水の杖
+		WIND_WAND,              //風の杖
+		EARTH_WAND,             //土の杖
+		ICE_WAND,               //氷の杖
+		LIGHT_WAND,             //光の杖
+		DARK_WAND,              //闇の杖
+		PHILOSOPHERS_STONE,     //賢者の石
 
 		//材料
 		HERB,					//薬草
@@ -41,7 +54,15 @@ public:
 		IRON_ORE,               //鉄鉱石
 		FIRE_MAGIC_STONE,       //火の魔石
 		WATER_MAGIC_STONE,      //水の魔石
+		WIND_MAGIC_STONE,       //風の魔石
+		EARTH_MAGIC_STONE,      //土の魔石
+		ICE_MAGIC_STONE,        //氷の魔石
+		LIGHT_MAGIC_STONE,      //光の魔石
+		DARK_MAGIC_STONE,       //闇の魔石
 		SWORD,                  //剣
+		WAND,                   //杖
+		BLOOD_BAG,              //血袋
+		CINNABAR,               //辰砂
 
 		//種子
 		SEED,					//種
@@ -66,6 +87,7 @@ public:
 		//庭関係
 		BLOCK_DIRT,				//土ブロック
 		BLOCK_GFRASS,			//草ブロック
+		BLOCK_LOOD,             //道ブロック
 		SEED_MODEL,				//発芽モデル
 		GROWING_MODEL,			//成長中モデル
 		MATURE_MODEL,			//成熟モデル
@@ -84,6 +106,9 @@ public:
 		OPERATION,              //操作説明の画像
 		PLAY_GUIDE,             //遊び方の画像1
 		PLAY_GUIDE2,            //遊び方の画像2
+		ATREA,
+		GUILD,
+		GARDEN,
 
 		//ミニマップ関係
 		MAP_FRAME,				//ミニマップ枠

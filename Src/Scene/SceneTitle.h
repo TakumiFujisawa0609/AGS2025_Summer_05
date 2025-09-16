@@ -36,6 +36,10 @@ private:
     int blackAlpha_;
     int pauseUiCount_;
 
+    int atelierHandle_;
+    int guildHandle_;
+    int gardenHandle_;
+
     bool inHowToPlayMenu_;
     bool isDecided_;
     bool showBlackBackground_;

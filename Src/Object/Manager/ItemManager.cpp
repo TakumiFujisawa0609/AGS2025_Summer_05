@@ -11,7 +11,13 @@
 #include "../Item/Material/IronOre.h"
 #include "../Item/Material/FireMagicStone.h"
 #include "../Item/Material/WaterMagicStone.h"
+#include "../Item/Material/WindMagicStone.h"
+#include "../Item/Material/EarthMagicStone.h"
+#include "../Item/Material/IceMagicStone.h"
+#include "../Item/Material/LightMagicStone.h"
+#include "../Item/Material/DarkMagicStone.h"
 #include "../Item/Material/Sword.h"
+#include "../Item/Material/Wand.h"
 #include "../Item/Product/RecoveryPotion.h"
 #include "../Item/Product/AntidotePotion.h"
 #include "../Item/Product/AntiParalysisPotion.h"
@@ -21,6 +27,18 @@
 #include "../Item/Product/DefensePotion.h"
 #include "../Item/Product/FireSword.h"
 #include "../Item/Product/WaterSword.h"
+#include "../Item/Product/WindSword.h"
+#include "../Item/Product/EarthSword.h"
+#include "../Item/Product/IceSword.h"
+#include "../Item/Product/LightSword.h"
+#include "../Item/Product/DarkSword.h"
+#include "../Item/Product/FireWand.h"
+#include "../Item/Product/WaterWand.h"
+#include "../Item/Product/WindWand.h"
+#include "../Item/Product/EarthWand.h"
+#include "../Item/Product/IceWand.h"
+#include "../Item/Product/LightWand.h"
+#include "../Item/Product/DarkWand.h"
 #include "../Item/Product/Garbage.h"
 #include "../Item/Seed/RandomSeed.h"
 
@@ -61,7 +79,13 @@ void ItemManager::Init()
     Register(std::make_shared<IronOre>());
     Register(std::make_shared<FireMagicStone>());
     Register(std::make_shared<WaterMagicStone>());
+    Register(std::make_shared<WindMagicStone>());
+    Register(std::make_shared<EarthMagicStone>());
+    Register(std::make_shared<IceMagicStone>());
+    Register(std::make_shared<LightMagicStone>());
+    Register(std::make_shared<DarkMagicStone>());
     Register(std::make_shared<Sword>());
+    Register(std::make_shared<Wand>());
 
     // アイテム生成＆登録（完成品）
     Register(std::make_shared<RecoveryPotion>());
@@ -73,6 +97,18 @@ void ItemManager::Init()
     Register(std::make_shared<DefensePotion>());
     Register(std::make_shared<FireSword>());
     Register(std::make_shared<WaterSword>());
+    Register(std::make_shared<WindSword>());
+    Register(std::make_shared<EarthSword>());
+    Register(std::make_shared<IceSword>());
+    Register(std::make_shared<LightSword>());
+    Register(std::make_shared<DarkSword>());
+    Register(std::make_shared<FireWand>());
+    Register(std::make_shared<WaterWand>());
+    Register(std::make_shared<WindWand>());
+    Register(std::make_shared<EarthWand>());
+    Register(std::make_shared<IceWand>());
+    Register(std::make_shared<LightWand>());
+    Register(std::make_shared<DarkWand>());
     Register(std::make_shared<Garbage>());
 
     //アイテム生成＆登録(種子)
@@ -108,7 +144,13 @@ void ItemManager::Init()
     AddQuantity(FindItemById("IronOre"), 0);
     AddQuantity(FindItemById("FireMagicStone"), 0);
     AddQuantity(FindItemById("WaterMagicStone"), 0);
+    AddQuantity(FindItemById("WindMagicStone"), 0);
+    AddQuantity(FindItemById("EarthMagicStone"), 0);
+    AddQuantity(FindItemById("IceMagicStone"), 0);
+    AddQuantity(FindItemById("LightMagicStone"), 0);
+    AddQuantity(FindItemById("DarkMagicStone"), 0);
     AddQuantity(FindItemById("Sword"), 0);
+    AddQuantity(FindItemById("Wand"), 0);
 
     // 完成品は0スタート
 }

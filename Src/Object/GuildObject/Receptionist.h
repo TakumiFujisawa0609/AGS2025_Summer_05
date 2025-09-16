@@ -21,6 +21,19 @@ enum class IETEM_TYPE
     POWER_POTION,
     DEFENSE_POTION,
     FIRE_SWORD,
+    WATER_SWORD,
+    WIND_SWORD,
+    EARTH_SWORD,
+    ICE_SWORD,
+    LIGHT_SWORD,
+    DARK_SWORD,
+    FIER_WAND,
+    WATER_WAND,
+    WIND_WAND,
+    EARTH_WAND,
+    ICE_WAND,
+    LIGHT_WAND,
+    DARK_WAMD,
     ITEM_COUNT
 };
 
@@ -110,6 +123,7 @@ private:
     bool isShowDeliveryMenu_;
     int selectedItem_;
     bool isSelectingQuantity_;
+    bool isUIForcedClosed_;
     int selectedQuantity_;
 
     // メッセージ表示

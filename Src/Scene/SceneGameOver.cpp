@@ -32,7 +32,7 @@ void SceneGameOver::Update(void)
 	auto& sound = SoundManager::GetInstance();
 
 	//シーン遷移(デバッグ)
-	if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_SPACE))
+	if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_RETURN))
 	{
 		//決定音
 		sound.Play(SoundManager::SOUND::SE_PUSH);

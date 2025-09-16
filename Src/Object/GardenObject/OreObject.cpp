@@ -125,7 +125,13 @@ void OreObject::TryMine(void)
 
     // テスト用のダミーアイテムIDを追加
     std::vector<std::string> materials = {
-        "FireMagicStone"
+        "FireMagicStone",
+        "WaterMagicStone",
+        "WindMagicStone",
+        "EarthMagicStone",
+        "IceMagicStone",
+        "LightMagicStone",
+        "DarkMagicStone",
 
         // TODO: 実際のアイテムIDに変更
     };

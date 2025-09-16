@@ -24,14 +24,14 @@ DeliveryQuest::DeliveryQuest(void)
     isActive = false;
 }
 
-DeliveryQuest::DeliveryQuest(int questId, const std::string& questTitle, const std::string& questDesc, const std::string& itemId, int required , int money)
+DeliveryQuest::DeliveryQuest(int questId, const std::string& questTitle, const std::string& questDesc, const std::string& itemId, int required, int money)
 {
     id = questId;
 
     title = questTitle;
 
     description = questDesc;
-
+    
     targetItemId = itemId;
 
     requiredAmount = required;
@@ -106,10 +106,36 @@ void QuestUI::InitializeQuests(void)
         "PowerPotion", 1, 400));
     availableQuests_.push_back(DeliveryQuest(7, "硬化ポーソン納品", "硬化ポーソンを納品",
         "DefensePotion", 1, 400));
-    availableQuests_.push_back(DeliveryQuest(8, "火の剣の納品", "火の剣の納品",
+    availableQuests_.push_back(DeliveryQuest(8, "フレイムソードの納品", "フレイムソードの納品",
         "FireSword", 1, 800));
-    availableQuests_.push_back(DeliveryQuest(9, "水の剣の納品", "水の剣の納品",
+    availableQuests_.push_back(DeliveryQuest(9, "ウォーターソードの納品", "ウォーターソードの納品",
         "WaterSword", 1, 800));
+    availableQuests_.push_back(DeliveryQuest(10, "ウィンドソードの納品", "ウィンドソードの納品",
+        "WindSword", 1, 800));
+    availableQuests_.push_back(DeliveryQuest(11, "アースソードの納品", "アースソードの納品",
+        "EarthSword", 1, 800));
+    availableQuests_.push_back(DeliveryQuest(12, "アイスソードの納品", "アイスソードの納品",
+        "IceSword", 1, 800));
+    availableQuests_.push_back(DeliveryQuest(13, "ライトソードの納品", "ライトソードの納品",
+        "LightSword", 1, 800));
+    availableQuests_.push_back(DeliveryQuest(14, "ダークソードの納品", "ダークソードの納品",
+        "DarkSword", 1, 800));
+    availableQuests_.push_back(DeliveryQuest(15, "フレイムワンドの納品", "フレイムワンドの納品",
+        "FireWand", 1, 800));
+    availableQuests_.push_back(DeliveryQuest(16, "ウォーターワンドの納品", "ウォーターワンドの納品",
+        "WaterWand", 1, 800));
+    availableQuests_.push_back(DeliveryQuest(17, "ウィンドワンドの納品", "ウィンドワンドの納品",
+        "WindWand", 1, 800));
+    availableQuests_.push_back(DeliveryQuest(18, "アースワンドの納品", "アースワンドの納品",
+        "EarthWand", 1, 800));
+    availableQuests_.push_back(DeliveryQuest(19, "アイスワンドの納品", "アイスワンドの納品",
+        "IceWand", 1, 800));
+    availableQuests_.push_back(DeliveryQuest(20, "ライトワンドの納品", "ライトワンドの納品",
+        "LightWand", 1, 800));
+    availableQuests_.push_back(DeliveryQuest(21, "ダークワンドの納品", "ダークワンドの納品",
+        "DarkWand", 1, 800));
+
+    
 }
 
 //更新処理
@@ -417,6 +443,11 @@ int QuestUI::GetCompletedQuestCount(void) const
 bool QuestUI::HasReachedMaxCompletion(void) const
 {
     return completedQuestCount_ >= MAX_QUESTS;
+}
+
+void QuestUI::SetCompletedQuestCount(int com)
+{
+    completedQuestCount_ = com;
 }
 
 

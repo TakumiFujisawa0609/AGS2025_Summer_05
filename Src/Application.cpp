@@ -100,6 +100,9 @@ void Application::Init(void)
 
 	pauseMenu_ = new PauseMenu();
 	pauseMenu_->Init();
+	
+	activeUI_ = ActiveUI::NONE;
+
 }
 
 void Application::Run(void)
@@ -232,6 +235,21 @@ bool Application::IsActiveUI(void) const
 void Application::SetActiveUI(bool isActive)
 {
 	isActiveUI_ = isActive;
+}
+
+void Application::SetsActiveUI(ActiveUI ui)
+{
+	activeUI_ = ui;
+}
+
+bool Application::IsTeleportUIActive(void) const
+{
+	return activeUI_ == ActiveUI::TELEPORT;;
+}
+
+ActiveUI Application::GetActiveUI(void) const
+{
+	return activeUI_;
 }
 
 void Application::InitEffekseer(void)

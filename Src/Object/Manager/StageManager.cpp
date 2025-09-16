@@ -13,6 +13,7 @@
 #include "../../Common/Fader.h"
 #include "../../Object/player.h"
 #include "../../DrawUI/SceneUI/GameHUD.h"
+#include "../PlayerStop.h"
 
 //コンストラクタ
 StageManager::StageManager(void)
@@ -153,18 +154,26 @@ void StageManager::DoChangeStage(STAGE_ID stageId)
 	{
 	case StageManager::STAGE_ID::ATELIER:
 		stage_ = new AtelierStage(this);
+		PlayerStop::GetInstance().ResumeMovement();
+		Application::GetInstance().SetActiveUI(false);
 		break;
 
 	case StageManager::STAGE_ID::GARDEN:
 		stage_ = new GardenStage(this);
+		PlayerStop::GetInstance().ResumeMovement();
+		Application::GetInstance().SetActiveUI(false);
 		break;
 
 	case StageManager::STAGE_ID::GUILD:
 		stage_ = new GuildStage(this);
+		PlayerStop::GetInstance().ResumeMovement();
+		Application::GetInstance().SetActiveUI(false);
 		break;
 
 	case StageManager::STAGE_ID::PRIVATE_ROOM:
 		stage_ = new PrivateRoomStage();
+		PlayerStop::GetInstance().ResumeMovement();
+		Application::GetInstance().SetActiveUI(false);
 		break;
 	}
 

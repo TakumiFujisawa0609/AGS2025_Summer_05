@@ -301,12 +301,16 @@ void PlantObject::TryHarvest()
         std::mt19937 gen(rd());
         std::uniform_int_distribution<> dist(0, static_cast<int>(possibleItems.size()) - 1);
 
-        int index = dist(gen);
+        // šƒ‰ƒ“ƒ_ƒ€‚Å2‰ñ‘I‚Ô
+        for (int i = 0; i < 2; ++i)
+        {
+            int index = dist(gen);
 
-        auto randomItem = std::dynamic_pointer_cast<MaterialItem>(
-            ItemManager::GetInstance().FindItemById(possibleItems[index]));
-        if (randomItem) {
-            ItemManager::GetInstance().AddQuantity(randomItem, 1);
+            auto randomItem = std::dynamic_pointer_cast<MaterialItem>(
+                ItemManager::GetInstance().FindItemById(possibleItems[index]));
+            if (randomItem) {
+                ItemManager::GetInstance().AddQuantity(randomItem, 1);
+            }
         }
     }
 

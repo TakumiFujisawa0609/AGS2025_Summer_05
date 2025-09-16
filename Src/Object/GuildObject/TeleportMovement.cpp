@@ -53,6 +53,7 @@ void TeleportMovement::Update(void)
 	{
 		if (teleportUI_)
 		{
+			Application::GetInstance().SetsActiveUI(ActiveUI::TELEPORT);
 			teleportUI_->Show();  // UIŒÄ‚Ño‚µ
 		}
 	}
@@ -113,7 +114,9 @@ void TeleportMovement::ShowUI(void)
 void TeleportMovement::HideUI(void)
 {
 	isShowUI_ = false;
+	if (teleportUI_) teleportUI_->Hide();
 }
+
 
 bool TeleportMovement::IsValid(void) const
 {

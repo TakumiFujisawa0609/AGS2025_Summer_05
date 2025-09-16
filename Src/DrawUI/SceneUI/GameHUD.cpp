@@ -7,6 +7,7 @@
 #include "../../Manager/Generic/ResourceManager.h"
 #include "../../Application.h"
 #include "../../Manager/System/DateTimeManager.h"
+#include "../../Manager/Generic/SceneManager.h"
 #include "QuestUI.h"
 
 
@@ -40,10 +41,24 @@ void GameHUD::Init(std::shared_ptr<Player> player, DateTimeManager* dateTimeMana
 
 void GameHUD::Update(void)
 {
-    if (QuestUI::GetInstance().HasReachedMaxCompletion() && maxCompleteMessageTimer_ == 0)
+    if (QuestUI::GetInstance().HasReachedMaxCompletion() && maxCompleteMessageTimer_ <= 0)
     {
-        maxCompleteMessageTimer_ = 600;
-   }
+        maxCompleteMessageTimer_ = 60; // 10秒くらい表示
+    }
+
+    // タイマーが動いているならカウントダウン
+    if (maxCompleteMessageTimer_ > 0)
+    {
+        maxCompleteMessageTimer_--;
+
+        // 0 になった瞬間にタイトルへ遷移
+        if (maxCompleteMessageTimer_ == 0)
+        {
+            SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::TITLE);
+            QuestUI::GetInstance().SetCompletedQuestCount(0);
+
+        }
+    }
 }
 
 void GameHUD::Draw(void)
@@ -68,7 +83,7 @@ void GameHUD::Draw(void)
     int timeIconY = 0;
 
     int completedCount = QuestUI::GetInstance().GetCompletedQuestCount();
-    std::string completeText = "達成依頼数 : " + std::to_string(completedCount) + " / " + std::to_string(100);
+    std::string completeText = "達成依頼数 : " + std::to_string(completedCount) + " / " + std::to_string(5);
     font.DrawDefaultText(Application::DEFA_SCREEN_SIZE_X / 2 - 100, iconY + 30, completeText.c_str(), GetColor(255, 255, 255), 28, Font::FONT_TYPE_ANTIALIASING_EDGE);
 
     // MAXに達したら全画面に文字を表示
@@ -80,7 +95,6 @@ void GameHUD::Draw(void)
         int screenW = Application::DEFA_SCREEN_SIZE_X / 2;
         int screenH = Application::DEFA_SCREEN_SZIE_Y;
         font.DrawDefaultText(screenW / 2, screenH / 2, msg.c_str(), 0xffffff, 58, Font::FONT_TYPE_ANTIALIASING_EDGE);
-        maxCompleteMessageTimer_--;
     }
 
    

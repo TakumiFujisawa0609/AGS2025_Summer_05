@@ -1,4 +1,4 @@
-#define NOMINMAX
+ï»¿#define NOMINMAX
 #include "Receptionist.h"
 
 #include <algorithm>
@@ -20,7 +20,7 @@
 Receptionist::Receptionist(void)
 {
     trans_ = Transform();
-    // 3Dƒ‚ƒfƒ‹‚ğ‰E‘¤‚É”z’u
+    // 3Dãƒ¢ãƒ‡ãƒ«ã‚’å³å´ã«é…ç½®
     trans_.pos = VGet(-150.0f, 0.0f, 0.0f);
     trans_.localPos = VAdd(trans_.pos, MODEL_POS);
     radius_ = 0.0f;
@@ -35,7 +35,7 @@ Receptionist::Receptionist(void)
     currentMode_ = MENU_MODE::MAIN_SELECT;
     mainMenuSelected_ = 0;
 
-    // ƒAƒCƒeƒ€ID‚ğ‰Šú‰»
+    // ã‚¢ã‚¤ãƒ†ãƒ IDã‚’åˆæœŸåŒ–
     itemIds_[static_cast<int>(IETEM_TYPE::HEALTH_POTION)] = "RecoveryPotion";
     itemIds_[static_cast<int>(IETEM_TYPE::ANTIDOTE_POTION)] = "AntidotePotion";
     itemIds_[static_cast<int>(IETEM_TYPE::MAGIC_POTION)] = "MagicPotion";
@@ -45,6 +45,19 @@ Receptionist::Receptionist(void)
     itemIds_[static_cast<int>(IETEM_TYPE::POWER_POTION)] = "PowerPotion";
     itemIds_[static_cast<int>(IETEM_TYPE::DEFENSE_POTION)] = "DefensePotion";
     itemIds_[static_cast<int>(IETEM_TYPE::FIRE_SWORD)] = "FireSword";
+    itemIds_[static_cast<int>(IETEM_TYPE::WATER_SWORD)] = "WaterSword";
+    itemIds_[static_cast<int>(IETEM_TYPE::WIND_SWORD)] = "WindSword";
+    itemIds_[static_cast<int>(IETEM_TYPE::EARTH_SWORD)] = "EarthSword";
+    itemIds_[static_cast<int>(IETEM_TYPE::ICE_SWORD)] = "IIceSword";
+    itemIds_[static_cast<int>(IETEM_TYPE::LIGHT_SWORD)] = "LightSword";
+    itemIds_[static_cast<int>(IETEM_TYPE::DARK_SWORD)] = "DarkSword";
+    itemIds_[static_cast<int>(IETEM_TYPE::FIER_WAND)] = "FireWand";
+    itemIds_[static_cast<int>(IETEM_TYPE::WATER_WAND)] = "WaterWand";
+    itemIds_[static_cast<int>(IETEM_TYPE::WIND_WAND)] = "WindWand";
+    itemIds_[static_cast<int>(IETEM_TYPE::EARTH_WAND)] = "EarthWand";
+    itemIds_[static_cast<int>(IETEM_TYPE::ICE_WAND)] = "IceWand";
+    itemIds_[static_cast<int>(IETEM_TYPE::LIGHT_WAND)] = "LightWand";
+    itemIds_[static_cast<int>(IETEM_TYPE::DARK_WAMD)] = "DarkWand";
 }
 
 Receptionist::~Receptionist(void)
@@ -55,12 +68,12 @@ void Receptionist::Init(void)
 {
     auto& res = ResourceManager::GetInstance();
 
-    // ƒ‚ƒfƒ‹i” Œn‚Ìƒ‚ƒfƒ‹‚ğg—p‘z’èj
+    // ãƒ¢ãƒ‡ãƒ«ï¼ˆç®±ç³»ã®ãƒ¢ãƒ‡ãƒ«ã‚’ä½¿ç”¨æƒ³å®šï¼‰
     trans_.SetModel(res.LoadModelDuplicate(ResourceManager::SRC::RECEPTIONIST));
     trans_.quaRot = Quaternion();
     trans_.quaRotLocal = Quaternion::AngleAxis(Utility::Deg2RadF(0.0f), Utility::AXIS_Y);
     trans_.scl = SCALE;
-    // 3Dƒ‚ƒfƒ‹‚ğ‰E‘¤‚É”z’uiX²•ûŒü‚ÉˆÚ“®j
+    // 3Dãƒ¢ãƒ‡ãƒ«ã‚’å³å´ã«é…ç½®ï¼ˆXè»¸æ–¹å‘ã«ç§»å‹•ï¼‰
     trans_.pos = MODEL_POS;
     trans_.localPos = VAdd(trans_.pos, MODEL_POS);
     radius_ = RADIUS;
@@ -72,22 +85,36 @@ void Receptionist::Init(void)
     selectedQuantity_ = 1;
     deliveryMessageTimer_ = 0;
     lastDeliveryMessage_ = "";
+    isUIForcedClosed_ = false;
 
     currentMode_ = MENU_MODE::MAIN_SELECT;
     mainMenuSelected_ = 0;
 
-    // ƒAƒCƒeƒ€–¼‚ğ‰Šú‰»
-    itemNames_[static_cast<int>(IETEM_TYPE::HEALTH_POTION)] = "‰ñ•œƒ|[ƒ\ƒ“";
-    itemNames_[static_cast<int>(IETEM_TYPE::ANTIDOTE_POTION)] = "‰ğ“Åƒ|[ƒ\ƒ“";
-    itemNames_[static_cast<int>(IETEM_TYPE::MAGIC_POTION)] = "–‚–@ƒ|[ƒ\ƒ“";
-    itemNames_[static_cast<int>(IETEM_TYPE::MAGIC_POTION)] = "¸”s‚Ìì•i";
-	itemNames_[static_cast<int>(IETEM_TYPE::ANTIPARALYSIS_POTION)] = "‰ğ–ƒáƒƒ|[ƒ\ƒ“";
-	itemNames_[static_cast<int>(IETEM_TYPE::SPEED_POTION)] = "r•qƒ|[ƒ\ƒ“";
-	itemNames_[static_cast<int>(IETEM_TYPE::POWER_POTION)] = "—Í‚Ìƒ|[ƒ\ƒ“";
-	itemNames_[static_cast<int>(IETEM_TYPE::DEFENSE_POTION)] = "d‰»ƒ|[ƒ\ƒ“";
-	itemNames_[static_cast<int>(IETEM_TYPE::FIRE_SWORD)] = "‰Î‚ÌŒ•";
+    // ã‚¢ã‚¤ãƒ†ãƒ åã‚’åˆæœŸåŒ–
+    itemNames_[static_cast<int>(IETEM_TYPE::HEALTH_POTION)] = "å›å¾©ãƒãƒ¼ã‚½ãƒ³";
+    itemNames_[static_cast<int>(IETEM_TYPE::ANTIDOTE_POTION)] = "è§£æ¯’ãƒãƒ¼ã‚½ãƒ³";
+    itemNames_[static_cast<int>(IETEM_TYPE::MAGIC_POTION)] = "é­”æ³•ãƒãƒ¼ã‚½ãƒ³";
+    itemNames_[static_cast<int>(IETEM_TYPE::GARBAGE)] = "å¤±æ•—ã®ä½œå“";
+	itemNames_[static_cast<int>(IETEM_TYPE::ANTIPARALYSIS_POTION)] = "è§£éº»ç—ºãƒãƒ¼ã‚½ãƒ³";
+	itemNames_[static_cast<int>(IETEM_TYPE::SPEED_POTION)] = "ä¿Šæ•ãƒãƒ¼ã‚½ãƒ³";
+	itemNames_[static_cast<int>(IETEM_TYPE::POWER_POTION)] = "åŠ›ã®ãƒãƒ¼ã‚½ãƒ³";
+	itemNames_[static_cast<int>(IETEM_TYPE::DEFENSE_POTION)] = "ç¡¬åŒ–ãƒãƒ¼ã‚½ãƒ³";
+	itemNames_[static_cast<int>(IETEM_TYPE::FIRE_SWORD)] = "ãƒ•ãƒ¬ã‚¤ãƒ ã‚½ãƒ¼ãƒ‰";
+	itemNames_[static_cast<int>(IETEM_TYPE::WATER_SWORD)] = "ã‚¦ã‚©ãƒ¼ã‚¿ãƒ¼ã‚½ãƒ¼ãƒ‰";
+	itemNames_[static_cast<int>(IETEM_TYPE::WIND_SWORD)] = "ã‚¦ã‚£ãƒ³ãƒ‰ã‚½ãƒ¼ãƒ‰";
+	itemNames_[static_cast<int>(IETEM_TYPE::EARTH_SWORD)] = "ã‚¢ãƒ¼ã‚¹ã‚½ãƒ¼ãƒ‰";
+	itemNames_[static_cast<int>(IETEM_TYPE::ICE_SWORD)] = "ã‚¢ã‚¤ã‚¹ã‚½ãƒ¼ãƒ‰";
+	itemNames_[static_cast<int>(IETEM_TYPE::LIGHT_SWORD)] = "ãƒ©ã‚¤ãƒˆã‚½ãƒ¼ãƒ‰";
+	itemNames_[static_cast<int>(IETEM_TYPE::DARK_SWORD)] = "ãƒ€ãƒ¼ã‚¯ã‚½ãƒ¼ãƒ‰";
+	itemNames_[static_cast<int>(IETEM_TYPE::FIER_WAND)] = "ãƒ•ãƒ¬ã‚¤ãƒ ãƒ¯ãƒ³ãƒ‰";
+	itemNames_[static_cast<int>(IETEM_TYPE::WATER_WAND)] = "ã‚¦ã‚©ãƒ¼ã‚¿ãƒ¼ãƒ¯ãƒ³ãƒ‰";
+	itemNames_[static_cast<int>(IETEM_TYPE::WIND_WAND)] = "ã‚¦ã‚£ãƒ³ãƒ‰ãƒ¯ãƒ³ãƒ‰";
+	itemNames_[static_cast<int>(IETEM_TYPE::EARTH_WAND)] = "ã‚¢ãƒ¼ã‚¹ãƒ¯ãƒ³ãƒ‰";
+	itemNames_[static_cast<int>(IETEM_TYPE::ICE_WAND)] = "ã‚¢ã‚¤ã‚¹ãƒ¯ãƒ³ãƒ‰";
+	itemNames_[static_cast<int>(IETEM_TYPE::LIGHT_WAND)] = "ãƒ©ã‚¤ãƒˆãƒ¯ãƒ³ãƒ‰";
+	itemNames_[static_cast<int>(IETEM_TYPE::DARK_WAMD)] = "ãƒ€ãƒ¼ã‚¯ãƒ¯ãƒ³ãƒ‰";
 
-    // ƒAƒCƒeƒ€ID‚ğ‰Šú‰»
+    // ã‚¢ã‚¤ãƒ†ãƒ IDã‚’åˆæœŸåŒ–
     itemIds_[static_cast<int>(IETEM_TYPE::HEALTH_POTION)] = "RecoveryPotion";
     itemIds_[static_cast<int>(IETEM_TYPE::ANTIDOTE_POTION)] = "AntidotePotion";
     itemIds_[static_cast<int>(IETEM_TYPE::MAGIC_POTION)] = "MagicPotion";
@@ -97,6 +124,19 @@ void Receptionist::Init(void)
     itemIds_[static_cast<int>(IETEM_TYPE::POWER_POTION)] = "PowerPotion";
     itemIds_[static_cast<int>(IETEM_TYPE::DEFENSE_POTION)] = "DefensePotion";
     itemIds_[static_cast<int>(IETEM_TYPE::FIRE_SWORD)] = "FireSword";
+    itemIds_[static_cast<int>(IETEM_TYPE::WATER_SWORD)] = "WaterSword";
+    itemIds_[static_cast<int>(IETEM_TYPE::WIND_SWORD)] = "WindSword";
+    itemIds_[static_cast<int>(IETEM_TYPE::EARTH_SWORD)] = "EarthSword";
+    itemIds_[static_cast<int>(IETEM_TYPE::ICE_SWORD)] = "IceSword";
+    itemIds_[static_cast<int>(IETEM_TYPE::LIGHT_SWORD)] = "LightSword";
+    itemIds_[static_cast<int>(IETEM_TYPE::DARK_SWORD)] = "DarkSword";
+    itemIds_[static_cast<int>(IETEM_TYPE::FIER_WAND)] = "FireWand";
+    itemIds_[static_cast<int>(IETEM_TYPE::WATER_WAND)] = "WaterWand";
+    itemIds_[static_cast<int>(IETEM_TYPE::WIND_WAND)] = "WindWand";
+    itemIds_[static_cast<int>(IETEM_TYPE::EARTH_WAND)] = "EarthWand";
+    itemIds_[static_cast<int>(IETEM_TYPE::ICE_WAND)] = "IceWand";
+    itemIds_[static_cast<int>(IETEM_TYPE::LIGHT_WAND)] = "LightWand";
+    itemIds_[static_cast<int>(IETEM_TYPE::DARK_WAMD)] = "DarkWand";
 
     shop_ = std::make_shared<Shop>();
     shop_->Init();
@@ -106,6 +146,13 @@ void Receptionist::Init(void)
 
 void Receptionist::Update()
 {
+    auto& app = Application::GetInstance();
+
+    if (app.GetActiveUI() == ActiveUI::TELEPORT || app.GetActiveUI() == ActiveUI::QUEST) {
+        // ãƒ†ãƒ¬ãƒãƒ¼ãƒˆä¸­ã¯å—ä»˜å¬¢UIã‚’ç„¡åŠ¹åŒ–
+        return;
+    }
+
     switch (currentMode_)
     {
     case MENU_MODE::MAIN_SELECT:
@@ -119,7 +166,7 @@ void Receptionist::Update()
     case MENU_MODE::SHOP_MENU:
         shop_->Update();
 
-        // ƒVƒ‡ƒbƒv‚ª”ñ•\¦‚É‚È‚Á‚½‚çƒƒCƒ“ƒƒjƒ…[‚É–ß‚é
+        // ã‚·ãƒ§ãƒƒãƒ—ãŒéè¡¨ç¤ºã«ãªã£ãŸã‚‰ãƒ¡ã‚¤ãƒ³ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«æˆ»ã‚‹
         if (!shop_->IsVisible())
         {
             currentMode_ = MENU_MODE::MAIN_SELECT;
@@ -138,7 +185,7 @@ void Receptionist::Draw(void)
 
 void Receptionist::DrawModel(void)
 {
-    // Zƒoƒbƒtƒ@ON‚Åƒ‚ƒfƒ‹•`‰æ
+    // Zãƒãƒƒãƒ•ã‚¡ONã§ãƒ¢ãƒ‡ãƒ«æç”»
     SetUseZBufferFlag(TRUE);
     SetWriteZBufferFlag(TRUE);
     if (trans_.modelId >= 0)
@@ -152,10 +199,10 @@ void Receptionist::DrawModel(void)
 
 void Receptionist::DrawUI(void)
 {
-    // UI‚ğ•\¦‚µ‚È‚¢ğŒ‚È‚çƒXƒLƒbƒv
+    // UIã‚’è¡¨ç¤ºã—ãªã„æ¡ä»¶ãªã‚‰ã‚¹ã‚­ãƒƒãƒ—
     if (!isShowUI_ && deliveryMessageTimer_ <= 0) return;
 
-    // Zƒoƒbƒtƒ@OFF‚ÅUI•`‰æ
+    // Zãƒãƒƒãƒ•ã‚¡OFFã§UIæç”»
     SetUseZBufferFlag(FALSE);
     SetWriteZBufferFlag(FALSE);
 
@@ -180,7 +227,7 @@ void Receptionist::DrawUI(void)
         deliveryMessageTimer_--;
     }
 
-    // Zƒoƒbƒtƒ@İ’è‚ğ–ß‚·
+    // Zãƒãƒƒãƒ•ã‚¡è¨­å®šã‚’æˆ»ã™
     SetUseZBufferFlag(TRUE);
     SetWriteZBufferFlag(TRUE);
 }
@@ -207,14 +254,14 @@ float Receptionist::GetHitRadius(void) const
 
 void Receptionist::ShowUI(void)
 {
-
+    if (isUIForcedClosed_) return;
     isShowUI_ = true;
     currentMode_ = MENU_MODE::MAIN_SELECT;
     mainMenuSelected_ = 0;
     isShowDeliveryMenu_ = false;
     isSelectingQuantity_ = false;
 
-    // ƒAƒNƒeƒBƒu‚ÈˆË—Š‚ÉŠî‚Ã‚¢‚Ä”[•i‰Â”\ƒAƒCƒeƒ€‚ği‚é
+    // ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãªä¾é ¼ã«åŸºã¥ã„ã¦ç´å“å¯èƒ½ã‚¢ã‚¤ãƒ†ãƒ ã‚’çµã‚‹
     deliverableItems_.clear();
 
     auto& activeQuests = QuestUI::GetInstance().GetActiveQuests();
@@ -222,7 +269,7 @@ void Receptionist::ShowUI(void)
     {
         const std::string& targetId = quest.targetItemId;
 
-        // ItemType‚ÆID‚ğÆ‡
+        // ItemTypeã¨IDã‚’ç…§åˆ
         for (int i = 0; i < static_cast<int>(IETEM_TYPE::ITEM_COUNT); ++i)
         {
             if (GetItemId(static_cast<IETEM_TYPE>(i)) == targetId)
@@ -242,6 +289,7 @@ void Receptionist::HideUI(void)
     isShowUI_ = false;
     isShowDeliveryMenu_ = false;
     isSelectingQuantity_ = false;
+    isUIForcedClosed_ = true;
 }
 
 bool Receptionist::IsValid(void) const
@@ -255,17 +303,18 @@ void Receptionist::OnPlayerHit(void)
 void Receptionist::OnPlayerExit(void)
 {
     HideUI();
+    isUIForcedClosed_ = false;
 }
 void Receptionist::UpdateMainMenu()
 {
     auto& input = InputManager::GetInstance();
     auto& sound = SoundManager::GetInstance();
 
-    // “ü—Í‚É‚æ‚é‘I‘ğ•ÏX
+    // å…¥åŠ›ã«ã‚ˆã‚‹é¸æŠå¤‰æ›´
     if (input.IsTrgDown(KEY_INPUT_DOWN))
     {
         sound.Play(SoundManager::SOUND::SE_SELECT);
-        mainMenuSelected_ = (mainMenuSelected_ + 1) % 2; // ”[•i‚Æw“ü‚Ì2‚Â‚¾‚¯
+        mainMenuSelected_ = (mainMenuSelected_ + 1) % 2; // ç´å“ã¨è³¼å…¥ã®2ã¤ã ã‘
     }
     else if (input.IsTrgDown(KEY_INPUT_UP))
     {
@@ -279,13 +328,13 @@ void Receptionist::UpdateMainMenu()
         sound.Play(SoundManager::SOUND::SE_PUSH);
         if (mainMenuSelected_ == 0)
         {
-            // ”[•iƒƒjƒ…[‚Ö
+            // ç´å“ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã¸
             currentMode_ = MENU_MODE::DELIVERY_MENU;
             isShowDeliveryMenu_ = true;
         }
         else if (mainMenuSelected_ == 1)
         {
-            // w“üƒƒjƒ…[iƒVƒ‡ƒbƒvj‚ğ•\¦
+            // è³¼å…¥ãƒ¡ãƒ‹ãƒ¥ãƒ¼ï¼ˆã‚·ãƒ§ãƒƒãƒ—ï¼‰ã‚’è¡¨ç¤º
             shop_->Show();
             currentMode_ = MENU_MODE::SHOP_MENU;
         }
@@ -297,14 +346,14 @@ void Receptionist::UpdateShopMenu(void)
     auto& sound = SoundManager::GetInstance();
     auto& input = InputManager::GetInstance();
 
-    // ƒVƒ‡ƒbƒvƒƒjƒ…[‚Ì“ü—Íˆ—
+    // ã‚·ãƒ§ãƒƒãƒ—ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®å…¥åŠ›å‡¦ç†
 
     if (input.IsTrgDown(KEY_INPUT_ESCAPE))
     {
         sound.Play(SoundManager::SOUND::SE_CANCEL);
         currentMode_ = MENU_MODE::MAIN_SELECT;
         PlayerStop::GetInstance().ResumeMovement();
-        // •K—v‚É‰‚¶‚ÄƒVƒ‡ƒbƒvƒƒjƒ…[‚Ìƒtƒ‰ƒO‚ğƒŠƒZƒbƒg
+        // å¿…è¦ã«å¿œã˜ã¦ã‚·ãƒ§ãƒƒãƒ—ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ãƒ•ãƒ©ã‚°ã‚’ãƒªã‚»ãƒƒãƒˆ
     }
 }
 
@@ -351,7 +400,7 @@ void Receptionist::UpdateDeliveryMenu(void)
     //    }
     //    else
     //    {
-    //        // ”—ÊŠm’è ¨ ”[•iÀs
+    //        // æ•°é‡ç¢ºå®š â†’ ç´å“å®Ÿè¡Œ
     //        if (DeliverSelectedQuantity())
     //        {
     //            isSelectingQuantity_ = false;
@@ -363,7 +412,7 @@ void Receptionist::UpdateDeliveryMenu(void)
 
     if (input.IsTrgDown(KEY_INPUT_RETURN))
     {
-        // ‚¢‚«‚È‚è”[•iÀs
+        // ã„ããªã‚Šç´å“å®Ÿè¡Œ
         if (DeliverSelectedQuantity())
         {
             isShowDeliveryMenu_ = false;
@@ -434,7 +483,7 @@ bool Receptionist::DeliverSelectedQuantity(void)
 
     if (!matchedQuest)
     {
-        lastDeliveryMessage_ = "‚±‚ÌƒAƒCƒeƒ€‚ÍˆË—Š‘ÎÛ‚Å‚Í‚ ‚è‚Ü‚¹‚ñI";
+        lastDeliveryMessage_ = "ã“ã®ã‚¢ã‚¤ãƒ†ãƒ ã¯ä¾é ¼å¯¾è±¡ã§ã¯ã‚ã‚Šã¾ã›ã‚“ï¼";
         deliveryMessageTimer_ = 120;
         return false;
     }
@@ -442,15 +491,13 @@ bool Receptionist::DeliverSelectedQuantity(void)
     auto item = itemManager.FindItemById(itemId);
     if (!item || item->GetQuantity() < selectedQuantity_)
     {
-        lastDeliveryMessage_ = "•K—v‚È”‚ª‚»‚ë‚Á‚Ä‚¢‚Ü‚¹‚ñI";
+        lastDeliveryMessage_ = "å¿…è¦ãªæ•°ãŒãã‚ã£ã¦ã„ã¾ã›ã‚“ï¼";
         deliveryMessageTimer_ = 120;
         return false;
     }
 
-    // ”—Ê•ª‚¾‚¯”[•i
+    // æ•°é‡åˆ†ã ã‘ç´å“
     itemManager.SubtractQuantity(item, matchedQuest->requiredAmount);
-    matchedQuest->isCompleted = true;
-    questUI.CompleteQuest(matchedQuest->id);
     matchedQuest->currentAmount += selectedQuantity_;
 
     if (matchedQuest->currentAmount >= matchedQuest->requiredAmount)
@@ -463,16 +510,21 @@ bool Receptionist::DeliverSelectedQuantity(void)
             player_->AddMoney(matchedQuest->rewardMoney);
         }
 
-        lastDeliveryMessage_ = std::string(GetItemName(itemType)) + " ‚ğ”[•i‚µ‚Ü‚µ‚½IˆË—ŠŠ®—¹‚Å‚·I";
-
-        PlayerStop::GetInstance().ResumeMovement();
+        lastDeliveryMessage_ = std::string(GetItemName(itemType)) + " ã‚’ç´å“ã—ã¾ã—ãŸï¼ä¾é ¼å®Œäº†ã§ã™ï¼";
     }
     else
     {
-        lastDeliveryMessage_ = std::string(GetItemName(itemType)) + " ‚ğ " + std::to_string(selectedQuantity_) + "ŒÂ ”[•i‚µ‚Ü‚µ‚½I";
+        lastDeliveryMessage_ = std::string(GetItemName(itemType)) + " ã‚’ " + std::to_string(selectedQuantity_) + "å€‹ ç´å“ã—ã¾ã—ãŸï¼";
     }
 
     deliveryMessageTimer_ = 120;
+
+    // âœ… ç´å“ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’é–‰ã˜ã‚‹
+    isShowDeliveryMenu_ = false;
+    currentMode_ = MENU_MODE::MAIN_SELECT;
+    isSelectingQuantity_ = false;
+    PlayerStop::GetInstance().ResumeMovement();
+
     return true;
 }
 
@@ -481,7 +533,7 @@ void Receptionist::DrawMainMenu()
     const int screenWidth = Application::SCREEN_SIZE_X;
     const int screenHeight = Application::SCREEN_SIZE_Y;
 
-    const char* menuItems[] = { "”[•i", "w“ü" };
+    const char* menuItems[] = { "ç´å“", "è³¼å…¥" };
     const int menuCount = sizeof(menuItems) / sizeof(menuItems[0]);
     const int fontSize = 24;
     const int boxHeight = 30;
@@ -528,8 +580,8 @@ void Receptionist::DrawDeliveryMenu(void)
     DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(255, 255, 255), FALSE);
 
     Font& font = Font::GetInstance();
-    font.DrawDefaultText(boxX + 20, boxY + 20, "===== ”[•iƒƒjƒ…[ =====", 0xffffff, 24);
-    font.DrawDefaultText(boxX + 20, boxY + 50, "”[•i‚·‚éƒAƒCƒeƒ€‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢", 0xcccccc, 18);
+    font.DrawDefaultText(boxX + 20, boxY + 20, "===== ç´å“ãƒ¡ãƒ‹ãƒ¥ãƒ¼ =====", 0xffffff, 24);
+    font.DrawDefaultText(boxX + 20, boxY + 50, "ç´å“ã™ã‚‹ã‚¢ã‚¤ãƒ†ãƒ ã‚’é¸æŠã—ã¦ãã ã•ã„", 0xcccccc, 18);
 
     for (int i = 0; i < (int)deliverableItems_.size(); i++)
     {
@@ -539,13 +591,13 @@ void Receptionist::DrawDeliveryMenu(void)
 
         if (i == selectedItem_)
         {
-            // font.DrawDefaultText(boxX + 20, yPos, "¨", 0xff00ff, 24);
+            // font.DrawDefaultText(boxX + 20, yPos, "â†’", 0xff00ff, 24);
         }
 
         int itemCount = GetItemCount(itemType);
         int requiredCount = GetRemainingDeliveryAmount(itemType);
 
-        // F•ª‚¯F•K—v”–¢– ¨ ÔA‚¿‚å‚¤‚Ç ¨ ”’A—]—T‚ ‚è ¨ —Î
+        // è‰²åˆ†ã‘ï¼šå¿…è¦æ•°æœªæº€ â†’ èµ¤ã€ã¡ã‚‡ã†ã© â†’ ç™½ã€ä½™è£•ã‚ã‚Š â†’ ç·‘
         if (itemCount < requiredCount)
             color = 0xff4444;
         else if (itemCount == requiredCount)
@@ -554,7 +606,7 @@ void Receptionist::DrawDeliveryMenu(void)
             color = 0x00ff00;
 
         std::string itemInfo = std::string(GetItemName(itemType)) +
-            " (Š”: " + std::to_string(itemCount) + " / •K—v: " + std::to_string(requiredCount) + ")";
+            " (æ‰€æŒæ•°: " + std::to_string(itemCount) + " / å¿…è¦: " + std::to_string(requiredCount) + ")";
 
         font.DrawDefaultText(boxX + 250, yPos + 350, itemInfo.c_str(), color, 32);
     }
@@ -580,21 +632,21 @@ void Receptionist::DrawDeliveryMenu(void)
 //
 //    if (!matchedQuest)
 //    {
-//        lastDeliveryMessage_ = "‚±‚ÌƒAƒCƒeƒ€‚ÍˆË—Š‘ÎÛ‚Å‚Í‚ ‚è‚Ü‚¹‚ñI";
+//        lastDeliveryMessage_ = "ã“ã®ã‚¢ã‚¤ãƒ†ãƒ ã¯ä¾é ¼å¯¾è±¡ã§ã¯ã‚ã‚Šã¾ã›ã‚“ï¼";
 //        deliveryMessageTimer_ = 120;
 //        return false;
 //    }
 //
-//    // •K—v”ƒ`ƒFƒbƒN
+//    // å¿…è¦æ•°ãƒã‚§ãƒƒã‚¯
 //    auto item = itemManager.FindItemById(itemId);
 //    if (!item || item->GetQuantity() < matchedQuest->requiredAmount)
 //    {
-//        lastDeliveryMessage_ = "•K—v‚È”‚ª‚»‚ë‚Á‚Ä‚¢‚Ü‚¹‚ñI";
+//        lastDeliveryMessage_ = "å¿…è¦ãªæ•°ãŒãã‚ã£ã¦ã„ã¾ã›ã‚“ï¼";
 //        deliveryMessageTimer_ = 120;
 //        return false;
 //    }
 //
-//    // ˆêŠ‡”[•i
+//    // ä¸€æ‹¬ç´å“
 //    itemManager.SubtractQuantity(item, matchedQuest->requiredAmount);
 //    matchedQuest->isCompleted = true;
 //    questUI.CompleteQuest(matchedQuest->id);
@@ -604,7 +656,7 @@ void Receptionist::DrawDeliveryMenu(void)
 //        player_->AddMoney(matchedQuest->rewardMoney);
 //    }
 //
-//    lastDeliveryMessage_ = std::string(GetItemName(itemType)) + " ‚ğ”[•i‚µ‚Ü‚µ‚½IˆË—ŠŠ®—¹‚Å‚·I";
+//    lastDeliveryMessage_ = std::string(GetItemName(itemType)) + " ã‚’ç´å“ã—ã¾ã—ãŸï¼ä¾é ¼å®Œäº†ã§ã™ï¼";
 //    deliveryMessageTimer_ = 120;
 //
 //    return true;
@@ -619,7 +671,7 @@ void Receptionist::SetItemCount(IETEM_TYPE itemType, int count)
     auto item = itemManager.FindItemById(itemId);
     if (item)
     {
-        // Œ»İ‚ÌŠ”‚ğ0‚É‚µ‚Ä‚©‚çV‚µ‚¢”‚ğİ’è
+        // ç¾åœ¨ã®æ‰€æŒæ•°ã‚’0ã«ã—ã¦ã‹ã‚‰æ–°ã—ã„æ•°ã‚’è¨­å®š
         int currentQuantity = item->GetQuantity();
         if (currentQuantity > 0)
         {
@@ -663,7 +715,7 @@ const char* Receptionist::GetItemName(IETEM_TYPE itemType) const
     {
         return itemNames_[itemIndex].c_str();
     }
-    return "•s–¾‚ÈƒAƒCƒeƒ€";
+    return "ä¸æ˜ãªã‚¢ã‚¤ãƒ†ãƒ ";
 }
 
 std::string Receptionist::GetItemId(IETEM_TYPE itemType) const

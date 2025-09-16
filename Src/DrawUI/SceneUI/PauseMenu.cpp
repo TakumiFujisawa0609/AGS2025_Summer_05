@@ -1,100 +1,143 @@
-#include "PauseMenu.h"
+Ôªø#include "PauseMenu.h"
 #include <DxLib.h>
 #include "../../Manager/Generic/InputManager.h"
 #include "../../Manager/Decoration/SoundManager.h"
-#include "../../Manager/Generic/ResourceManager.h"
 #include "../../DrawUI/Font.h"
 #include "../../Application.h"
 
 PauseMenu::PauseMenu(void)
-	: currentIndex_(0), visible_(false), decisionMade_(false)
+    : currentIndex_(0), visible_(false), decisionMade_(false),
+      howToPlayIndex_(0), howToPlayPage_(0), mode_(MODE_POUSE::SELECT),
+      controlHandle_(-1), reninHandle_(-1), mokihiHandle_(-1),
+      atelierHandle_(-1), guildHandle_(-1), gardenHandle_(-1)
 {
-	menuItems_ = {
-		"ë±ÇØÇÈ",
-		"óVÇ—ï˚",
-		"ëÄçÏê‡ñæ",
-		"ÉQÅ[ÉÄèIóπ"
-	};
+    // „É°„Ç§„É≥„É°„Éã„É•„Éº
+    menuItems_ = {
+        "Á∂ö„Åë„Çã",
+        "ÈÅä„Å≥Êñπ",
+        "Êìç‰ΩúË™¨Êòé",
+        "„Ç≤„Éº„É†ÁµÇ‰∫Ü"
+    };
 
-    controlHandle_ = -1;
+    // „Çµ„Éñ„É°„Éã„É•„Éº
+    howToPlayItems_ = {
+        "ÁõÆÊ®ô„Å´„Å§„ÅÑ„Å¶",
+        "Èå¨Èáë„Å´„Å§„ÅÑ„Å¶",
+        "„Ç¢„Éà„É™„Ç®„Å´„Å§„ÅÑ„Å¶",
+        "„ÇÆ„É´„Éâ„Å´„Å§„ÅÑ„Å¶",
+        "„Ç¨„Éº„Éá„É≥„Å´„Å§„ÅÑ„Å¶",
+        "Êàª„Çã"
+    };
 }
 
 void PauseMenu::Show(void)
 {
-	visible_ = true;
-	currentIndex_ = 0;
-	decisionMade_ = false;
+    visible_ = true;
+    currentIndex_ = 0;
+    decisionMade_ = false;
+    mode_ = MODE_POUSE::SELECT;
 }
 
 void PauseMenu::Hide(void)
 {
-	visible_ = false;
-	decisionMade_ = false;
+    visible_ = false;
+    decisionMade_ = false;
+    mode_ = MODE_POUSE::SELECT;
 }
 
 bool PauseMenu::IsVisible(void) const
 {
-	return visible_;
+    return visible_;
 }
 
 bool PauseMenu::IsDecisionMade(void) const
 {
-	return decisionMade_;
+    return decisionMade_;
 }
 
 int PauseMenu::GetSelectedIndex(void) const
 {
-	return currentIndex_;
+    return currentIndex_;
 }
 
 void PauseMenu::Init(void)
 {
-	controlHandle_ = LoadGraph((Application::PATH_IMAGE + "UI/sousa.png").c_str());
+    // ÂêÑÁ®ÆÁîªÂÉè„ÅÆ„É≠„Éº„Éâ
+    reninHandle_   = LoadGraph((Application::PATH_IMAGE + "UI/renkint.png").c_str());
+    mokihiHandle_  = LoadGraph((Application::PATH_IMAGE + "UI/mokuhyou.png").c_str());
+    controlHandle_ = LoadGraph((Application::PATH_IMAGE + "UI/sousa.png").c_str());
+    atelierHandle_ = LoadGraph((Application::PATH_IMAGE + "UI/atrieT.png").c_str());
+    guildHandle_   = LoadGraph((Application::PATH_IMAGE + "UI/girudo.png").c_str());
+    gardenHandle_  = LoadGraph((Application::PATH_IMAGE + "UI/gadenT.png").c_str());
 }
 
 void PauseMenu::Update(void)
 {
     SoundManager& sound = SoundManager::GetInstance();
+    auto& input = InputManager::GetInstance();
 
     if (mode_ == MODE_POUSE::SELECT)
     {
-		if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_UP))
-		{
+        if (input.IsTrgDown(KEY_INPUT_UP)) {
             sound.Play(SoundManager::SOUND::SE_SELECT);
-			currentIndex_ = (currentIndex_ + menuItems_.size() - 1) % menuItems_.size();  // èCê≥
-		}
-		if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_DOWN))
-		{
+            currentIndex_ = (currentIndex_ + menuItems_.size() - 1) % menuItems_.size();
+        }
+        if (input.IsTrgDown(KEY_INPUT_DOWN)) {
             sound.Play(SoundManager::SOUND::SE_SELECT);
-			currentIndex_ = (currentIndex_ + 1) % menuItems_.size();  // èCê≥
-		}
+            currentIndex_ = (currentIndex_ + 1) % menuItems_.size();
+        }
 
-        if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_RETURN))
+        if (input.IsTrgDown(KEY_INPUT_RETURN))
         {
             sound.Play(SoundManager::SOUND::SE_PUSH);
-            if (currentIndex_ == 0) // ë±ÇØÇÈ
-            {
+            if (currentIndex_ == 0) {           // Á∂ö„Åë„Çã
                 visible_ = false;
             }
-            else if (currentIndex_ == 1) // óVÇ—ï˚
-            {
-                mode_ = MODE_POUSE::HOW_TO_PLAY;
+            else if (currentIndex_ == 1) {      // ÈÅä„Å≥Êñπ
+                mode_ = MODE_POUSE::HOW_TO_PLAY_MENU;
+                howToPlayIndex_ = 0;
             }
-            else if (currentIndex_ == 2) // ëÄçÏê‡ñæ
-            {
+            else if (currentIndex_ == 2) {      // Êìç‰ΩúË™¨Êòé
                 mode_ = MODE_POUSE::CONTROL;
             }
-            else if (currentIndex_ == 3) // ÉQÅ[ÉÄèIóπ
-            {
+            else if (currentIndex_ == 3) {      // „Ç≤„Éº„É†ÁµÇ‰∫Ü
                 decisionMade_ = true;
             }
         }
     }
-    else
+    else if (mode_ == MODE_POUSE::HOW_TO_PLAY_MENU)
     {
-        // XÇ≈ñﬂÇÈ
-        if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_ESCAPE))
-        {
+        if (input.IsTrgDown(KEY_INPUT_UP)) {
+            sound.Play(SoundManager::SOUND::SE_SELECT);
+            howToPlayIndex_ = (howToPlayIndex_ + howToPlayItems_.size() - 1) % howToPlayItems_.size();
+        }
+        if (input.IsTrgDown(KEY_INPUT_DOWN)) {
+            sound.Play(SoundManager::SOUND::SE_SELECT);
+            howToPlayIndex_ = (howToPlayIndex_ + 1) % howToPlayItems_.size();
+        }
+        if (input.IsTrgDown(KEY_INPUT_RETURN)) {
+            if (howToPlayIndex_ == howToPlayItems_.size() - 1) {
+                mode_ = MODE_POUSE::SELECT; // Êàª„Çã
+            } else {
+                howToPlayPage_ = howToPlayIndex_ + 1;
+                mode_ = MODE_POUSE::HOW_TO_PLAY_PAGE;
+            }
+        }
+        if (input.IsTrgDown(KEY_INPUT_ESCAPE)) {
+            sound.Play(SoundManager::SOUND::SE_CANCEL);
+            mode_ = MODE_POUSE::SELECT;
+        }
+    }
+    else if (mode_ == MODE_POUSE::HOW_TO_PLAY_PAGE)
+    {
+        if (input.IsTrgDown(KEY_INPUT_ESCAPE)) {
+            sound.Play(SoundManager::SOUND::SE_CANCEL);
+            mode_ = MODE_POUSE::HOW_TO_PLAY_MENU;
+        }
+    }
+    else if (mode_ == MODE_POUSE::CONTROL)
+    {
+        if (input.IsTrgDown(KEY_INPUT_ESCAPE)) {
             sound.Play(SoundManager::SOUND::SE_CANCEL);
             mode_ = MODE_POUSE::SELECT;
         }
@@ -108,49 +151,114 @@ void PauseMenu::Draw(void)
     const int screenW = Application::DEFA_SCREEN_SIZE_X;
     const int screenH = Application::DEFA_SCREEN_SZIE_Y;
 
-    // ÅuóVÇ—ï˚ÅvÇ©ÅuëÄçÏê‡ñæÅvÇÃÇ∆Ç´ÇÕâÊñ ëSëÃÇçïÇ≠ìhÇÈ
-    if (mode_ == MODE_POUSE::HOW_TO_PLAY || mode_ == MODE_POUSE::CONTROL)
+    // --- „ÄåÈÅä„Å≥Êñπ„Äç„Çµ„Éñ„É°„Éã„É•„Éº ---
+    if (mode_ == MODE_POUSE::HOW_TO_PLAY_MENU)
     {
         DrawBox(0, 0, screenW, screenH, GetColor(0, 0, 0), TRUE);
 
-        // TODO: Ç±Ç±Ç…ê‡ñæï∂ÇÃï`âÊÇ»Ç«Ç‡ì¸ÇÍÇÁÇÍÇ‹Ç∑
-        const char* message = (mode_ == MODE_POUSE::HOW_TO_PLAY) ? "óVÇ—ï˚ê‡ñæ..." : "ëÄçÏê‡ñæ...";
-        DrawString(50, 50, message, GetColor(255, 255, 255));
-        DrawString(50, screenH - 10, "ñﬂÇÈÇ…ÇÕXÉLÅ[ÇâüÇµÇƒÇ≠ÇæÇ≥Ç¢", GetColor(255, 255, 255));
+        const int fontSize = 32;
+        const int startY = screenH / 2 - (howToPlayItems_.size() * (fontSize + 20)) / 2;
 
-        if (mode_ == MODE_POUSE::CONTROL)
-        {
-            DrawRotaGraph3(5, 20, 0, 0, 1.0f, 1.0f, 0, controlHandle_, true);
+        for (int i = 0; i < howToPlayItems_.size(); ++i) {
+            int itemY = startY + i * (fontSize + 25);
+            int textWidth = Font::GetInstance().GetDefaultTextWidth(howToPlayItems_[i]);
+            int textX = (screenW / 2) - textWidth;
+            const int marginX = 75; // ‚Üê Ê®™„ÅÆ‰ΩôÁôΩ„ÇíÂ¢ó„ÇÑ„Åô
+            const int marginY = 8;  // ‚Üê Á∏¶„ÅÆ‰ΩôÁôΩ„ÇÇÂ∞ë„ÅóÂ∫É„Åí„Çã
+
+            if (i == howToPlayIndex_) {
+                int boxW = textWidth + marginX * 2;
+                int boxX = (screenW - boxW) / 2;
+                DrawBox(boxX, itemY - marginY,
+                    boxX + boxW, itemY + fontSize + marginY,
+                    0xFFFF00, FALSE);
+            }
+
+            // „Éï„Ç©„É≥„Éà„ÇØ„É©„Çπ„Çí‰Ωø„Å£„Å¶ÊèèÁîª
+            Font::GetInstance().DrawDefaultText(
+                textX,
+                itemY,
+                howToPlayItems_[i].c_str(),
+                GetColor(255, 255, 255),
+                fontSize,
+                Font::FONT_TYPE_ANTIALIASING_EDGE
+            );
         }
+
+        Font::GetInstance().DrawDefaultText(
+            50,
+            screenH - 50,
+            "SPACE„ÅßÊ±∫ÂÆö / ESC„ÅßÊàª„Çã",
+            GetColor(200, 200, 200),
+            24,
+            Font::FONT_TYPE_ANTIALIASING_EDGE
+        );
+
         return;
     }
 
-    // í èÌÇÃÉÅÉjÉÖÅ[ï\é¶ÇÕÇ±Ç±Ç©ÇÁ
+
+    // --- „ÄåÈÅä„Å≥Êñπ„ÄçÂÄãÂà•„Éö„Éº„Ç∏ ---
+    if (mode_ == MODE_POUSE::HOW_TO_PLAY_PAGE)
+    {
+        DrawBox(0, 0, screenW, screenH, GetColor(0, 0, 0), TRUE);
+
+        if (howToPlayPage_ == 1) {
+            DrawRotaGraph(screenW / 2, screenH / 2, 1.0, 0.0, mokihiHandle_, TRUE);
+        }
+        else if (howToPlayPage_ == 2) {
+            DrawRotaGraph(screenW / 2, screenH / 2, 1.0, 0.0, reninHandle_, TRUE);
+        }
+        else if (howToPlayPage_ == 3) {
+            DrawRotaGraph(screenW / 2, screenH / 2, 1.0, 0.0, atelierHandle_, TRUE);
+        }
+        else if (howToPlayPage_ == 4) {
+            DrawRotaGraph(screenW / 2, screenH / 2, 1.0, 0.0, guildHandle_, TRUE);
+        }
+        else if (howToPlayPage_ == 5) {
+            DrawRotaGraph(screenW / 2, screenH / 2, 1.0, 0.0, gardenHandle_, TRUE);
+        }
+
+        DrawString(50, screenH - 30, "ESC„Ç≠„Éº„ÅßÊàª„Çã", GetColor(200, 200, 200));
+        return;
+    }
+
+    // --- Êìç‰ΩúË™¨Êòé ---
+    if (mode_ == MODE_POUSE::CONTROL)
+    {
+        DrawBox(0, 0, screenW, screenH, GetColor(0, 0, 0), TRUE);
+        DrawRotaGraph(screenW / 2, screenH / 2, 1.0, 0.0, controlHandle_, TRUE);
+        DrawString(50, screenH - 30, "ESC„Ç≠„Éº„ÅßÊàª„Çã", GetColor(200, 200, 200));
+        return;
+    }
+
+    // --- ÈÄöÂ∏∏„ÅÆ„Éù„Éº„Ç∫„É°„Éã„É•„Éº ---
     const int boxW = 400;
     const int boxH = static_cast<int>(menuItems_.size()) * 50 + 40;
 
     const int x = (screenW - boxW) / 2;
     const int y = (screenH - boxH) / 2;
 
-    // ÉÅÉjÉÖÅ[îwåi
-    DrawBox(x, y, x + boxW, y + boxH, GetColor(0, 0, 0), TRUE);
+    DrawBox(x, y, x + boxW, y + boxH, GetColor(0, 0, 0), TRUE);   // ËÉåÊôØ
+    DrawBox(x, y, x + boxW, y + boxH, GetColor(255, 255, 255), FALSE); // Êû†
 
-    // ògê¸
-    DrawBox(x, y, x + boxW, y + boxH, GetColor(255, 255, 255), FALSE);
-
-    // ÉÅÉjÉÖÅ[çÄñ⁄ï`âÊ
     for (int i = 0; i < menuItems_.size(); ++i)
     {
         int itemY = y + 20 + i * 50;
-        if (i == currentIndex_)
-        {
+        if (i == currentIndex_) {
             DrawBox(x + 10, itemY - 5, x + boxW - 10, itemY + 30, 0xFFFF00, false);
         }
-        Font::GetInstance().DrawDefaultText(x + 150, itemY, menuItems_[i].c_str(), 0xffffff,24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+        Font::GetInstance().DrawDefaultText(x + 150, itemY, menuItems_[i].c_str(),
+            0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
     }
 }
 
 void PauseMenu::Release(void)
 {
     DeleteGraph(controlHandle_);
+    DeleteGraph(reninHandle_);
+    DeleteGraph(mokihiHandle_);
+    DeleteGraph(atelierHandle_);
+    DeleteGraph(guildHandle_);
+    DeleteGraph(gardenHandle_);
 }

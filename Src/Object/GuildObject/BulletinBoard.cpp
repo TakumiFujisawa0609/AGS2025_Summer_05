@@ -66,12 +66,17 @@ void BulletinBoard::Update(void)
 {
 	auto& input = InputManager::GetInstance();
 	auto& sound = SoundManager::GetInstance();
+	auto& app = Application::GetInstance();
 
 	// エンターキーが押された時の処理
 	if (isShowUI_ && input.IsTrgDown(KEY_INPUT_RETURN))
 	{
-		Application::GetInstance().SetActiveUI(true);
+		// --- UI優先度を QUEST に設定 ---
+		app.SetsActiveUI(ActiveUI::QUEST);
+		app.SetActiveUI(true);
+
 		sound.Play(SoundManager::SOUND::SE_PUSH);
+
 		if (!isShowQuestList_)
 		{
 			isShowQuestList_ = true;
@@ -90,14 +95,16 @@ void BulletinBoard::Update(void)
 			PlayerStop::GetInstance().ResumeMovement();
 			isShowQuestList_ = false;
 			isShowUI_ = false;
+
+			// --- UI閉じたら優先度を解除 ---
+			app.SetsActiveUI(ActiveUI::NONE);
+			app.SetActiveUI(false);
 		}
 	}
-
 
 	// 依頼リスト表示中の選択処理
 	if (isShowQuestList_)
 	{
-		// 左右キーで選択を変更
 		if (input.IsTrgDown(KEY_INPUT_LEFT))
 		{
 			sound.Play(SoundManager::SOUND::SE_SELECT);
@@ -109,13 +116,16 @@ void BulletinBoard::Update(void)
 			selectedQuest_ = (selectedQuest_ + 1) % 3;
 		}
 
-		// ESCキーで依頼リストを閉じる
 		if (input.IsTrgDown(KEY_INPUT_ESCAPE))
 		{
 			sound.Play(SoundManager::SOUND::SE_CANCEL);
 			isShowQuestList_ = false;
 			isShowUI_ = false;
 			PlayerStop::GetInstance().ResumeMovement();
+
+			// --- ESCで閉じるときも優先度解除 ---
+			app.SetsActiveUI(ActiveUI::NONE);
+			app.SetActiveUI(false);
 		}
 	}
 
@@ -208,7 +218,7 @@ void BulletinBoard::DrawUI(void)
 		}
 
 		Font::GetInstance().DrawDefaultText(startX, startY + boxHeight + 30,
-			"←→キー: 選択  Enter: 決定  X: 閉じる", 0xcccccc, 24);
+			"←→キー: 選択  Enter: 決定  ESC: 閉じる", 0xcccccc, 24);
 	}
 
 	// UI描画終了後はZバッファを元に戻す

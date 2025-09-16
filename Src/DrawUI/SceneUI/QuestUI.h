@@ -28,7 +28,7 @@ class QuestUI
 {
 public:
 
-    static constexpr int MAX_QUESTS = 100;
+    static constexpr int MAX_QUESTS = 5;
 
     //シングルトンインスタンス生成
     static void CreateInstance(void);
@@ -90,6 +90,8 @@ public:
     int GetCompletedQuestCount(void) const;
 
     bool HasReachedMaxCompletion(void) const;
+
+    void SetCompletedQuestCount(int com);
 
 
 private:

@@ -10,6 +10,7 @@
 #include "../DrawUI/SceneUI/SceneUI.h"
 #include "../Object/Grid.h"
 #include "../Application.h"
+#include "../DrawUI/Font.h"
 
 SceneTitle::SceneTitle(void)
 {
@@ -47,6 +48,9 @@ void SceneTitle::Init(void)
     uiHowToPlay_ = std::make_unique<SceneUi>();
     uiHowToPlay_->AddCharctor("目標について");
     uiHowToPlay_->AddCharctor("錬金について");
+    uiHowToPlay_->AddCharctor("アトリエについて");  // ★追加
+    uiHowToPlay_->AddCharctor("ギルドについて");    // ★追加
+    uiHowToPlay_->AddCharctor("ガーデンについて");  // ★追加
     uiHowToPlay_->AddCharctor("戻る");
 
     inHowToPlayMenu_ = false;
@@ -73,6 +77,10 @@ void SceneTitle::Init(void)
     operationHandle_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::OPERATION).handleId_;
 	playHandle_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::PLAY_GUIDE).handleId_;
 	playHandle2_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::PLAY_GUIDE2).handleId_;
+
+    atelierHandle_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::ATREA).handleId_;
+    guildHandle_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::GUILD).handleId_;
+    gardenHandle_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::GARDEN).handleId_;
 
 	// 初期カーソル位置
 	uiMain_->SetCurrentIndex(0);
@@ -180,7 +188,16 @@ void SceneTitle::Update(void)
             else if (selected == 1) { // 錬金について
                 howToPlayPage_ = 2;
             }
-            else if (selected == 2) { // 戻る
+            else if (selected == 2) { // アトリエについて
+                howToPlayPage_ = 3;
+            }
+            else if (selected == 3) { // ギルドについて
+                howToPlayPage_ = 4;
+            }
+            else if (selected == 4) { // ガーデンについて
+                howToPlayPage_ = 5;
+            }
+            else if (selected == 5) { // 戻る
                 inHowToPlayMenu_ = false;
             }
         }
@@ -196,12 +213,33 @@ void SceneTitle::Draw(void)
     if (howToPlayPage_ > 0)
     {
         DrawBox(0, 0, Application::DEFA_SCREEN_SIZE_X, Application::DEFA_SCREEN_SZIE_Y, GetColor(0, 0, 0), TRUE);
+
         if (howToPlayPage_ == 1) {
-            DrawString(50, 50, "目標について:\nこのゲームでは〜〜〜〜〜〜", GetColor(255, 255, 255));
+            DrawRotaGraph(Application::SCREEN_SIZE_X / 2,
+                Application::SCREEN_SIZE_Y / 2,
+                1.0, 0.0, playHandle_, true);
         }
         else if (howToPlayPage_ == 2) {
-            DrawString(50, 50, "錬金について:\n素材を集めて〜〜〜〜〜〜", GetColor(255, 255, 255));
+            DrawRotaGraph(Application::SCREEN_SIZE_X / 2,
+                Application::SCREEN_SIZE_Y / 2,
+                1.0, 0.0, playHandle2_, true);
         }
+        else if (howToPlayPage_ == 3) { // アトリエ
+            DrawRotaGraph(Application::SCREEN_SIZE_X / 2,
+                Application::SCREEN_SIZE_Y / 2,
+                1.0, 0.0, atelierHandle_, true);
+        }
+        else if (howToPlayPage_ == 4) { // ギルド
+            DrawRotaGraph(Application::SCREEN_SIZE_X / 2,
+                Application::SCREEN_SIZE_Y / 2,
+                1.0, 0.0, guildHandle_, true);
+        }
+        else if (howToPlayPage_ == 5) { // ガーデン
+            DrawRotaGraph(Application::SCREEN_SIZE_X / 2,
+                Application::SCREEN_SIZE_Y / 2,
+                1.0, 0.0, gardenHandle_, true);
+        }
+
         DrawString(50, Application::DEFA_SCREEN_SZIE_Y - 30, "ESCキーで戻る", GetColor(200, 200, 200));
         return;
     }
@@ -230,11 +268,42 @@ void SceneTitle::Draw(void)
             }
             else if (selected == 3) // クレジット
             {
-                DrawString(50, 50, "クレジット\n製作者: ○○○○\nサウンド: △△△△", GetColor(255, 255, 255));
+                auto& font = Font::GetInstance();
+                std::vector<std::string> lines = {
+                    "クレジット",
+                    "効果音ラボ: カーソル移動音2, キラッ2",
+                    "ニコニコ・コモンズ: キャンセル音 k45mm, 午後の庭園 kenapo",
+                    "BGM: Stream D (ju-nya)",
+                    "効果音工房: 決定音01, 決定音19",
+                    "ポケットサウンド: ファンファーレ",
+                    "魔王魂: 民族10",
+                    "H/MIX GALLERY: ホシノキセキ"
+                };
+
+                int color = GetColor(255, 255, 255);
+                int fontSize = 28;
+                int fontType = DX_FONTTYPE_ANTIALIASING;
+
+                int centerX = Application::SCREEN_SIZE_X / 2;
+                int centerY = Application::SCREEN_SIZE_Y / 2;
+
+                int lineSpacing = fontSize + 24; // ← 行間を広めに (12px 余白)
+
+                int totalHeight = static_cast<int>(lines.size()) * lineSpacing;
+                int startY = centerY - totalHeight / 2;
+
+                for (size_t i = 0; i < lines.size(); i++)
+                {
+                    int textWidth = font.GetDefaultTextWidth(lines[i]);
+                    int drawX = centerX - textWidth / 2;
+                    int drawY = startY + static_cast<int>(i) * lineSpacing;
+
+                    font.DrawDefaultText(drawX, drawY, lines[i].c_str(), color, fontSize, fontType);
+                }
             }
 
-            DrawString(50, Application::DEFA_SCREEN_SZIE_Y - 30, "ESCキーで戻る", GetColor(200, 200, 200));
         }
+
     }
     // ---- 遊び方サブメニュー ----
     else

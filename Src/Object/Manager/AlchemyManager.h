@@ -41,8 +41,10 @@ public:
 	void Close(void);
 	bool IsOpen(void) const;
 
-	//レシピと選択素材の差分をメッセージとして表示する
 	void ShowRecipeDifferenceMessage(const std::map<std::string, int>& selectedMap);
+
+	//レシピと選択素材の差分をメッセージとして表示する
+	const AlchemyRecipe* FindClosestRecipe(const std::map<std::string, int>& selectedMap);
 
 
 private:

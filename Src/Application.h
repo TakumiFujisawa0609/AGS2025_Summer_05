@@ -4,6 +4,14 @@
 class Fps;
 class PauseMenu;
 
+enum class ActiveUI {
+	NONE,
+	QUEST,
+	DELIVERY,
+	SHOP,
+	TELEPORT
+};
+
 class Application
 {
 public:
@@ -63,6 +71,10 @@ public:
 
 	void SetActiveUI(bool isActive);
 
+	void SetsActiveUI(ActiveUI ui);
+	bool IsTeleportUIActive(void) const;
+	ActiveUI GetActiveUI(void) const;
+
 private:
 
 	//性的インスタンス
@@ -80,6 +92,8 @@ private:
 	Fps* fps_;
 
 	PauseMenu* pauseMenu_;
+
+	ActiveUI activeUI_;;
 
 	//エフェクシアの初期化
 	void InitEffekseer(void);
