@@ -301,7 +301,6 @@ void PlantObject::TryHarvest()
         std::mt19937 gen(rd());
         std::uniform_int_distribution<> dist(0, static_cast<int>(possibleItems.size()) - 1);
 
-        // šƒ‰ƒ“ƒ_ƒ€‚Å2‰ñ‘I‚Ô
         for (int i = 0; i < 2; ++i)
         {
             int index = dist(gen);

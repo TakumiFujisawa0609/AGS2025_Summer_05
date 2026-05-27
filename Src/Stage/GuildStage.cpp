@@ -110,7 +110,6 @@ void GuildStage::Init(void)
 	}
 }
 
-//更新処理
 // 更新処理
 void GuildStage::Update(void)
 {
@@ -123,7 +122,7 @@ void GuildStage::Update(void)
     }
 #endif
 
-    // --- UI優先度管理 ---
+    // UI優先度管理
     switch (app.GetActiveUI()) {
     case ActiveUI::NONE:
         bulletinBoard_->Update();
@@ -141,9 +140,7 @@ void GuildStage::Update(void)
         break;
 
     case ActiveUI::TELEPORT:
-        // ★テレポート中は teleportMovement だけを更新
         teleportMovement_->Update();
-        // receptionist_->Update() は呼ばない！
         break;
     }
 
@@ -157,14 +154,17 @@ void GuildStage::Update(void)
     // UI非表示時のカウント管理
     if (!bulletinBoard_->GetQuestList() &&
         !receptionist_->GetShopUiVisible() &&
-        !receptionist_->GetDeliveryMenu()) {
+        !receptionist_->GetDeliveryMenu())
+	{
         pauseUiCount_--;
     }
-    else {
+    else
+	{
         pauseUiCount_ = PAUSE_UI_COUNT;
     }
 
-    if (pauseUiCount_ <= 0) {
+    if (pauseUiCount_ <= 0)
+	{
         app.SetsActiveUI(ActiveUI::NONE);
         pauseUiCount_ = PAUSE_UI_COUNT;
     }

@@ -6,8 +6,8 @@ class Fps
 public:
 
 	//定数宣言
-	static constexpr int N = 60;         //平均をとるサンプル数
-	static constexpr int FPS = 60;       //設定下fps
+	static constexpr int N = 240;         //平均をとるサンプル数
+	static constexpr int FPS = 240;       //設定下fps
 
 private:
 	

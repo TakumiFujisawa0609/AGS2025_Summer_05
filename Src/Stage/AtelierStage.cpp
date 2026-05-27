@@ -46,14 +46,13 @@ void AtelierStage::Init(void)
 	camera->SetPos(Camera::DEFAULT_CAMERA_POS, { 0.0f,0.0f,0.0f });
 	//camera->SetFollow(&player->GetTransform());
 
-	// 鍋
 	modelId_ = res.LoadModelDuplicate(ResourceManager::SRC::STAGE_ATELIER);
 
-	// 鍋の位置
+	// 位置
 	modelIdPos_ = INIT_MODELID_POS;
 	// 座標をモデルに設定
 	MV1SetPosition(modelId_, modelIdPos_);
-	// 鍋の大きさ
+	// 大きさ
 	MV1SetScale(modelId_, MODELID_SCALEA);
 
 	MV1SetRotationXYZ(modelId_, { 0, 0, 0 });
@@ -183,7 +182,7 @@ void AtelierStage::Draw(void)
 {
 	//DrawFormatString(0, 20, 0xffffff, "アトリエステージ");
 
-	// 鍋の描画
+	// 描画
 	if (isModelId_)
 	{
 		MV1DrawModel(modelId_);

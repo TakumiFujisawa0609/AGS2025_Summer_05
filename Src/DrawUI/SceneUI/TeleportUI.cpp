@@ -35,7 +35,7 @@ void TeleportUI::Show(void)
 void TeleportUI::Hide(void)
 {
 	isVisible_ = false;
-	Application::GetInstance().SetsActiveUI(ActiveUI::NONE); // š‰ğœ
+	Application::GetInstance().SetsActiveUI(ActiveUI::NONE);
 	PlayerStop::GetInstance().ResumeMovement();
 }
 

@@ -83,12 +83,10 @@ void WallGuild::HideUI(void)
 
 void WallGuild::OnPlayerHit(void)
 {
-    // フェンスに当たったら特に何もしない（必要ならここに処理）
 }
 
 void WallGuild::OnPlayerExit(void)
 {
-    // フェンスから離れたときの処理があればここに
 }
 
 Transform& WallGuild::GetTransform(void)

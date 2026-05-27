@@ -56,6 +56,10 @@ void Application::Init(void)
 	//非アクティブ状態でも動作する
 	SetAlwaysRunFlag(TRUE);
 
+
+	//FPS制御初期化
+	fps_->FpsControll_Initialize();
+
 	//DXLibの初期化
 	SetUseDirect3DVersion(DX_DIRECT3D_11);
 	isInitFail_ = false;
@@ -94,9 +98,6 @@ void Application::Init(void)
 	std::string fontPath = Application::PATH_FONT + "NikkyouSans-mLKax.ttf";
 
  	Font::GetInstance().AddFont("GameFont","Nikkyou Sans", fontPath, 24, 6, Font::FONT_TYPE_EDGE);
-
-	//FPS制御初期化
-	fps_->FpsControll_Initialize();
 
 	pauseMenu_ = new PauseMenu();
 	pauseMenu_->Init();
@@ -180,6 +181,9 @@ void Application::Run(void)
 
 		// 描画
 		sceneManager.Draw();
+
+		fps_->FpsControll_Draw();
+
 		// エフェクト描画
 		DrawEffekseer3D();
 

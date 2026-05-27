@@ -33,8 +33,6 @@ void SoundManager::Add(const TYPE type, const SOUND sound, const int _data)
 	if (type == TYPE::BGM) mode = DX_PLAYTYPE_LOOP;  // BGMはループ再生
 	else mode = DX_PLAYTYPE_BACK;                    // SEは単発再生
 
-	// 新規データのため情報を追加
-	// 注意: 変数名が不一致 (*data → _data)
 	sounds_.emplace(sound, SOUND_DATA{ _data, type, mode });
 }
 
@@ -69,8 +67,6 @@ void SoundManager::Release(void)
 // 音量調節
 void SoundManager::AdjustVolume(const SOUND sound, const int persent)
 {
-	// 元データがないときは警告 (未登録の音声を設定しようとした場合)
-	// 注意: 変数名が不一致 (_sound → *sound)
 	if (sounds_.find(sound) == sounds_.end()) assert("設定していない音声を設定しようとしています。");
 
 	// DxLibの関数を使用して音量を変更
