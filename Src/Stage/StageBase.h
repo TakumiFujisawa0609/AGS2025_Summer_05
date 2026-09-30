@@ -1,24 +1,25 @@
 #pragma once
+
+/// @brief ステージの基底クラス
 class StageBase
 {
 public:
 
-	//コンストラクタ
-	StageBase(void) = default;
+    /// @brief コンストラクタ
+    StageBase(void) = default;
 
-	//デストラクタ
-	virtual ~StageBase(void) = 0;
+    /// @brief デストラクタ
+    virtual ~StageBase(void) = 0;
 
-	//初期化処理
-	virtual void Init(void) = 0;
+    /// @brief 初期化処理
+    virtual void Init(void) = 0;
 
-	//更新処理
-	virtual void Update(void) = 0;
+    /// @brief 更新処理
+    virtual void Update(void) = 0;
 
-	//描画処理
-	virtual void Draw(void) = 0;
+    /// @brief 描画処理
+    virtual void Draw(void) = 0;
 
-	//解放処理
-	virtual void Release(void) = 0;
+    /// @brief 解放処理
+    virtual void Release(void) = 0;
 };
-

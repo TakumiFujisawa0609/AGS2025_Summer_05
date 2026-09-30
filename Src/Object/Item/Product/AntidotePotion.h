@@ -1,12 +1,15 @@
 #pragma once
 
-#include"ProductItem.h"
+#include "ProductItem.h"
 
-//解毒ポーション (完成品アイテム) のクラス
+/// @brief 解毒ポーションのクラス
 class AntidotePotion : public ProductItem
 {
 public:
-	//コンストラクタ
-	AntidotePotion(void);
-};
 
+    /// @brief コンストラクタ
+    AntidotePotion(void);
+
+    /// @brief デストラクタ
+    ~AntidotePotion(void) override = default;
+};

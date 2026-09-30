@@ -1,163 +1,178 @@
-#include"Resource.h"
+#include "Resource.h"
 
-#include<DxLib.h>
-#include<EffekseerForDXLib.h>
+#include <DxLib.h>
+#include <EffekseerForDXLib.h>
 
-
-
-//コンストラクタ
-Resource::Resource()
+Resource::Resource(void)
 {
-	resType_ = TYPE::NONE;
+    resourceType_ = TYPE::NONE;
+    filePath_ = "";
 
-	path_= "";
+    splitCountX_ = -1;
+    splitCountY_ = -1;
+    imageWidth_ = -1;
+    imageHeight_ = -1;
 
-	numX_ = -1;
-
-	numY_ = -1;
-
-	sizeX_ = -1;
-
-	sizeY_ = -1;
-
-	handleId_ = -1;
-
-	handleIds_ = nullptr;
+    handleId_ = -1;
+    handleIds_ = nullptr;
 }
 
-//コンストラクタ
-Resource::Resource(TYPE type, const std::string& path)
+Resource::Resource(TYPE resourceType, const std::string& filePath)
 {
-	resType_ = type;
-	path_ = path;
+    resourceType_ = resourceType;
+    filePath_ = filePath;
 
-	numX_ = -1;
-	numY_ = -1;
-	sizeX_ = -1;
-	sizeY_ = -1;
+    splitCountX_ = -1;
+    splitCountY_ = -1;
+    imageWidth_ = -1;
+    imageHeight_ = -1;
 
-	handleId_ = -1;
-	handleIds_ = nullptr;
+    handleId_ = -1;
+    handleIds_ = nullptr;
 }
 
-//コンストラクタ(IMGS用)
-Resource::Resource(TYPE type, const std::string& path, int numX, int numY, int sizeX, int sizeY)
+Resource::Resource(
+    TYPE resourceType,
+    const std::string& filePath,
+    int splitCountX,
+    int splitCountY,
+    int imageWidth,
+    int imageHeight)
 {
-	resType_ = type;
-	path_ = path;
-	numX_ = numX;
-	numY_ = numY;
-	sizeX_ = sizeX;
-	sizeY_ = sizeY;
+    resourceType_ = resourceType;
+    filePath_ = filePath;
+    splitCountX_ = splitCountX;
+    splitCountY_ = splitCountY;
+    imageWidth_ = imageWidth;
+    imageHeight_ = imageHeight;
 
-	handleId_ = -1;
-	handleIds_ = nullptr;
+    handleId_ = -1;
+    handleIds_ = nullptr;
 }
 
-//デストラクタ
-Resource::~Resource()
+Resource::~Resource(void)
 {
-
 }
 
-//読み込み
 void Resource::Load(void)
 {
+    switch (resourceType_)
+    {
+    case Resource::TYPE::IMAGE:
+        handleId_ = LoadGraph(filePath_.c_str());
+        break;
 
-	switch (resType_)
-	{
-	case Resource::TYPE::IMG:
-		//画像
-		handleId_ = LoadGraph(path_.c_str());
-		break;
+    case Resource::TYPE::IMAGES:
+    {
+        const int totalSplitCount = splitCountX_ * splitCountY_;
 
-	case Resource::TYPE::IMGS:
-		//画像分割
-		handleId_ = LoadDivGraph(path_.c_str(), numX_ * numY_, numX_, numY_, sizeX_, sizeY_, &handleIds_[0]);
-		break;
-		
-	case Resource::TYPE::MASK:
-		//マスクがぞ像
-		handleId_ = LoadGraph(path_.c_str());
-		break;
+        // ハンドルを格納する配列が確保されていないとクラッシュするため動的確保
+        if (handleIds_ == nullptr)
+        {
+            handleIds_ = new int[totalSplitCount];
+        }
 
-	case Resource::TYPE::MODEL:
-		//モデル
-		handleId_ = MV1LoadModel(path_.c_str());
-		break;
+        // 100文字を超えないように引数を改行
+        handleId_ = LoadDivGraph(
+            filePath_.c_str(),
+            totalSplitCount,
+            splitCountX_,
+            splitCountY_,
+            imageWidth_,
+            imageHeight_,
+            handleIds_
+        );
+        break;
+    }
 
-	case Resource::TYPE::EFFEKSEER:
-		//エフェクト
-		handleId_ = LoadEffekseerEffect(path_.c_str());
-		break;
+    case Resource::TYPE::MASK:
+        handleId_ = LoadGraph(filePath_.c_str());
+        break;
 
-	case Resource::TYPE::SOUND:
-		//サウンド
-		handleId_ = LoadSoundMem(path_.c_str());
-		break;
+    case Resource::TYPE::MODEL:
+        handleId_ = MV1LoadModel(filePath_.c_str());
+        break;
 
-	}
+    case Resource::TYPE::EFFEKSEER:
+        handleId_ = LoadEffekseerEffect(filePath_.c_str());
+        break;
+
+    case Resource::TYPE::SOUND:
+        handleId_ = LoadSoundMem(filePath_.c_str());
+        break;
+
+    case Resource::TYPE::NONE:
+    case Resource::TYPE::ANIMATION:
+        // 特になし（警告回避）
+        break;
+    }
 }
 
 void Resource::Release(void)
 {
-	switch (resType_)
-	{
-	case Resource::TYPE::IMG:
-		//画像
-		DeleteGraph(handleId_);
-		break;
+    switch (resourceType_)
+    {
+    case Resource::TYPE::IMAGE:
+        DeleteGraph(handleId_);
+        break;
 
-	case Resource::TYPE::IMGS:
-	{
-		//画像分割
-		int num = numX_ * numY_;
-		for (int i = 0; i < num; i++)
-		{
-			DeleteGraph(handleIds_[i]);
-		}
-		delete[] handleIds_;
-		break;
-	}
+    case Resource::TYPE::IMAGES:
+    {
+        const int totalSplitCount = splitCountX_ * splitCountY_;
 
-	case Resource::TYPE::MASK:
-		//マスク画像
-		DeleteGraph(handleId_);
-		break;
+        if (handleIds_ != nullptr)
+        {
+            for (int index = 0; index < totalSplitCount; ++index)
+            {
+                DeleteGraph(handleIds_[index]);
+            }
+            delete[] handleIds_;
+            handleIds_ = nullptr;
+        }
+        break;
+    }
 
-	case Resource::TYPE::MODEL:
-	{
-		//モデル
-		MV1DeleteModel(handleId_);
-		auto ids = duplicateModelIds_;
-		for (auto id : ids)
-		{
-			MV1DeleteModel(id);
-		}
-	}
-		break;
+    case Resource::TYPE::MASK:
+        DeleteGraph(handleId_);
+        break;
 
-	case Resource::TYPE::EFFEKSEER:
-		DeleteEffekseerEffect(handleId_);
-		break;
+    case Resource::TYPE::MODEL:
+    {
+        MV1DeleteModel(handleId_);
 
-	case Resource::TYPE::SOUND:
-		//サウンド
-		DeleteSoundMem(handleId_);
-		break;
-	}
+        auto modelIds = duplicateModelIds_;
+        for (auto modelId : modelIds)
+        {
+            MV1DeleteModel(modelId);
+        }
+        break;
+    }
+
+    case Resource::TYPE::EFFEKSEER:
+        DeleteEffekseerEffect(handleId_);
+        break;
+
+    case Resource::TYPE::SOUND:
+        DeleteSoundMem(handleId_);
+        break;
+
+    case Resource::TYPE::NONE:
+    case Resource::TYPE::ANIMATION:
+        break;
+    }
 }
 
-void Resource::CoopyHandle(int* imgs)
+void Resource::CopyHandles(int* imageHandles)
 {
-	if (handleIds_ == nullptr)
-	{
-		return;
-	}
+    if (handleIds_ == nullptr)
+    {
+        return;
+    }
 
-	int num = numX_ * numY_;
-	for (int i = 0; i < num; i++)
-	{
-		imgs[i] = handleIds_[i];
-	}
+    const int totalSplitCount = splitCountX_ * splitCountY_;
+
+    for (int index = 0; index < totalSplitCount; ++index)
+    {
+        imageHandles[index] = handleIds_[index];
+    }
 }

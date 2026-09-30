@@ -1,17 +1,20 @@
 #include "RandomSeed.h"
-
 #include "../../../Manager/Generic/ResourceManager.h"
 
-//コンストラクタ
+namespace
+{
+    const int INITIAL_QUANTITY = 0;
+    const int SEED_PRICE = 100;
+}
+
 RandomSeed::RandomSeed(void)
-	:SeedItem
-	(
-		"RandomSeed",
-		"種子",
-		"特殊な種子なにが取れるかは運しだい",
-		0,
-		ResourceManager::GetInstance().Load(ResourceManager::SRC::SEED).handleId_,
-		100
-	)
+    : SeedItem(
+        "RandomSeed",
+        "種子",
+        "特殊な種子なにが取れるかは運しだい",
+        INITIAL_QUANTITY,
+        ResourceManager::GetInstance().Load(ResourceManager::SRC::SEED).handleId_,
+        SEED_PRICE
+    )
 {
 }

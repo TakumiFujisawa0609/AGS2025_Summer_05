@@ -2,9 +2,14 @@
 
 #include "ProductItem.h"
 
+/// @brief 硬化ポーションのクラス
 class DefensePotion : public ProductItem
 {
 public:
-	DefensePotion(void);
-};
 
+    /// @brief コンストラクタ
+    DefensePotion(void);
+
+    /// @brief デストラクタ
+    ~DefensePotion(void) override = default;
+};

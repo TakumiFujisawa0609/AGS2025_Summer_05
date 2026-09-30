@@ -12,7 +12,11 @@
 
 
 GameHUD::GameHUD(void)
-    : moneyIconHandle_(-1), dateTimeManager_(nullptr)
+    : player_(nullptr)
+    , dateTimeManager_(nullptr)
+    , uiFrameHandle_(-1)
+    , moneyIconHandle_(-1)
+    , maxCompleteMessageTimer_(0)
 {
     timeIcons_.fill(-1);
 }
@@ -26,37 +30,34 @@ void GameHUD::Init(std::shared_ptr<Player> player, DateTimeManager* dateTimeMana
     player_ = player;
     dateTimeManager_ = dateTimeManager;
 
-    //UIフレームアイコン読み込み
     uiFrameHandle_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::UI_FRAME).handleId_;
+    moneyIconHandle_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::MONEY).handleId_; 
 
-    // 所持金アイコン読み込み
-    moneyIconHandle_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::MANEY).handleId_;
-
-    // 時間帯アイコン読み込み（例：morning.png, day.png, evening.png, night.png）
-    timeIcons_[MORNING] = ResourceManager::GetInstance().Load(ResourceManager::SRC::MORNING).handleId_;
-    timeIcons_[DAY] = ResourceManager::GetInstance().Load(ResourceManager::SRC::DAY).handleId_;
-    timeIcons_[EVENING] = ResourceManager::GetInstance().Load(ResourceManager::SRC::EVENING).handleId_;
-    timeIcons_[NIGHT] = ResourceManager::GetInstance().Load(ResourceManager::SRC::NIGHT).handleId_;
+    timeIcons_[static_cast<size_t>(TIME_ICON_INDEX::MORNING)] = 
+        ResourceManager::GetInstance().Load(ResourceManager::SRC::MORNING).handleId_;
+    timeIcons_[static_cast<size_t>(TIME_ICON_INDEX::DAY)] = 
+        ResourceManager::GetInstance().Load(ResourceManager::SRC::DAY).handleId_;
+    timeIcons_[static_cast<size_t>(TIME_ICON_INDEX::EVENING)] = 
+        ResourceManager::GetInstance().Load(ResourceManager::SRC::EVENING).handleId_;
+    timeIcons_[static_cast<size_t>(TIME_ICON_INDEX::NIGHT)] = 
+        ResourceManager::GetInstance().Load(ResourceManager::SRC::NIGHT).handleId_;
 }
 
 void GameHUD::Update(void)
 {
     if (QuestUI::GetInstance().HasReachedMaxCompletion() && maxCompleteMessageTimer_ <= 0)
     {
-        maxCompleteMessageTimer_ = 60; // 10秒くらい表示
+        maxCompleteMessageTimer_ = MESSAGE_DISPLAY_TIME;
     }
 
-    // タイマーが動いているならカウントダウン
     if (maxCompleteMessageTimer_ > 0)
     {
         maxCompleteMessageTimer_--;
 
-        // 0 になった瞬間にタイトルへ遷移
         if (maxCompleteMessageTimer_ == 0)
         {
             SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::TITLE);
             QuestUI::GetInstance().SetCompletedQuestCount(0);
-
         }
     }
 }
@@ -64,47 +65,56 @@ void GameHUD::Update(void)
 void GameHUD::Draw(void)
 {
     auto& font = Font::GetInstance();
-    const int margin = 0;
 
-    // ==== 所持金表示 ====
-    int money = player_->GetMoney();
+    // 描画位置関連のローカル定数
+    const int MARGIN = 0;                 // 画面端からのマージン
+    const int MONEY_ICON_OFFSET_X = -500; // 所持金アイコンのX座標オフセット
+    const int MONEY_ICON_OFFSET_Y = -60;  // 所持金アイコンのY座標オフセット
+    const int MONEY_TEXT_OFFSET_X = 180;  // 所持金テキストのX座標オフセット
+    const int MONEY_TEXT_OFFSET_Y = 15;   // 所持金テキストのY座標オフセット
+    const int QUEST_TEXT_OFFSET_X = -100; // クエストテキストのX座標オフセット
+    const int QUEST_TEXT_OFFSET_Y = 30;   // クエストテキストのY座標オフセット
 
-    int iconX = Application::DEFA_SCREEN_SIZE_X - 500;
-    int iconY = margin;
+    int money = player_->GetMoney(); // 所持金
 
-    DrawRotaGraph3(iconX, iconY - 60, 0, 0, 0.27f, 0.27f,0,moneyIconHandle_, true);
-    font.DrawDefaultText(iconX + 180, iconY + 15, std::to_string(money).c_str(), 0xffffff, 32, Font::FONT_TYPE_ANTIALIASING_EDGE);
+    int moneyIconPositionX = Application::FULL_SCREEN_SIZE_X + MONEY_ICON_OFFSET_X; // 所持金アイコンのX座標
+    int moneyIconPositionY = MARGIN;                                                // 所持金アイコンのY座標
 
-    // ==== 時間帯表示 ====
-    DateTimeManager::TIME_ZONE timeZone = dateTimeManager_->GetTimeZone();
-    int iconIndex = static_cast<int>(timeZone);
+    DrawRotaGraph3(moneyIconPositionX, moneyIconPositionY + MONEY_ICON_OFFSET_Y,
+        0, 0, MONEY_ICON_SCALE, MONEY_ICON_SCALE, 0, moneyIconHandle_, true);
 
-    int timeIconX = 0;
-    int timeIconY = 0;
+    font.DrawDefaultText(moneyIconPositionX + MONEY_TEXT_OFFSET_X, moneyIconPositionY
+        + MONEY_TEXT_OFFSET_Y, std::to_string(money).c_str(), COLOR_WHITE,
+        FONT_SIZE_MONEY, Font::FONT_TYPE_ANTIALIASING_EDGE);
+
+    DateTimeManager::TIME_ZONE timeZone = dateTimeManager_->GetTimeZone(); // 現在の時間帯
+    int iconIndex = static_cast<int>(timeZone);                            // 時間帯のインデックス
+
+    int timeIconPositionX = 0; // 時間帯アイコンのX座標
+    int timeIconPositionY = 0; // 時間帯アイコンのY座標
 
     int completedCount = QuestUI::GetInstance().GetCompletedQuestCount();
-    std::string completeText = "達成依頼数 : " + std::to_string(completedCount) + " / " + std::to_string(5);
-    font.DrawDefaultText(Application::DEFA_SCREEN_SIZE_X / 2 - 100, iconY + 30, completeText.c_str(), GetColor(255, 255, 255), 28, Font::FONT_TYPE_ANTIALIASING_EDGE);
+    std::string completeText = "達成依頼数 : " + std::to_string(completedCount)
+        + " / " + std::to_string(MAX_QUEST_COUNT);
+
+    font.DrawDefaultText(Application::FULL_SCREEN_SIZE_X / 2 + QUEST_TEXT_OFFSET_X, moneyIconPositionY 
+        + QUEST_TEXT_OFFSET_Y, completeText.c_str(), COLOR_WHITE, FONT_SIZE_QUEST, 
+        Font::FONT_TYPE_ANTIALIASING_EDGE);
 
     // MAXに達したら全画面に文字を表示
     if (maxCompleteMessageTimer_ > 0)
     {
-       
-        std::string msg = "あなたは錬金術師として有名になった!!";
-        int msgWidth = font.GetDefaultTextWidth(msg.c_str());
-        int screenW = Application::DEFA_SCREEN_SIZE_X / 2;
-        int screenH = Application::DEFA_SCREEN_SZIE_Y;
-        font.DrawDefaultText(screenW / 2, screenH / 2, msg.c_str(), 0xffffff, 58, Font::FONT_TYPE_ANTIALIASING_EDGE);
+        std::string message = "あなたは錬金術師として有名になった!!";                   // 表示するメッセージ
+        int messageWidth = font.GetDefaultTextWidth(message.c_str());                   // メッセージの描画幅
+        int screenWidthHalf = Application::FULL_SCREEN_SIZE_X / 2;                      // 画面の幅の半分
+        int screenHeight = Application::FULL_SCREEN_SIZE_Y;                             // 画面の高さ
+
+        font.DrawDefaultText(screenWidthHalf / 2, screenHeight / 2, message.c_str(),
+            COLOR_WHITE, FONT_SIZE_MESSAGE, Font::FONT_TYPE_ANTIALIASING_EDGE);
     }
 
-   
-    
+    DrawRotaGraph3(timeIconPositionX, timeIconPositionY, 0, 0, TIME_ICON_SCALE,
+        TIME_ICON_SCALE, 0, timeIcons_[iconIndex], true);
 
-   
-
-    DrawRotaGraph3(timeIconX, timeIconY, 0, 0, 1.5f, 1.5f, 0, timeIcons_[iconIndex], true);
-
-    DrawRotaGraph3(0, 0, 0, 0, 1.5f, 1.5f, 0, uiFrameHandle_, true);
+    DrawRotaGraph3(0, 0, 0, 0, UI_FRAME_SCALE, UI_FRAME_SCALE, 0, uiFrameHandle_, true);
 }
-
-   

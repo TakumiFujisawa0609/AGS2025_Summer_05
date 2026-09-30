@@ -1,38 +1,37 @@
 #pragma once
 
-//FPSクラス(PFSオブジェクトの設計図)
+/// @brief FPSの計測および制御を行うクラス
 class Fps
 {
 public:
 
-	//定数宣言
-	static constexpr int N = 240;         //平均をとるサンプル数
-	static constexpr int FPS = 240;       //設定下fps
+    // FPS制御関連
+    static constexpr int SAMPLE_COUNT = 240; // 平均をとるサンプル数
+    static constexpr int TARGET_FPS = 240;   // 設定した目標FPS
+
+    /// @brief デフォルトコンストラクタ
+    Fps(void);
+
+    /// @brief デストラクタ
+    ~Fps(void);
+
+    /// @brief 初期処理(最初の1回のみ実行)
+    void FpsControll_Initialize(void);
+
+    /// @brief 更新処理(毎フレーム実行)
+    /// @return 正常に更新された場合はtrue
+    bool FpsControll_Update(void);
+
+    /// @brief 描画処理(毎フレーム実行)
+    void FpsControll_Draw(void);
+
+    /// @brief 解放・待機処理(毎フレーム実行)
+    void FpsControll_Wait(void);
 
 private:
-	
-	//変数宣言
-	int _mStartTime;           //測定開始時刻
-	int _mConut;               //カウンタ
-	float _mFps;               //fps
 
-public:
-	//デフォルトコンストラクタ
-	Fps(void);
-
-	//デストラクタ
-	~Fps(void);
-
-	// 初期処理(最初の１回のみ実行)
-	void FpsControll_Initialize();
-
-	// 更新処理(毎フレーム実行)
-	bool FpsControll_Update();
-
-	// 描画処理(毎フレーム実行)
-	void FpsControll_Draw();
-
-	// 解放処理(最後の１回のみ実行)
-	void FpsControll_Wait();
-
+    // 状態管理関連
+    int startTime_;   // 測定開始時刻
+    int frameCount_;  // フレームカウンタ
+    float currentFps_;// 現在のFPS
 };

@@ -1,9 +1,8 @@
 #pragma once
 #include "DxLib.h"
-#include<memory>
+#include <memory>
 
 #include "StageBase.h"
-
 
 class StageManager;
 class AlchemyPot;
@@ -11,70 +10,63 @@ class Teleport;
 class ItemBox;
 class WallAtelier;
 class WallAtelier2;
-class WallAtelierZ;
-class WallAtelierZZ;
+class WallAtelier3;
+class WallAtelier4;
 class TableSetAtelier;
 class BookshelfManager;
 
+/// @brief アトリエステージの管理・描画を行うクラス
 class AtelierStage : public StageBase
 {
 public:
 
-	//鍋の大きさ
-	static constexpr VECTOR MODELID_SCALEA = { 4.0f,2.2f,4.0f };
+    // モデルスケール・配置定数関連
+    static constexpr VECTOR MODEL_SCALE = { 4.0f, 2.2f, 4.0f };             // 背景モデルのスケール
+    static constexpr VECTOR MODEL_INITIAL_POSITION = { 0.0f, 0.0f, 0.0f };  // 背景モデルの初期位置
+    static constexpr float MODEL_RADIUS = 120.0f;                           // モデルの接触判定用半径
 
-	// 鍋の初期位置
-	static constexpr VECTOR INIT_MODELID_POS = { 0.0f, 0.0f, 0.0f };
+    // ポーズUIカウント最大値
+    static constexpr int PAUSE_UI_COUNT_MAX = 2;                            
 
-	// 鍋の接触判定用半径
-	static constexpr float RADIUS_MODELID = 120.0f;
+    /// @brief コンストラクタ
+    /// @param stageManager ステージマネージャーのポインタ
+    AtelierStage(StageManager* stageManager);
 
-	//ポーズUIカウント最大値
-	static constexpr int PAUSE_UI_COUNT = 2.0f;
+    /// @brief デストラクタ
+    virtual ~AtelierStage(void) override = default;
 
-	//コンストラクタ
-	AtelierStage(StageManager* stageManager);
+    /// @brief 初期化処理
+    void Init(void) override;
 
-	//デストラクタ
-	~AtelierStage(void) = default;
+    /// @brief 更新処理
+    void Update(void) override;
 
-	//初期化処理
-	void Init(void) override;
+    /// @brief 描画処理
+    void Draw(void) override;
 
-	//更新処理
-	void Update(void) override;
-
-	//描画処理
-	void Draw(void) override;
-
-	//解放処理
-	void Release(void) override;
+    /// @brief 解放処理
+    void Release(void) override;
 
 private:
 
-	// 球体位置
-	VECTOR spherePos = { 0.0f, 20.0f, 0.0f };
+    // ステージモデル情報関連
+    int modelId_;                           // ステージ背景モデルのハンドルID
+    VECTOR modelPosition_;                  // ステージ背景モデルの座標
 
-	// 鍋
-	int modelId_;
+    // UI非表示までの待機カウント
+    int pauseUiCount_;                     
 
-	//UIの表示カウント
-	int pauseUiCount_;
+    // オブジェクト管理関連
+    std::shared_ptr<AlchemyPot> alchemyPot_;            // 錬金釜
+    std::shared_ptr<Teleport> teleport_;                // テレポートポイント
+    std::unique_ptr<BookshelfManager> bookshelfManager_;// 本棚マネージャー
+    std::shared_ptr<WallAtelier> wallLeft_;             // 壁オブジェクト（左）
+    std::shared_ptr<WallAtelier2> wallRight_;           // 壁オブジェクト（右）
+    std::shared_ptr<WallAtelier3> wallBack_;            // 壁オブジェクト（奥）
+    std::shared_ptr<WallAtelier4> wallFront_;           // 壁オブジェクト（手前）
+    std::shared_ptr<ItemBox> itemBox_;                  // アイテムボックス
+    std::shared_ptr<TableSetAtelier> tableSetAtelier_;  // テーブルセット
 
-	VECTOR modelIdPos_;
-	// 鍋の生存判定
-	bool isModelId_;
-
-	std::shared_ptr<AlchemyPot> alchemyPot_;
-	std::shared_ptr<Teleport> teleportt_;
-	std::unique_ptr<BookshelfManager> bookshelfManager_;
-	std::shared_ptr<WallAtelier> wall_;
-	std::shared_ptr<WallAtelier2> wall2_;
-	std::shared_ptr<WallAtelierZ> wallZ_;
-	std::shared_ptr<WallAtelierZZ> wallZZ_;
-	std::shared_ptr<ItemBox> itemBox_;
-	std::shared_ptr<TableSetAtelier> tableSetAtelier_;
-
-	// StageManagerの参照
-	StageManager* stageManager_;
+    // ステージマネージャーへの参照
+    StageManager* stageManager_;
 };

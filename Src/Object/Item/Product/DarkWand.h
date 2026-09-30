@@ -2,9 +2,14 @@
 
 #include "ProductItem.h"
 
+/// @brief ダークワンドのクラス
 class DarkWand : public ProductItem
 {
 public:
-	DarkWand(void);
-};
 
+    /// @brief コンストラクタ
+    DarkWand(void);
+
+    /// @brief デストラクタ
+    ~DarkWand(void) override = default;
+};

@@ -1,39 +1,38 @@
 #pragma once
 
-#include<memory>
-
-#include"SceneBase.h"
+#include <memory>
+#include "SceneBase.h"
 
 class SceneUi;
 
+/// @brief ゲームクリアシーンを管理するクラス
 class SceneGameClear : public SceneBase
 {
 public:
 
-	//コンストラクタ
-	SceneGameClear(void);
+    /// @brief コンストラクタ
+    SceneGameClear(void);
 
-	//デストラクタ
-	~SceneGameClear(void) = default;
+    /// @brief デストラクタ
+    virtual ~SceneGameClear(void) override = default;
 
-	//初期化処理
-	void Init(void)override;
+    /// @brief 初期化処理
+    void Init(void) override;
 
-	//更新処理
-	void Update(void)override;
+    /// @brief 更新処理
+    void Update(void) override;
 
-	//描画処理
-	void Draw(void)override;
+    /// @brief 描画処理
+    void Draw(void) override;
 
-	//解放処理
-	void Release(void)override;
+    /// @brief 解放処理
+    void Release(void) override;
 
 private:
 
-	//UI
-	std::unique_ptr<SceneUi> ui_;
+    // UIオブジェクト
+    std::unique_ptr<SceneUi> ui_;           
 
-	//描画処理(デバッグ)
-	void DrawDebug(void);
+    /// @brief 描画処理(デバッグ)
+    void DrawDebug(void);
 };
-

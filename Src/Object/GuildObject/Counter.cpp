@@ -4,9 +4,7 @@
 Counter::Counter(void)
     : isValid_(false)
 {
-    radius_ = 50.0f;
-    speed_ = 0.0f;
-    movePow_ = { 0.0f, 0.0f, 0.0f };
+    radius_ = RADIUS;
 }
 
 Counter::~Counter(void)
@@ -16,64 +14,82 @@ Counter::~Counter(void)
 
 void Counter::Init(void)
 {
-    trans_.modelId = ResourceManager::GetInstance().LoadModelDuplicate(ResourceManager::SRC::COUNTER);
+    const float POSITION_X = -150.0f;                   // 配置X座標
+    const float POSITION_Y = 0.0f;                      // 配置Y座標
+    const float POSITION_Z = 200.0f;                    // 配置Z座標
+    const float MODEL_SCALE_X = 0.1f;                   // モデルスケールX
+    const float MODEL_SCALE_Y = 0.05f;                  // モデルスケールY
+    const float MODEL_SCALE_Z = 0.15f;                  // モデルスケールZ
+    const float ROTATION_X = 0.0f;                      // 回転角X
+    const float ROTATION_Y = -105.3f;                   // 回転角Y
+    const float ROTATION_Z = 0.0f;                      // 回転角Z
 
-    // フェンスの位置を地面に固定（例）
-    trans_.pos = { -150.0f, 0.0f, 200.0f };
-    trans_.scl = { 0.1f, 0.05f, 0.15f };
-    trans_.rot = { 0.0f, -105.3f, 0.0f };
+    transform_.modelId = ResourceManager::GetInstance().LoadModelDuplicate(
+        ResourceManager::SRC::COUNTER
+    );
+
+    transform_.position = { POSITION_X, POSITION_Y, POSITION_Z };
+    transform_.scale = { MODEL_SCALE_X, MODEL_SCALE_Y, MODEL_SCALE_Z };
+    transform_.rotation = { ROTATION_X, ROTATION_Y, ROTATION_Z };
     radius_ = RADIUS;
-
 
     isValid_ = true;
 }
 
-void  Counter::Update(void)
+void Counter::Update(void)
 {
-    // 当たり判定の範囲
-    hitMin_ = { trans_.pos.x - WIDTH / 2, trans_.pos.y - HEIGHT / 2, trans_.pos.z - DEPTH / 2 };
-    hitMax_ = { trans_.pos.x + WIDTH / 2, trans_.pos.y + HEIGHT / 2, trans_.pos.z + DEPTH / 2 };
+    hitMin_ = {
+        transform_.position.x - WIDTH / 2,
+        transform_.position.y - HEIGHT / 2,
+        transform_.position.z - DEPTH / 2
+    };
+
+    hitMax_ = {
+        transform_.position.x + WIDTH / 2,
+        transform_.position.y + HEIGHT / 2,
+        transform_.position.z + DEPTH / 2
+    };
 }
 
-void  Counter::Draw(void)
+void Counter::Draw(void)
 {
-    if (trans_.modelId >= 0)
+    if (transform_.modelId >= 0)
     {
-        MV1SetScale(trans_.modelId, trans_.scl);
-        MV1SetPosition(trans_.modelId, trans_.pos);
-        MV1SetRotationXYZ(trans_.modelId, trans_.rot);
-        MV1DrawModel(trans_.modelId);
+        MV1SetScale(transform_.modelId, transform_.scale);
+        MV1SetPosition(transform_.modelId, transform_.position);
+        MV1SetRotationXYZ(transform_.modelId, transform_.rotation);
+        MV1DrawModel(transform_.modelId);
     }
 }
 
-void  Counter::Release(void)
+void Counter::Release(void)
 {
     isValid_ = false;
 }
 
-VECTOR  Counter::GetHitMin(void) const
+VECTOR Counter::GetHitMin(void) const
 {
     return hitMin_;
 }
 
-VECTOR  Counter::GetHitMax(void) const
+VECTOR Counter::GetHitMax(void) const
 {
     return hitMax_;
 }
 
-HitObject::HIT_TYPE  Counter::GetHitType() const
+HitObject::HIT_TYPE Counter::GetHitType(void) const
 {
     return HIT_TYPE::AABB;
 }
 
 VECTOR Counter::GetHitPosition(void) const
 {
-    return trans_.pos;
+    return transform_.position;
 }
 
-float  Counter::GetHitRadius(void) const
+float Counter::GetHitRadius(void) const
 {
-    return radius_;  // フェンスはAABBなので半径は不要
+    return radius_;
 }
 
 bool Counter::IsValid(void) const
@@ -81,7 +97,7 @@ bool Counter::IsValid(void) const
     return isValid_;
 }
 
-void  Counter::ShowUI(void)
+void Counter::ShowUI(void)
 {
 }
 
@@ -89,17 +105,15 @@ void Counter::HideUI(void)
 {
 }
 
-void  Counter::OnPlayerHit(void)
+void Counter::OnPlayerHit(void)
 {
-    // フェンスに当たったら特に何もしない（必要ならここに処理）
 }
 
-void  Counter::OnPlayerExit(void)
+void Counter::OnPlayerExit(void)
 {
-    // フェンスから離れたときの処理があればここに
 }
 
 Transform& Counter::GetTransform(void)
 {
-    return trans_;
+    return transform_;
 }

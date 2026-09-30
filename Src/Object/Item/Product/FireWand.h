@@ -2,9 +2,14 @@
 
 #include "ProductItem.h"
 
+/// @brief フレイムワンドのクラス
 class FireWand : public ProductItem
 {
 public:
-	FireWand(void);
-};
 
+    /// @brief コンストラクタ
+    FireWand(void);
+
+    /// @brief デストラクタ
+    ~FireWand(void) override = default;
+};

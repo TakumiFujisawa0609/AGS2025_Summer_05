@@ -1,16 +1,20 @@
 #include "Garbage.h"
-
 #include "../../../Manager/Generic/ResourceManager.h"
 
+namespace
+{
+    const int INITIAL_QUANTITY = 0;
+    const int GARBAGE_PRICE = 0;
+}
+
 Garbage::Garbage(void)
-	:ProductItem
-	(
-		"Garbage",
-		"失敗の作品",
-		"何にも使えないもの",
-		0,
-		ResourceManager::GetInstance().Load(ResourceManager::SRC::GARBAGE).handleId_,
-		0
-	)
+    : ProductItem(
+        "Garbage",
+        "失敗の作品",
+        "何にも使えないもの",
+        INITIAL_QUANTITY,
+        ResourceManager::GetInstance().Load(ResourceManager::SRC::GARBAGE).handleId_,
+        GARBAGE_PRICE
+    )
 {
 }

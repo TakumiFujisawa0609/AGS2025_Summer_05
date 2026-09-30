@@ -1,64 +1,75 @@
-#include"Grid.h"
+#include "Grid.h"
+#include <DxLib.h>
 
-#include<DxLib.h>
-
-
-//コンストラクタ
 Grid::Grid(void)
 {
 }
 
-//デストラクタ
 Grid::~Grid(void)
 {
 }
 
-//初期化
 void Grid::Init(void)
 {
 }
 
-//更新処理
 void Grid::Update(void)
 {
 }
 
-//描画処理
 void Grid::Draw(void)
 {
-	// X軸方向の線（Z方向に並べる）→ 赤
-	for (int z = -NUM; z <= NUM; z++)
-	{
-		float offsetZ = z * TERM;
+    const int COLOR_RED = 0xff0000;
+    const int COLOR_GREEN = 0x00ff00;
+    const int COLOR_BLUE = 0x0000ff;
+    const float SPHERE_RADIUS = 20.0f;
+    const int SPHERE_DIVISIONS = 10;
+    const float Y_AXIS_POSITION = 0.0f;
 
-		VECTOR sPos = { -LEN, 0.0f, offsetZ };
-		VECTOR ePos = { LEN, 0.0f, offsetZ };
+    for (int zIndex = -LINE_COUNT; zIndex <= LINE_COUNT; zIndex++)
+    {
+        float offsetZ = zIndex * INTERVAL;
 
-		DrawLine3D(sPos, ePos, 0xff0000);
-		DrawSphere3D(ePos, 20.0f, 10, 0xff0000, 0xff0000, true);
-	}
+        VECTOR startPosition = { -LENGTH, Y_AXIS_POSITION, offsetZ };
+        VECTOR endPosition = { LENGTH, Y_AXIS_POSITION, offsetZ };
 
-	// Z軸方向の線（X方向に並べる）→ 青
-	for (int x = -NUM; x <= NUM; x++)
-	{
-		float offsetX = x * TERM;
+        DrawLine3D(startPosition, endPosition, COLOR_RED);
 
-		VECTOR sPos = { offsetX, 0.0f, -LEN };
-		VECTOR ePos = { offsetX, 0.0f, LEN };
+        DrawSphere3D(
+            endPosition,
+            SPHERE_RADIUS,
+            SPHERE_DIVISIONS,
+            COLOR_RED,
+            COLOR_RED,
+            true
+        );
+    }
 
-		DrawLine3D(sPos, ePos, 0x0000FF);
-		DrawSphere3D(ePos, 20.0f, 10, 0x0000ff, 0x0000ff, true);
-	}
+    for (int xIndex = -LINE_COUNT; xIndex <= LINE_COUNT; xIndex++)
+    {
+        float offsetX = xIndex * INTERVAL;
 
-	// 原点からY軸に向かう線 → 緑（軸表示用）
-	VECTOR yStart = { 0.0f, -LEN, 0.0f };
-	VECTOR yEnd = { 0.0f, LEN, 0.0f };
+        VECTOR startPosition = { offsetX, Y_AXIS_POSITION, -LENGTH };
+        VECTOR endPosition = { offsetX, Y_AXIS_POSITION, LENGTH };
 
-	DrawLine3D(yStart, yEnd, 0x00ff00);
+        DrawLine3D(startPosition, endPosition, COLOR_BLUE);
+
+        DrawSphere3D(
+            endPosition,
+            SPHERE_RADIUS,
+            SPHERE_DIVISIONS,
+            COLOR_BLUE,
+            COLOR_BLUE,
+            true
+        );
+    }
+
+    VECTOR yStartPosition = { 0.0f, -LENGTH, 0.0f };
+    VECTOR yEndPosition = { 0.0f, LENGTH, 0.0f };
+
+    DrawLine3D(yStartPosition, yEndPosition, COLOR_GREEN);
 }
 
-//解放処理
 void Grid::Release(void)
 {
-	
 }

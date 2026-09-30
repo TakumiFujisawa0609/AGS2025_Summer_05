@@ -1,10 +1,15 @@
 #pragma once
 
 #include "ProductItem.h"
+
+/// @brief 失敗作のクラス
 class Garbage : public ProductItem
 {
 public:
-	//コンストラクタ
-	Garbage(void);
-};
 
+    /// @brief コンストラクタ
+    Garbage(void);
+
+    /// @brief デストラクタ
+    ~Garbage(void) override = default;
+};

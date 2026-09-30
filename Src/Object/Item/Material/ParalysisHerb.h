@@ -2,12 +2,14 @@
 
 #include "MaterialItem.h"
 
-/// <summary>
-/// 魔力草（素材）
-/// </summary>
+/// @brief 麻痺草のクラス
 class ParalysisHerb : public MaterialItem
 {
 public:
-	ParalysisHerb(void);
-};
 
+    /// @brief コンストラクタ
+    ParalysisHerb(void);
+
+    /// @brief デストラクタ
+    ~ParalysisHerb(void) override = default;
+};

@@ -19,12 +19,10 @@
 
 Receptionist::Receptionist(void)
 {
-    trans_ = Transform();
-    // 3Dモデルを右側に配置
-    trans_.pos = VGet(-150.0f, 0.0f, 0.0f);
-    trans_.localPos = VAdd(trans_.pos, MODEL_POS);
+    transform_ = Transform();
+    transform_.position = VGet(-150.0f, 0.0f, 0.0f);
+    transform_.localPosition = VAdd(transform_.position, MODEL_POS);
     radius_ = 0.0f;
-    speed_ = 0.0f;
     isShowUI_ = false;
     isShowDeliveryMenu_ = false;
     selectedItem_ = 0;
@@ -35,29 +33,28 @@ Receptionist::Receptionist(void)
     currentMode_ = MENU_MODE::MAIN_SELECT;
     mainMenuSelected_ = 0;
 
-    // アイテムIDを初期化
-    itemIds_[static_cast<int>(IETEM_TYPE::HEALTH_POTION)] = "RecoveryPotion";
-    itemIds_[static_cast<int>(IETEM_TYPE::ANTIDOTE_POTION)] = "AntidotePotion";
-    itemIds_[static_cast<int>(IETEM_TYPE::MAGIC_POTION)] = "MagicPotion";
-    itemIds_[static_cast<int>(IETEM_TYPE::GARBAGE)] = "Garbage";
-    itemIds_[static_cast<int>(IETEM_TYPE::ANTIPARALYSIS_POTION)] = "AntiParalysisPotion";
-    itemIds_[static_cast<int>(IETEM_TYPE::SPEED_POTION)] = "SpeedPotion";
-    itemIds_[static_cast<int>(IETEM_TYPE::POWER_POTION)] = "PowerPotion";
-    itemIds_[static_cast<int>(IETEM_TYPE::DEFENSE_POTION)] = "DefensePotion";
-    itemIds_[static_cast<int>(IETEM_TYPE::FIRE_SWORD)] = "FireSword";
-    itemIds_[static_cast<int>(IETEM_TYPE::WATER_SWORD)] = "WaterSword";
-    itemIds_[static_cast<int>(IETEM_TYPE::WIND_SWORD)] = "WindSword";
-    itemIds_[static_cast<int>(IETEM_TYPE::EARTH_SWORD)] = "EarthSword";
-    itemIds_[static_cast<int>(IETEM_TYPE::ICE_SWORD)] = "IIceSword";
-    itemIds_[static_cast<int>(IETEM_TYPE::LIGHT_SWORD)] = "LightSword";
-    itemIds_[static_cast<int>(IETEM_TYPE::DARK_SWORD)] = "DarkSword";
-    itemIds_[static_cast<int>(IETEM_TYPE::FIER_WAND)] = "FireWand";
-    itemIds_[static_cast<int>(IETEM_TYPE::WATER_WAND)] = "WaterWand";
-    itemIds_[static_cast<int>(IETEM_TYPE::WIND_WAND)] = "WindWand";
-    itemIds_[static_cast<int>(IETEM_TYPE::EARTH_WAND)] = "EarthWand";
-    itemIds_[static_cast<int>(IETEM_TYPE::ICE_WAND)] = "IceWand";
-    itemIds_[static_cast<int>(IETEM_TYPE::LIGHT_WAND)] = "LightWand";
-    itemIds_[static_cast<int>(IETEM_TYPE::DARK_WAMD)] = "DarkWand";
+    itemIds_[static_cast<int>(ITEM_TYPE::HEALTH_POTION)] = "RecoveryPotion";
+    itemIds_[static_cast<int>(ITEM_TYPE::ANTIDOTE_POTION)] = "AntidotePotion";
+    itemIds_[static_cast<int>(ITEM_TYPE::MAGIC_POTION)] = "MagicPotion";
+    itemIds_[static_cast<int>(ITEM_TYPE::GARBAGE)] = "Garbage";
+    itemIds_[static_cast<int>(ITEM_TYPE::ANTIPARALYSIS_POTION)] = "AntiParalysisPotion";
+    itemIds_[static_cast<int>(ITEM_TYPE::SPEED_POTION)] = "SpeedPotion";
+    itemIds_[static_cast<int>(ITEM_TYPE::POWER_POTION)] = "PowerPotion";
+    itemIds_[static_cast<int>(ITEM_TYPE::DEFENSE_POTION)] = "DefensePotion";
+    itemIds_[static_cast<int>(ITEM_TYPE::FIRE_SWORD)] = "FireSword";
+    itemIds_[static_cast<int>(ITEM_TYPE::WATER_SWORD)] = "WaterSword";
+    itemIds_[static_cast<int>(ITEM_TYPE::WIND_SWORD)] = "WindSword";
+    itemIds_[static_cast<int>(ITEM_TYPE::EARTH_SWORD)] = "EarthSword";
+    itemIds_[static_cast<int>(ITEM_TYPE::ICE_SWORD)] = "IceSword";
+    itemIds_[static_cast<int>(ITEM_TYPE::LIGHT_SWORD)] = "LightSword";
+    itemIds_[static_cast<int>(ITEM_TYPE::DARK_SWORD)] = "DarkSword";
+    itemIds_[static_cast<int>(ITEM_TYPE::FIRE_WAND)] = "FireWand";
+    itemIds_[static_cast<int>(ITEM_TYPE::WATER_WAND)] = "WaterWand";
+    itemIds_[static_cast<int>(ITEM_TYPE::WIND_WAND)] = "WindWand";
+    itemIds_[static_cast<int>(ITEM_TYPE::EARTH_WAND)] = "EarthWand";
+    itemIds_[static_cast<int>(ITEM_TYPE::ICE_WAND)] = "IceWand";
+    itemIds_[static_cast<int>(ITEM_TYPE::LIGHT_WAND)] = "LightWand";
+    itemIds_[static_cast<int>(ITEM_TYPE::DARK_WAND)] = "DarkWand";
 }
 
 Receptionist::~Receptionist(void)
@@ -66,18 +63,15 @@ Receptionist::~Receptionist(void)
 
 void Receptionist::Init(void)
 {
-    auto& res = ResourceManager::GetInstance();
+    auto& resourceManager = ResourceManager::GetInstance();
 
-    // モデル（箱系のモデルを使用想定）
-    trans_.SetModel(res.LoadModelDuplicate(ResourceManager::SRC::RECEPTIONIST));
-    trans_.quaRot = Quaternion();
-    trans_.quaRotLocal = Quaternion::AngleAxis(Utility::Deg2RadF(0.0f), Utility::AXIS_Y);
-    trans_.scl = SCALE;
-    // 3Dモデルを右側に配置（X軸方向に移動）
-    trans_.pos = MODEL_POS;
-    trans_.localPos = VAdd(trans_.pos, MODEL_POS);
+    transform_.SetModel(resourceManager.LoadModelDuplicate(ResourceManager::SRC::RECEPTIONIST));
+    transform_.quaternionRotation = Quaternion();
+    transform_.quaternionRotationLocal = Quaternion::AngleAxis(Utility::DegreeToRadianDouble(0.0f), Utility::AXIS_Y);
+    transform_.scale = SCALE;
+    transform_.position = MODEL_POS;
+    transform_.localPosition = VAdd(transform_.position, MODEL_POS);
     radius_ = RADIUS;
-    speed_ = 0.0f;
     isShowUI_ = false;
     isShowDeliveryMenu_ = false;
     selectedItem_ = 0;
@@ -90,66 +84,63 @@ void Receptionist::Init(void)
     currentMode_ = MENU_MODE::MAIN_SELECT;
     mainMenuSelected_ = 0;
 
-    // アイテム名を初期化
-    itemNames_[static_cast<int>(IETEM_TYPE::HEALTH_POTION)] = "回復ポーソン";
-    itemNames_[static_cast<int>(IETEM_TYPE::ANTIDOTE_POTION)] = "解毒ポーソン";
-    itemNames_[static_cast<int>(IETEM_TYPE::MAGIC_POTION)] = "魔法ポーソン";
-    itemNames_[static_cast<int>(IETEM_TYPE::GARBAGE)] = "失敗の作品";
-	itemNames_[static_cast<int>(IETEM_TYPE::ANTIPARALYSIS_POTION)] = "解麻痺ポーソン";
-	itemNames_[static_cast<int>(IETEM_TYPE::SPEED_POTION)] = "俊敏ポーソン";
-	itemNames_[static_cast<int>(IETEM_TYPE::POWER_POTION)] = "力のポーソン";
-	itemNames_[static_cast<int>(IETEM_TYPE::DEFENSE_POTION)] = "硬化ポーソン";
-	itemNames_[static_cast<int>(IETEM_TYPE::FIRE_SWORD)] = "フレイムソード";
-	itemNames_[static_cast<int>(IETEM_TYPE::WATER_SWORD)] = "ウォーターソード";
-	itemNames_[static_cast<int>(IETEM_TYPE::WIND_SWORD)] = "ウィンドソード";
-	itemNames_[static_cast<int>(IETEM_TYPE::EARTH_SWORD)] = "アースソード";
-	itemNames_[static_cast<int>(IETEM_TYPE::ICE_SWORD)] = "アイスソード";
-	itemNames_[static_cast<int>(IETEM_TYPE::LIGHT_SWORD)] = "ライトソード";
-	itemNames_[static_cast<int>(IETEM_TYPE::DARK_SWORD)] = "ダークソード";
-	itemNames_[static_cast<int>(IETEM_TYPE::FIER_WAND)] = "フレイムワンド";
-	itemNames_[static_cast<int>(IETEM_TYPE::WATER_WAND)] = "ウォーターワンド";
-	itemNames_[static_cast<int>(IETEM_TYPE::WIND_WAND)] = "ウィンドワンド";
-	itemNames_[static_cast<int>(IETEM_TYPE::EARTH_WAND)] = "アースワンド";
-	itemNames_[static_cast<int>(IETEM_TYPE::ICE_WAND)] = "アイスワンド";
-	itemNames_[static_cast<int>(IETEM_TYPE::LIGHT_WAND)] = "ライトワンド";
-	itemNames_[static_cast<int>(IETEM_TYPE::DARK_WAMD)] = "ダークワンド";
+    itemNames_[static_cast<int>(ITEM_TYPE::HEALTH_POTION)] = "回復ポーション";
+    itemNames_[static_cast<int>(ITEM_TYPE::ANTIDOTE_POTION)] = "解毒ポーション";
+    itemNames_[static_cast<int>(ITEM_TYPE::MAGIC_POTION)] = "魔法ポーション";
+    itemNames_[static_cast<int>(ITEM_TYPE::GARBAGE)] = "失敗の作品";
+    itemNames_[static_cast<int>(ITEM_TYPE::ANTIPARALYSIS_POTION)] = "解麻痺ポーション";
+    itemNames_[static_cast<int>(ITEM_TYPE::SPEED_POTION)] = "俊敏ポーション";
+    itemNames_[static_cast<int>(ITEM_TYPE::POWER_POTION)] = "力のポーション";
+    itemNames_[static_cast<int>(ITEM_TYPE::DEFENSE_POTION)] = "硬化ポーション";
+    itemNames_[static_cast<int>(ITEM_TYPE::FIRE_SWORD)] = "フレイムソード";
+    itemNames_[static_cast<int>(ITEM_TYPE::WATER_SWORD)] = "ウォーターソード";
+    itemNames_[static_cast<int>(ITEM_TYPE::WIND_SWORD)] = "ウィンドソード";
+    itemNames_[static_cast<int>(ITEM_TYPE::EARTH_SWORD)] = "アースソード";
+    itemNames_[static_cast<int>(ITEM_TYPE::ICE_SWORD)] = "アイスソード";
+    itemNames_[static_cast<int>(ITEM_TYPE::LIGHT_SWORD)] = "ライトソード";
+    itemNames_[static_cast<int>(ITEM_TYPE::DARK_SWORD)] = "ダークソード";
+    itemNames_[static_cast<int>(ITEM_TYPE::FIRE_WAND)] = "フレイムワンド";
+    itemNames_[static_cast<int>(ITEM_TYPE::WATER_WAND)] = "ウォーターワンド";
+    itemNames_[static_cast<int>(ITEM_TYPE::WIND_WAND)] = "ウィンドワンド";
+    itemNames_[static_cast<int>(ITEM_TYPE::EARTH_WAND)] = "アースワンド";
+    itemNames_[static_cast<int>(ITEM_TYPE::ICE_WAND)] = "アイスワンド";
+    itemNames_[static_cast<int>(ITEM_TYPE::LIGHT_WAND)] = "ライトワンド";
+    itemNames_[static_cast<int>(ITEM_TYPE::DARK_WAND)] = "ダークワンド";
 
-    // アイテムIDを初期化
-    itemIds_[static_cast<int>(IETEM_TYPE::HEALTH_POTION)] = "RecoveryPotion";
-    itemIds_[static_cast<int>(IETEM_TYPE::ANTIDOTE_POTION)] = "AntidotePotion";
-    itemIds_[static_cast<int>(IETEM_TYPE::MAGIC_POTION)] = "MagicPotion";
-    itemIds_[static_cast<int>(IETEM_TYPE::GARBAGE)] = "Garbage";
-    itemIds_[static_cast<int>(IETEM_TYPE::ANTIPARALYSIS_POTION)] = "AntiParalysisPotion";
-    itemIds_[static_cast<int>(IETEM_TYPE::SPEED_POTION)] = "SpeedPotion";
-    itemIds_[static_cast<int>(IETEM_TYPE::POWER_POTION)] = "PowerPotion";
-    itemIds_[static_cast<int>(IETEM_TYPE::DEFENSE_POTION)] = "DefensePotion";
-    itemIds_[static_cast<int>(IETEM_TYPE::FIRE_SWORD)] = "FireSword";
-    itemIds_[static_cast<int>(IETEM_TYPE::WATER_SWORD)] = "WaterSword";
-    itemIds_[static_cast<int>(IETEM_TYPE::WIND_SWORD)] = "WindSword";
-    itemIds_[static_cast<int>(IETEM_TYPE::EARTH_SWORD)] = "EarthSword";
-    itemIds_[static_cast<int>(IETEM_TYPE::ICE_SWORD)] = "IceSword";
-    itemIds_[static_cast<int>(IETEM_TYPE::LIGHT_SWORD)] = "LightSword";
-    itemIds_[static_cast<int>(IETEM_TYPE::DARK_SWORD)] = "DarkSword";
-    itemIds_[static_cast<int>(IETEM_TYPE::FIER_WAND)] = "FireWand";
-    itemIds_[static_cast<int>(IETEM_TYPE::WATER_WAND)] = "WaterWand";
-    itemIds_[static_cast<int>(IETEM_TYPE::WIND_WAND)] = "WindWand";
-    itemIds_[static_cast<int>(IETEM_TYPE::EARTH_WAND)] = "EarthWand";
-    itemIds_[static_cast<int>(IETEM_TYPE::ICE_WAND)] = "IceWand";
-    itemIds_[static_cast<int>(IETEM_TYPE::LIGHT_WAND)] = "LightWand";
-    itemIds_[static_cast<int>(IETEM_TYPE::DARK_WAMD)] = "DarkWand";
+    itemIds_[static_cast<int>(ITEM_TYPE::HEALTH_POTION)] = "RecoveryPotion";
+    itemIds_[static_cast<int>(ITEM_TYPE::ANTIDOTE_POTION)] = "AntidotePotion";
+    itemIds_[static_cast<int>(ITEM_TYPE::MAGIC_POTION)] = "MagicPotion";
+    itemIds_[static_cast<int>(ITEM_TYPE::GARBAGE)] = "Garbage";
+    itemIds_[static_cast<int>(ITEM_TYPE::ANTIPARALYSIS_POTION)] = "AntiParalysisPotion";
+    itemIds_[static_cast<int>(ITEM_TYPE::SPEED_POTION)] = "SpeedPotion";
+    itemIds_[static_cast<int>(ITEM_TYPE::POWER_POTION)] = "PowerPotion";
+    itemIds_[static_cast<int>(ITEM_TYPE::DEFENSE_POTION)] = "DefensePotion";
+    itemIds_[static_cast<int>(ITEM_TYPE::FIRE_SWORD)] = "FireSword";
+    itemIds_[static_cast<int>(ITEM_TYPE::WATER_SWORD)] = "WaterSword";
+    itemIds_[static_cast<int>(ITEM_TYPE::WIND_SWORD)] = "WindSword";
+    itemIds_[static_cast<int>(ITEM_TYPE::EARTH_SWORD)] = "EarthSword";
+    itemIds_[static_cast<int>(ITEM_TYPE::ICE_SWORD)] = "IceSword";
+    itemIds_[static_cast<int>(ITEM_TYPE::LIGHT_SWORD)] = "LightSword";
+    itemIds_[static_cast<int>(ITEM_TYPE::DARK_SWORD)] = "DarkSword";
+    itemIds_[static_cast<int>(ITEM_TYPE::FIRE_WAND)] = "FireWand";
+    itemIds_[static_cast<int>(ITEM_TYPE::WATER_WAND)] = "WaterWand";
+    itemIds_[static_cast<int>(ITEM_TYPE::WIND_WAND)] = "WindWand";
+    itemIds_[static_cast<int>(ITEM_TYPE::EARTH_WAND)] = "EarthWand";
+    itemIds_[static_cast<int>(ITEM_TYPE::ICE_WAND)] = "IceWand";
+    itemIds_[static_cast<int>(ITEM_TYPE::LIGHT_WAND)] = "LightWand";
+    itemIds_[static_cast<int>(ITEM_TYPE::DARK_WAND)] = "DarkWand";
 
     shop_ = std::make_shared<Shop>();
     shop_->Init();
-
-
 }
 
-void Receptionist::Update()
+void Receptionist::Update(void)
 {
-    auto& app = Application::GetInstance();
+    auto& application = Application::GetInstance();
 
-    if (app.GetActiveUI() == ActiveUI::TELEPORT || app.GetActiveUI() == ActiveUI::QUEST) {
-        // テレポート中は受付嬢UIを無効化
+    if (application.GetActiveUIType() == Application::ACTIVE_UI_TYPE::TELEPORT ||
+        application.GetActiveUIType() == Application::ACTIVE_UI_TYPE::QUEST)
+    {
         return;
     }
 
@@ -166,7 +157,6 @@ void Receptionist::Update()
     case MENU_MODE::SHOP_MENU:
         shop_->Update();
 
-        // ショップが非表示になったらメインメニューに戻る
         if (!shop_->IsVisible())
         {
             currentMode_ = MENU_MODE::MAIN_SELECT;
@@ -178,33 +168,39 @@ void Receptionist::Update()
     }
 }
 
-
 void Receptionist::Draw(void)
 {
 }
 
 void Receptionist::DrawModel(void)
 {
-    // ZバッファONでモデル描画
-    SetUseZBufferFlag(TRUE);
-    SetWriteZBufferFlag(TRUE);
-    if (trans_.modelId >= 0)
+    SetUseZBufferFlag(true);
+    SetWriteZBufferFlag(true);
+
+    if (transform_.modelId >= 0)
     {
-        MV1SetScale(trans_.modelId, trans_.scl);
-        MV1SetPosition(trans_.modelId, { trans_.pos.x, trans_.pos.y,trans_.pos.z + 60 });
-        MV1SetRotationXYZ(trans_.modelId, trans_.rot);
-        MV1DrawModel(trans_.modelId);
+        const float Z_OFFSET = 60.0f;                   // 描画位置のZオフセット
+
+        MV1SetScale(transform_.modelId, transform_.scale);
+        MV1SetPosition(transform_.modelId, {
+            transform_.position.x,
+            transform_.position.y,
+            transform_.position.z + Z_OFFSET
+            });
+        MV1SetRotationXYZ(transform_.modelId, transform_.rotation);
+        MV1DrawModel(transform_.modelId);
     }
 }
 
 void Receptionist::DrawUI(void)
 {
-    // UIを表示しない条件ならスキップ
-    if (!isShowUI_ && deliveryMessageTimer_ <= 0) return;
+    if (!isShowUI_ && deliveryMessageTimer_ <= 0)
+    {
+        return;
+    }
 
-    // ZバッファOFFでUI描画
-    SetUseZBufferFlag(FALSE);
-    SetWriteZBufferFlag(FALSE);
+    SetUseZBufferFlag(false);
+    SetWriteZBufferFlag(false);
 
     switch (currentMode_)
     {
@@ -215,7 +211,10 @@ void Receptionist::DrawUI(void)
         DrawDeliveryMenu();
         break;
     case MENU_MODE::SHOP_MENU:
-        if (shop_) shop_->Draw();
+        if (shop_ != nullptr)
+        {
+            shop_->Draw();
+        }
         break;
     default:
         break;
@@ -223,15 +222,24 @@ void Receptionist::DrawUI(void)
 
     if (deliveryMessageTimer_ > 0)
     {
-        Font::GetInstance().DrawDefaultText(100, 95, lastDeliveryMessage_.c_str(), 0x0, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+        const int MESSAGE_POS_X = 100;                  // メッセージのX座標
+        const int MESSAGE_POS_Y = 95;                   // メッセージのY座標
+        const int FONT_SIZE = 24;                       // フォントサイズ
+
+        Font::GetInstance().DrawDefaultText(
+            MESSAGE_POS_X,
+            MESSAGE_POS_Y,
+            lastDeliveryMessage_.c_str(),
+            0x0,
+            FONT_SIZE,
+            Font::FONT_TYPE_ANTIALIASING_EDGE
+        );
         deliveryMessageTimer_--;
     }
 
-    // Zバッファ設定を戻す
-    SetUseZBufferFlag(TRUE);
-    SetWriteZBufferFlag(TRUE);
+    SetUseZBufferFlag(true);
+    SetWriteZBufferFlag(true);
 }
-
 
 void Receptionist::Release(void)
 {
@@ -244,7 +252,7 @@ HitObject::HIT_TYPE Receptionist::GetHitType(void) const
 
 VECTOR Receptionist::GetHitPosition(void) const
 {
-    return trans_.pos;
+    return transform_.position;
 }
 
 float Receptionist::GetHitRadius(void) const
@@ -254,14 +262,17 @@ float Receptionist::GetHitRadius(void) const
 
 void Receptionist::ShowUI(void)
 {
-    if (isUIForcedClosed_) return;
+    if (isUIForcedClosed_)
+    {
+        return;
+    }
+
     isShowUI_ = true;
     currentMode_ = MENU_MODE::MAIN_SELECT;
     mainMenuSelected_ = 0;
     isShowDeliveryMenu_ = false;
     isSelectingQuantity_ = false;
 
-    // アクティブな依頼に基づいて納品可能アイテムを絞る
     deliverableItems_.clear();
 
     auto& activeQuests = QuestUI::GetInstance().GetActiveQuests();
@@ -269,12 +280,11 @@ void Receptionist::ShowUI(void)
     {
         const std::string& targetId = quest.targetItemId;
 
-        // ItemTypeとIDを照合
-        for (int i = 0; i < static_cast<int>(IETEM_TYPE::ITEM_COUNT); ++i)
+        for (int i = 0; i < static_cast<int>(ITEM_TYPE::ITEM_COUNT); ++i)
         {
-            if (GetItemId(static_cast<IETEM_TYPE>(i)) == targetId)
+            if (GetItemId(static_cast<ITEM_TYPE>(i)) == targetId)
             {
-                deliverableItems_.push_back(static_cast<IETEM_TYPE>(i));
+                deliverableItems_.push_back(static_cast<ITEM_TYPE>(i));
                 break;
             }
         }
@@ -282,7 +292,6 @@ void Receptionist::ShowUI(void)
 
     selectedItem_ = 0;
 }
-
 
 void Receptionist::HideUI(void)
 {
@@ -296,45 +305,46 @@ bool Receptionist::IsValid(void) const
 {
     return true;
 }
+
 void Receptionist::OnPlayerHit(void)
 {
     ShowUI();
 }
+
 void Receptionist::OnPlayerExit(void)
 {
     HideUI();
     isUIForcedClosed_ = false;
 }
-void Receptionist::UpdateMainMenu()
-{
-    auto& input = InputManager::GetInstance();
-    auto& sound = SoundManager::GetInstance();
 
-    // 入力による選択変更
-    if (input.IsTrgDown(KEY_INPUT_DOWN))
+void Receptionist::UpdateMainMenu(void)
+{
+    auto& inputManager = InputManager::GetInstance();
+    auto& soundManager = SoundManager::GetInstance();
+
+    if (inputManager.IsTriggerDown(KEY_INPUT_DOWN))
     {
-        sound.Play(SoundManager::SOUND::SE_SELECT);
-        mainMenuSelected_ = (mainMenuSelected_ + 1) % 2; // 納品と購入の2つだけ
+        soundManager.Play(SoundManager::SOUND::SE_SELECT);
+        mainMenuSelected_ = (mainMenuSelected_ + 1) % 2;
     }
-    else if (input.IsTrgDown(KEY_INPUT_UP))
+    else if (inputManager.IsTriggerDown(KEY_INPUT_UP))
     {
-        sound.Play(SoundManager::SOUND::SE_SELECT);
+        soundManager.Play(SoundManager::SOUND::SE_SELECT);
         mainMenuSelected_ = (mainMenuSelected_ - 1 + 2) % 2;
     }
 
-    if (input.IsTrgDown(KEY_INPUT_RETURN))
+    if (inputManager.IsTriggerDown(KEY_INPUT_RETURN))
     {
         Application::GetInstance().SetActiveUI(true);
-        sound.Play(SoundManager::SOUND::SE_PUSH);
+        soundManager.Play(SoundManager::SOUND::SE_PUSH);
+
         if (mainMenuSelected_ == 0)
         {
-            // 納品メニューへ
             currentMode_ = MENU_MODE::DELIVERY_MENU;
             isShowDeliveryMenu_ = true;
         }
         else if (mainMenuSelected_ == 1)
         {
-            // 購入メニュー（ショップ）を表示
             shop_->Show();
             currentMode_ = MENU_MODE::SHOP_MENU;
         }
@@ -343,76 +353,23 @@ void Receptionist::UpdateMainMenu()
 
 void Receptionist::UpdateShopMenu(void)
 {
-    auto& sound = SoundManager::GetInstance();
-    auto& input = InputManager::GetInstance();
+    auto& soundManager = SoundManager::GetInstance();
+    auto& inputManager = InputManager::GetInstance();
 
-    // ショップメニューの入力処理
-
-    if (input.IsTrgDown(KEY_INPUT_ESCAPE))
+    if (inputManager.IsTriggerDown(KEY_INPUT_ESCAPE))
     {
-        sound.Play(SoundManager::SOUND::SE_CANCEL);
+        soundManager.Play(SoundManager::SOUND::SE_CANCEL);
         currentMode_ = MENU_MODE::MAIN_SELECT;
         PlayerStop::GetInstance().ResumeMovement();
-        // 必要に応じてショップメニューのフラグをリセット
     }
 }
 
-
-
 void Receptionist::UpdateDeliveryMenu(void)
 {
-    auto& input = InputManager::GetInstance();
+    auto& inputManager = InputManager::GetInstance();
 
-    /*if (!isSelectingQuantity_ && !deliverableItems_.empty())
+    if (inputManager.IsTriggerDown(KEY_INPUT_RETURN))
     {
-        int itemCount = static_cast<int>(deliverableItems_.size());
-        if (input.IsTrgDown(KEY_INPUT_UP))
-        {
-            selectedItem_ = (selectedItem_ - 1 + itemCount) % itemCount;
-        }
-        else if (input.IsTrgDown(KEY_INPUT_DOWN))
-        {
-            selectedItem_ = (selectedItem_ + 1) % itemCount;
-        }
-    }
-    else if (isSelectingQuantity_)
-    {
-        int maxQuantity = GetMaxDeliveryQuantity();
-        if (maxQuantity > 0)
-        {
-            if (input.IsTrgDown(KEY_INPUT_UP))
-            {
-                selectedQuantity_ = std::min(selectedQuantity_ + 1, maxQuantity);
-            }
-            else if (input.IsTrgDown(KEY_INPUT_DOWN))
-            {
-                selectedQuantity_ = std::max(selectedQuantity_ - 1, 1);
-            }
-        }
-    }*/
-
-    //if (input.IsTrgDown(KEY_INPUT_RETURN))
-    //{
-    //    if (!isSelectingQuantity_)
-    //    {
-    //        isSelectingQuantity_ = true;
-    //        selectedQuantity_ = 1;
-    //    }
-    //    else
-    //    {
-    //        // 数量確定 → 納品実行
-    //        if (DeliverSelectedQuantity())
-    //        {
-    //            isSelectingQuantity_ = false;
-    //            isShowDeliveryMenu_ = false;
-    //            currentMode_ = MENU_MODE::MAIN_SELECT;
-    //        }
-    //    }
-    //}
-
-    if (input.IsTrgDown(KEY_INPUT_RETURN))
-    {
-        // いきなり納品実行
         if (DeliverSelectedQuantity())
         {
             isShowDeliveryMenu_ = false;
@@ -420,9 +377,10 @@ void Receptionist::UpdateDeliveryMenu(void)
         }
     }
 
-    if (input.IsTrgDown(KEY_INPUT_ESCAPE))
+    if (inputManager.IsTriggerDown(KEY_INPUT_ESCAPE))
     {
         SoundManager::GetInstance().Play(SoundManager::SOUND::SE_CANCEL);
+
         if (isSelectingQuantity_)
         {
             isSelectingQuantity_ = false;
@@ -446,11 +404,11 @@ void Receptionist::UpdateDeliverableItems(void)
     {
         const std::string& targetId = quest.targetItemId;
 
-        for (int i = 0; i < static_cast<int>(IETEM_TYPE::ITEM_COUNT); ++i)
+        for (int i = 0; i < static_cast<int>(ITEM_TYPE::ITEM_COUNT); ++i)
         {
-            if (GetItemId(static_cast<IETEM_TYPE>(i)) == targetId)
+            if (GetItemId(static_cast<ITEM_TYPE>(i)) == targetId)
             {
-                deliverableItems_.push_back(static_cast<IETEM_TYPE>(i));
+                deliverableItems_.push_back(static_cast<ITEM_TYPE>(i));
                 break;
             }
         }
@@ -462,9 +420,11 @@ void Receptionist::UpdateDeliverableItems(void)
 bool Receptionist::DeliverSelectedQuantity(void)
 {
     if (selectedItem_ < 0 || selectedItem_ >= static_cast<int>(deliverableItems_.size()))
+    {
         return false;
+    }
 
-    IETEM_TYPE itemType = deliverableItems_[selectedItem_];
+    ITEM_TYPE itemType = deliverableItems_[selectedItem_];
 
     auto& itemManager = ItemManager::GetInstance();
     std::string itemId = GetItemId(itemType);
@@ -472,6 +432,7 @@ bool Receptionist::DeliverSelectedQuantity(void)
     auto& questUI = QuestUI::GetInstance();
 
     DeliveryQuest* matchedQuest = nullptr;
+
     for (auto& quest : questUI.GetActiveQuests())
     {
         if (quest.targetItemId == itemId)
@@ -481,22 +442,24 @@ bool Receptionist::DeliverSelectedQuantity(void)
         }
     }
 
-    if (!matchedQuest)
+    const int MESSAGE_TIMER_DURATION = 120;             
+
+    if (matchedQuest == nullptr)
     {
         lastDeliveryMessage_ = "このアイテムは依頼対象ではありません！";
-        deliveryMessageTimer_ = 120;
+        deliveryMessageTimer_ = MESSAGE_TIMER_DURATION;
         return false;
     }
 
     auto item = itemManager.FindItemById(itemId);
-    if (!item || item->GetQuantity() < selectedQuantity_)
+
+    if (item == nullptr || item->GetQuantity() < selectedQuantity_)
     {
         lastDeliveryMessage_ = "必要な数がそろっていません！";
-        deliveryMessageTimer_ = 120;
+        deliveryMessageTimer_ = MESSAGE_TIMER_DURATION;
         return false;
     }
 
-    // 数量分だけ納品
     itemManager.SubtractQuantity(item, matchedQuest->requiredAmount);
     matchedQuest->currentAmount += selectedQuantity_;
 
@@ -505,21 +468,22 @@ bool Receptionist::DeliverSelectedQuantity(void)
         matchedQuest->isCompleted = true;
         questUI.CompleteQuest(matchedQuest->id);
 
-        if (player_)
+        if (player_ != nullptr)
         {
             player_->AddMoney(matchedQuest->rewardMoney);
         }
 
-        lastDeliveryMessage_ = std::string(GetItemName(itemType)) + " を納品しました！依頼完了です！";
+        lastDeliveryMessage_ = std::string(GetItemName(itemType)) +
+            " を納品しました！依頼完了です！";
     }
     else
     {
-        lastDeliveryMessage_ = std::string(GetItemName(itemType)) + " を " + std::to_string(selectedQuantity_) + "個 納品しました！";
+        lastDeliveryMessage_ = std::string(GetItemName(itemType)) + " を " +
+            std::to_string(selectedQuantity_) + "個 納品しました！";
     }
 
-    deliveryMessageTimer_ = 120;
+    deliveryMessageTimer_ = MESSAGE_TIMER_DURATION;
 
-    // ✅ 納品メニューを閉じる
     isShowDeliveryMenu_ = false;
     currentMode_ = MENU_MODE::MAIN_SELECT;
     isSelectingQuantity_ = false;
@@ -528,155 +492,204 @@ bool Receptionist::DeliverSelectedQuantity(void)
     return true;
 }
 
-void Receptionist::DrawMainMenu()
+void Receptionist::DrawMainMenu(void)
 {
     const int screenWidth = Application::SCREEN_SIZE_X;
     const int screenHeight = Application::SCREEN_SIZE_Y;
 
     const char* menuItems[] = { "納品", "購入" };
     const int menuCount = sizeof(menuItems) / sizeof(menuItems[0]);
-    const int fontSize = 24;
-    const int boxHeight = 30;
+    const int FONT_SIZE = 24;                           // フォントサイズ
+    const int BOX_HEIGHT = 30;                          // 背景ボックスの高さ
+    const int TEXT_PADDING_WIDTH = 30;                  // テキスト背景枠の余白幅
+    const int Y_SPACING = 50;                           // メニュー間のY座標スペース
+    const int BG_OFFSET_INNER = 10;                     // 背景内側オフセット
+    const int BG_OFFSET_OUTER = 20;                     // 背景外側オフセット
+    const int TEXT_OFFSET_X = 15;                       // テキストのX座標オフセット
+    const int TEXT_OFFSET_Y = 5;                        // テキストのY座標オフセット
 
     int startY = screenHeight / 2 + 100;
 
     for (int i = 0; i < menuCount; i++)
     {
         const char* text = menuItems[i];
-        int textWidth = GetDrawStringWidth(text, strlen(text), fontSize);
-        int boxWidth = textWidth + 30;
-        int boxX = (screenWidth - boxWidth) / 2;
-        int boxY = startY + i * (boxHeight + 50);
+        int textWidth = GetDrawStringWidth(text, static_cast<int>(strlen(text)), FONT_SIZE);
+        int boxWidth = textWidth + TEXT_PADDING_WIDTH;
+        int boxPositionX = (screenWidth - boxWidth) / 2;
+        int boxPositionY = startY + i * (BOX_HEIGHT + Y_SPACING);
 
         if (i == mainMenuSelected_)
         {
-            DrawBox(boxX - 10, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(0, 0, 0), TRUE);
-            DrawBox(boxX - 10, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(255, 255, 255), FALSE);
-            Font::GetInstance().DrawDefaultText(boxX + 15, boxY + 5, text, GetColor(255, 255, 255), fontSize);
+            DrawBox(
+                boxPositionX - BG_OFFSET_INNER,
+                boxPositionY - BG_OFFSET_INNER,
+                boxPositionX + boxWidth + BG_OFFSET_OUTER,
+                boxPositionY + BOX_HEIGHT + BG_OFFSET_INNER,
+                GetColor(0, 0, 0),
+                true
+            );
+            DrawBox(
+                boxPositionX - BG_OFFSET_INNER,
+                boxPositionY - BG_OFFSET_INNER,
+                boxPositionX + boxWidth + BG_OFFSET_OUTER,
+                boxPositionY + BOX_HEIGHT + BG_OFFSET_INNER,
+                GetColor(255, 255, 255),
+                false
+            );
+            Font::GetInstance().DrawDefaultText(
+                boxPositionX + TEXT_OFFSET_X,
+                boxPositionY + TEXT_OFFSET_Y,
+                text,
+                GetColor(255, 255, 255),
+                FONT_SIZE
+            );
         }
         else
         {
-            DrawBox(boxX - 10, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(64, 64, 64), TRUE);
-            DrawBox(boxX - 10, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(128, 128, 128), FALSE);
-            Font::GetInstance().DrawDefaultText(boxX + 15, boxY + 5, text, GetColor(255, 255, 255), fontSize);
+            DrawBox(
+                boxPositionX - BG_OFFSET_INNER,
+                boxPositionY - BG_OFFSET_INNER,
+                boxPositionX + boxWidth + BG_OFFSET_OUTER,
+                boxPositionY + BOX_HEIGHT + BG_OFFSET_INNER,
+                GetColor(64, 64, 64),
+                true
+            );
+            DrawBox(
+                boxPositionX - BG_OFFSET_INNER,
+                boxPositionY - BG_OFFSET_INNER,
+                boxPositionX + boxWidth + BG_OFFSET_OUTER,
+                boxPositionY + BOX_HEIGHT + BG_OFFSET_INNER,
+                GetColor(128, 128, 128),
+                false
+            );
+            Font::GetInstance().DrawDefaultText(
+                boxPositionX + TEXT_OFFSET_X,
+                boxPositionY + TEXT_OFFSET_Y,
+                text,
+                GetColor(255, 255, 255),
+                FONT_SIZE
+            );
         }
     }
 }
-
 
 void Receptionist::DrawDeliveryMenu(void)
 {
     PlayerStop::GetInstance().StopMovement();
 
-    const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
-    const int screenHeight = Application::DEFA_SCREEN_SIZE_X;
+    const int screenWidth = Application::FULL_SCREEN_SIZE_X;
 
-    const int boxWidth = 1000;
-    const int boxHeight = 800;
-    const int boxX = (screenWidth - boxWidth) / 2;
-    const int boxY = 150;
+    const int BOX_WIDTH = 1000;                         // 納品メニュー枠の幅
+    const int BOX_HEIGHT = 800;                         // 納品メニュー枠の高さ
+    const int boxPositionX = (screenWidth - BOX_WIDTH) / 2;
+    const int boxPositionY = 150;                       // 納品メニューの表示開始Y座標
 
-    DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(0, 0, 0), TRUE);
-    DrawBox(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GetColor(255, 255, 255), FALSE);
+    const int COLOR_BLACK = GetColor(0, 0, 0);          // 黒色
+    const int COLOR_WHITE = GetColor(255, 255, 255);    // 白色
+    const int TEXT_COLOR_WHITE = 0xffffff;              // 白色テキスト
+    const int TEXT_COLOR_GRAY = 0xcccccc;               // 灰色テキスト
+    const int TEXT_COLOR_MAGENTA = 0xff00ff;            // マゼンタ色テキスト
+    const int TEXT_COLOR_RED = 0xff4444;                // 赤色テキスト
+    const int TEXT_COLOR_GREEN = 0x00ff00;              // 緑色テキスト
+
+    DrawBox(
+        boxPositionX,
+        boxPositionY,
+        boxPositionX + BOX_WIDTH,
+        boxPositionY + BOX_HEIGHT,
+        COLOR_BLACK,
+        true
+    );
+    DrawBox(
+        boxPositionX,
+        boxPositionY,
+        boxPositionX + BOX_WIDTH,
+        boxPositionY + BOX_HEIGHT,
+        COLOR_WHITE,
+        false
+    );
 
     Font& font = Font::GetInstance();
-    font.DrawDefaultText(boxX + 20, boxY + 20, "===== 納品メニュー =====", 0xffffff, 24);
-    font.DrawDefaultText(boxX + 20, boxY + 50, "納品するアイテムを選択してください", 0xcccccc, 18);
 
-    for (int i = 0; i < (int)deliverableItems_.size(); i++)
+    const int TITLE_OFFSET_X = 20;                      // タイトルのXオフセット
+    const int TITLE_OFFSET_Y = 20;                      // タイトルのYオフセット
+    const int TITLE_FONT_SIZE = 24;                     // タイトルフォントサイズ
+    const int SUBTITLE_OFFSET_Y = 50;                   // サブタイトルのYオフセット
+    const int SUBTITLE_FONT_SIZE = 18;                  // サブタイトルフォントサイズ
+
+    font.DrawDefaultText(
+        boxPositionX + TITLE_OFFSET_X,
+        boxPositionY + TITLE_OFFSET_Y,
+        "===== 納品メニュー =====",
+        TEXT_COLOR_WHITE,
+        TITLE_FONT_SIZE
+    );
+    font.DrawDefaultText(
+        boxPositionX + TITLE_OFFSET_X,
+        boxPositionY + SUBTITLE_OFFSET_Y,
+        "納品するアイテムを選択してください",
+        TEXT_COLOR_GRAY,
+        SUBTITLE_FONT_SIZE
+    );
+
+    const int LIST_START_OFFSET_Y = 80;                 // アイテムリスト開始Yオフセット
+    const int LIST_ITEM_SPACING_Y = 30;                 // アイテムリスト行間
+    const int INFO_TEXT_OFFSET_X = 250;                 // アイテム情報のXオフセット
+    const int INFO_TEXT_OFFSET_Y = 350;                 // アイテム情報のYオフセット
+    const int INFO_FONT_SIZE = 32;                      // アイテム情報フォントサイズ
+
+    for (int i = 0; i < static_cast<int>(deliverableItems_.size()); i++)
     {
-        IETEM_TYPE itemType = deliverableItems_[i];
-        int color = (i == selectedItem_) ? 0xff00ff : 0xffffff;
-        int yPos = boxY + 80 + (i * 30);
-
-        if (i == selectedItem_)
-        {
-            // font.DrawDefaultText(boxX + 20, yPos, "→", 0xff00ff, 24);
-        }
+        ITEM_TYPE itemType = deliverableItems_[i];
+        int color = (i == selectedItem_) ? TEXT_COLOR_MAGENTA : TEXT_COLOR_WHITE;
+        int yPosition = boxPositionY + LIST_START_OFFSET_Y + (i * LIST_ITEM_SPACING_Y);
 
         int itemCount = GetItemCount(itemType);
         int requiredCount = GetRemainingDeliveryAmount(itemType);
 
-        // 色分け：必要数未満 → 赤、ちょうど → 白、余裕あり → 緑
         if (itemCount < requiredCount)
-            color = 0xff4444;
+        {
+            color = TEXT_COLOR_RED;
+        }
         else if (itemCount == requiredCount)
-            color = (i == selectedItem_) ? 0xff00ff : 0xffffff;
+        {
+            color = (i == selectedItem_) ? TEXT_COLOR_MAGENTA : TEXT_COLOR_WHITE;
+        }
         else
-            color = 0x00ff00;
+        {
+            color = TEXT_COLOR_GREEN;
+        }
 
         std::string itemInfo = std::string(GetItemName(itemType)) +
-            " (所持数: " + std::to_string(itemCount) + " / 必要: " + std::to_string(requiredCount) + ")";
+            " (所持数: " + std::to_string(itemCount) +
+            " / 必要: " + std::to_string(requiredCount) + ")";
 
-        font.DrawDefaultText(boxX + 250, yPos + 350, itemInfo.c_str(), color, 32);
+        font.DrawDefaultText(
+            boxPositionX + INFO_TEXT_OFFSET_X,
+            yPosition + INFO_TEXT_OFFSET_Y,
+            itemInfo.c_str(),
+            color,
+            INFO_FONT_SIZE
+        );
     }
 }
 
-
-//bool Receptionist::DeliverItem(IETEM_TYPE itemType)
-//{
-//    auto& itemManager = ItemManager::GetInstance();
-//    std::string itemId = GetItemId(itemType);
-//
-//    auto& questUI = QuestUI::GetInstance();
-//
-//    DeliveryQuest* matchedQuest = nullptr;
-//    for (auto& quest : questUI.GetActiveQuests())
-//    {
-//        if (quest.targetItemId == itemId)
-//        {
-//            matchedQuest = &quest;
-//            break;
-//        }
-//    }
-//
-//    if (!matchedQuest)
-//    {
-//        lastDeliveryMessage_ = "このアイテムは依頼対象ではありません！";
-//        deliveryMessageTimer_ = 120;
-//        return false;
-//    }
-//
-//    // 必要数チェック
-//    auto item = itemManager.FindItemById(itemId);
-//    if (!item || item->GetQuantity() < matchedQuest->requiredAmount)
-//    {
-//        lastDeliveryMessage_ = "必要な数がそろっていません！";
-//        deliveryMessageTimer_ = 120;
-//        return false;
-//    }
-//
-//    // 一括納品
-//    itemManager.SubtractQuantity(item, matchedQuest->requiredAmount);
-//    matchedQuest->isCompleted = true;
-//    questUI.CompleteQuest(matchedQuest->id);
-//
-//    if (player_)
-//    {
-//        player_->AddMoney(matchedQuest->rewardMoney);
-//    }
-//
-//    lastDeliveryMessage_ = std::string(GetItemName(itemType)) + " を納品しました！依頼完了です！";
-//    deliveryMessageTimer_ = 120;
-//
-//    return true;
-//}
-
-
-void Receptionist::SetItemCount(IETEM_TYPE itemType, int count)
+void Receptionist::SetItemCount(ITEM_TYPE itemType, int count)
 {
     auto& itemManager = ItemManager::GetInstance();
     std::string itemId = GetItemId(itemType);
 
     auto item = itemManager.FindItemById(itemId);
-    if (item)
+
+    if (item != nullptr)
     {
-        // 現在の所持数を0にしてから新しい数を設定
         int currentQuantity = item->GetQuantity();
+
         if (currentQuantity > 0)
         {
             itemManager.SubtractQuantity(item, currentQuantity);
         }
+
         if (count > 0)
         {
             itemManager.AddQuantity(item, count);
@@ -684,47 +697,56 @@ void Receptionist::SetItemCount(IETEM_TYPE itemType, int count)
     }
 }
 
-int Receptionist::GetItemCount(IETEM_TYPE itemType) const
+int Receptionist::GetItemCount(ITEM_TYPE itemType) const
 {
     auto& itemManager = ItemManager::GetInstance();
     std::string itemId = GetItemId(itemType);
 
     auto item = itemManager.FindItemById(itemId);
-    if (item)
+
+    if (item != nullptr)
     {
         return item->GetQuantity();
     }
+
     return 0;
 }
 
-int Receptionist::GetMaxDeliveryQuantity() const
+int Receptionist::GetMaxDeliveryQuantity(void) const
 {
     if (selectedItem_ < 0 || selectedItem_ >= static_cast<int>(deliverableItems_.size()))
+    {
         return 0;
+    }
 
-    IETEM_TYPE itemType = deliverableItems_[selectedItem_];
-    int remain = GetRemainingDeliveryAmount(itemType);
-    int have = GetItemCount(itemType);
-    return std::min(remain, have);
+    ITEM_TYPE itemType = deliverableItems_[selectedItem_];
+    int remainAmount = GetRemainingDeliveryAmount(itemType);
+    int haveAmount = GetItemCount(itemType);
+
+    return std::min(remainAmount, haveAmount);
 }
 
-const char* Receptionist::GetItemName(IETEM_TYPE itemType) const
+const char* Receptionist::GetItemName(ITEM_TYPE itemType) const
 {
     int itemIndex = static_cast<int>(itemType);
-    if (itemIndex >= 0 && itemIndex < static_cast<int>(IETEM_TYPE::ITEM_COUNT))
+
+    if (itemIndex >= 0 && itemIndex < static_cast<int>(ITEM_TYPE::ITEM_COUNT))
     {
         return itemNames_[itemIndex].c_str();
     }
+
     return "不明なアイテム";
 }
 
-std::string Receptionist::GetItemId(IETEM_TYPE itemType) const
+std::string Receptionist::GetItemId(ITEM_TYPE itemType) const
 {
     int itemIndex = static_cast<int>(itemType);
-    if (itemIndex >= 0 && itemIndex < static_cast<int>(IETEM_TYPE::ITEM_COUNT))
+
+    if (itemIndex >= 0 && itemIndex < static_cast<int>(ITEM_TYPE::ITEM_COUNT))
     {
         return itemIds_[itemIndex];
     }
+
     return "";
 }
 
@@ -734,7 +756,7 @@ void Receptionist::SetPlayer(std::shared_ptr<Player> player)
     shop_->SetPlayer(player);
 }
 
-int Receptionist::GetRemainingDeliveryAmount(IETEM_TYPE itemType) const
+int Receptionist::GetRemainingDeliveryAmount(ITEM_TYPE itemType) const
 {
     std::string targetId = GetItemId(itemType);
 
@@ -745,6 +767,7 @@ int Receptionist::GetRemainingDeliveryAmount(IETEM_TYPE itemType) const
             return std::max(0, quest.requiredAmount - quest.currentAmount);
         }
     }
+
     return 0;
 }
 

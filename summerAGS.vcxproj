@@ -131,6 +131,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(DXLIB_DIR)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -141,6 +142,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\Object\GuildObject\WallGuild.cpp" />
+    <ClCompile Include="Src\Object\GuildObject\WallGuild2.cpp" />
+    <ClCompile Include="Src\Object\GuildObject\WallGuild3.cpp" />
     <ClCompile Include="Src\Object\Item\Material\BloodBag.cpp" />
     <ClCompile Include="Src\Object\Item\Product\DarkWand.cpp" />
     <ClCompile Include="Src\Object\Item\Product\LightWand.cpp" />
@@ -174,11 +178,8 @@
     <ClCompile Include="Src\Object\AtelierObject\ItemBox.cpp" />
     <ClCompile Include="Src\Object\AtelierObject\Bookshelf.cpp" />
     <ClCompile Include="Src\DrawUI\SceneUI\ItemPickupUI.cpp" />
-    <ClCompile Include="Src\Object\GardenObject\FenceObjectX.cpp" />
+    <ClCompile Include="Src\Object\GardenObject\FenceObject1.cpp" />
     <ClCompile Include="Src\Object\GardenObject\FenceObject.cpp" />
-    <ClCompile Include="Src\Object\GuildObject\ WallGuild.cpp" />
-    <ClCompile Include="Src\Object\GuildObject\ WallGuild2.cpp" />
-    <ClCompile Include="Src\Object\GuildObject\ WallGuildZ.cpp" />
     <ClCompile Include="Src\Object\Manager\FenceManager.cpp" />
     <ClCompile Include="Src\Object\Manager\OreMnanager.cpp" />
     <ClCompile Include="Src\Object\GardenObject\OreObject.cpp" />
@@ -217,7 +218,6 @@
     <ClCompile Include="Src\Object\player.cpp" />
     <ClCompile Include="Src\Scene\SceneGameClear.cpp" />
     <ClCompile Include="Src\Scene\SceneGameOver.cpp" />
-    <ClCompile Include="Src\Stage\PrivateRoomStage.cpp" />
     <ClCompile Include="Src\Stage\GuildStage.cpp" />
     <ClCompile Include="Src\Stage\GardenStage.cpp" />
     <ClCompile Include="Src\Stage\AtelierStage.cpp" />
@@ -245,6 +245,7 @@
     <ClCompile Include="Src\Scene\SceneBase.cpp" />
     <ClCompile Include="Src\Scene\SceneGame.cpp" />
     <ClCompile Include="Src\Scene\SceneTitle.cpp" />
+    <ClCompile Include="Src\Stage\PrivateRoomStage.cpp" />
     <ClCompile Include="Src\Utility\Utility.cpp" />
     <ClCompile Include="Src\Stage\StageBase.cpp" />
     <ClCompile Include="Src\Object\Manager\StageManager.cpp" />
@@ -257,9 +258,9 @@
     <ClCompile Include="Src\Object\GardenObject\WellObject.cpp" />
     <ClCompile Include="Src\Object\AtelierObject\WallAtelier.cpp" />
     <ClCompile Include="Src\Object\AtelierObject\WallAtelier2.cpp" />
-    <ClCompile Include="Src\Object\AtelierObject\WallAtelierZ.cpp" />
-    <ClCompile Include="Src\Object\AtelierObject\WallAtelierZZ.cpp" />
-    <ClCompile Include="Src\Object\GuildObject\WallGuildZZ.cpp" />
+    <ClCompile Include="Src\Object\AtelierObject\WallAtelier3.cpp" />
+    <ClCompile Include="Src\Object\AtelierObject\WallAtelier4.cpp" />
+    <ClCompile Include="Src\Object\GuildObject\WallGuild4.cpp" />
     <ClCompile Include="Src\Object\AtelierObject\TableSetAtelier.cpp" />
     <ClCompile Include="Src\Object\GuildObject\TableSetGuild.cpp" />
     <ClCompile Include="Src\Object\Manager\TableSetGuildManager.cpp" />
@@ -273,6 +274,9 @@
     <ClCompile Include="Src\Object\Item\Product\WindWand.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Object\GuildObject\WallGuild.h" />
+    <ClInclude Include="Src\Object\GuildObject\WallGuild2.h" />
+    <ClInclude Include="Src\Object\GuildObject\WallGuild3.h" />
     <ClInclude Include="Src\Object\Item\Material\BloodBag.h" />
     <ClInclude Include="Src\Object\Item\Product\DarkWand.h" />
     <ClInclude Include="Src\Object\Item\Product\LightWand.h" />
@@ -306,11 +310,8 @@
     <ClInclude Include="Src\Object\AtelierObject\ItemBox.h" />
     <ClInclude Include="Src\Object\AtelierObject\Bookshelf.h" />
     <ClInclude Include="Src\DrawUI\SceneUI\ItemPickupUI.h" />
-    <ClInclude Include="Src\Object\GardenObject\FenceObjectX.h" />
+    <ClInclude Include="Src\Object\GardenObject\FenceObject1.h" />
     <ClInclude Include="Src\Object\GardenObject\FenceObject.h" />
-    <ClInclude Include="Src\Object\GuildObject\ WallGuild.h" />
-    <ClInclude Include="Src\Object\GuildObject\ WallGuild2.h" />
-    <ClInclude Include="Src\Object\GuildObject\ WallGuildZ.h" />
     <ClInclude Include="Src\Object\Manager\FenceManager.h" />
     <ClInclude Include="Src\Object\Manager\OreMnanager.h" />
     <ClInclude Include="Src\Object\GardenObject\OreObject.h" />
@@ -349,7 +350,6 @@
     <ClInclude Include="Src\Object\player.h" />
     <ClInclude Include="Src\Scene\SceneGameClear.h" />
     <ClInclude Include="Src\Scene\SceneGameOver.h" />
-    <ClInclude Include="Src\Stage\PrivateRoomStage.h" />
     <ClInclude Include="Src\Stage\GuildStage.h" />
     <ClInclude Include="Src\Stage\GardenStage.h" />
     <ClInclude Include="Src\Stage\AtelierStage.h" />
@@ -377,6 +377,7 @@
     <ClInclude Include="Src\Scene\SceneBase.h" />
     <ClInclude Include="Src\Scene\SceneGame.h" />
     <ClInclude Include="Src\Scene\SceneTitle.h" />
+    <ClInclude Include="Src\Stage\PrivateRoomStage.h" />
     <ClInclude Include="Src\Utility\Utility.h" />
     <ClInclude Include="Src\Stage\StageBase.h" />
     <ClInclude Include="Src\Object\Manager\StageManager.h" />
@@ -389,9 +390,9 @@
     <ClInclude Include="Src\Object\GardenObject\WellObject.h" />
     <ClInclude Include="Src\Object\AtelierObject\WallAtelier.h" />
     <ClInclude Include="Src\Object\AtelierObject\WallAtelier2.h" />
-    <ClInclude Include="Src\Object\AtelierObject\WallAtelierZ.h" />
-    <ClInclude Include="Src\Object\AtelierObject\WallAtelierZZ.h" />
-    <ClInclude Include="Src\Object\GuildObject\WallGuildZZ.h" />
+    <ClInclude Include="Src\Object\AtelierObject\WallAtelier3.h" />
+    <ClInclude Include="Src\Object\AtelierObject\WallAtelier4.h" />
+    <ClInclude Include="Src\Object\GuildObject\WallGuild4.h" />
     <ClInclude Include="Src\Object\AtelierObject\TableSetAtelier.h" />
     <ClInclude Include="Src\Object\GuildObject\TableSetGuild.h" />
     <ClInclude Include="Src\Object\Manager\TableSetGuildManager.h" />

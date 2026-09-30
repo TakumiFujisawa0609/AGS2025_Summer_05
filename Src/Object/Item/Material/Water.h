@@ -2,12 +2,14 @@
 
 #include "MaterialItem.h"
 
-/// <summary>
-/// 水アイテムクラス（素材）
-/// </summary>
+/// @brief 水アイテムのクラス
 class Water : public MaterialItem
 {
 public:
-	Water();
-};
 
+    /// @brief コンストラクタ
+    Water(void);
+
+    /// @brief デストラクタ
+    ~Water(void) override = default;
+};

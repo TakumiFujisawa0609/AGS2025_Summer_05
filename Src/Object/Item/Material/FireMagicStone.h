@@ -2,9 +2,14 @@
 
 #include "MaterialItem.h"
 
+/// @brief 火の魔石のクラス
 class FireMagicStone : public MaterialItem
 {
 public:
-	FireMagicStone(void);
-};
 
+    /// @brief コンストラクタ
+    FireMagicStone(void);
+
+    /// @brief デストラクタ
+    ~FireMagicStone(void) override = default;
+};

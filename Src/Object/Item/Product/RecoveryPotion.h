@@ -2,10 +2,14 @@
 
 #include "ProductItem.h"
 
-// 回復ポーション（完成品アイテム）のクラス
+/// @brief 回復ポーションのクラス
 class RecoveryPotion : public ProductItem
 {
 public:
-    // コンストラクタ
+
+    /// @brief コンストラクタ
     RecoveryPotion(void);
+
+    /// @brief デストラクタ
+    ~RecoveryPotion(void) override = default;
 };

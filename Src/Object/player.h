@@ -1,119 +1,123 @@
 #pragma once
-#include<DxLib.h>
+#include <DxLib.h>
 #include "UnitBase.h"
 
 class AnimationController;
 
+/// @brief プレイヤーキャラクターの管理・制御を行うクラス
 class Player : public UnitBase
 {
-
 public:
 
-	// コンストラクタ
-	Player(void);
+    /// @brief アニメーション種別を定義する列挙型
+    enum class ANIMATION_TYPE
+    {
+        NONE,  // タイポ修正(NOME -> NONE)
+        WALK,
+        IDLE,
+        MAX
+    };
 
-	// デストラクタ
-	~Player(void) override;
+    // 基本設定関連
+    static constexpr VECTOR SCALES = { 1.0f, 1.0f, 1.0f };                   // モデルの大きさ
+    static constexpr VECTOR DEFAULT_POSITION = { 0.0f, 20.0f, -200.0f };     // 初期位置
+    static constexpr COLOR_F COLOR_EMI_DEFAULT = { 0.5f, 0.5f, 0.5f, 0.5f }; // 標準の自己発光色
+    static constexpr float SPEED_MOVE = 5.0f;                                // 移動スピード
+    static constexpr float RADIUS = 30.0f;                                   // 当たり判定の半径
 
-	//初期化
-	void Init(void) override;
+    /// @brief コンストラクタ
+    Player(void);
 
-	//更新
-	void Update(void) override;
+    /// @brief デストラクタ
+    ~Player(void) override;
 
-	//描画
-	void Draw(void) override;
+    /// @brief 初期化処理
+    void Init(void) override;
 
-	//解放
-	void Release(void) override;
+    /// @brief 更新処理
+    void Update(void) override;
 
-	//座標取得
-	VECTOR GetPos(void) const;
+    /// @brief 描画処理
+    void Draw(void) override;
 
-	//座標設定
-	void SetPos(VECTOR pos);
+    /// @brief 解放処理
+    void Release(void) override;
 
-	// プレイヤーのAABB最小点を取得
-	VECTOR GetHitMin(void) const;
+    /// @brief 座標を取得する
+    /// @return プレイヤーの現在座標
+    VECTOR GetPosition(void) const;
 
-	// プレイヤーのAABB最大点を取得
-	VECTOR GetHitMax(void) const;
+    /// @brief 座標を設定する
+    /// @param position 設定する座標
+    void SetPosition(VECTOR position);
 
-	//当たり判定の半径
-	float GetRadius(void) const;
+    /// @brief プレイヤーのAABB最小点を取得する
+    /// @return 最小点の座標
+    VECTOR GetHitMin(void) const;
 
-	//プレイヤーの所持金を取得
-	int GetMoney(void) const;
+    /// @brief プレイヤーのAABB最大点を取得する
+    /// @return 最大点の座標
+    VECTOR GetHitMax(void) const;
 
-	//プレイヤーの所持金を設定
-	void AddMoney(int money);
+    /// @brief 当たり判定の半径を取得する
+    /// @return 半径
+    float GetRadius(void) const;
 
-	void SetBlockedDirX(int dir);
+    /// @brief プレイヤーの所持金を取得する
+    /// @return 現在の所持金
+    int GetMoney(void) const;
 
-	void SetBlockedDirZ(int dir);
+    /// @brief プレイヤーの所持金を追加・設定する
+    /// @param money 加算する金額
+    void AddMoney(int money);
 
-	void ResetBlockDirs(void);
+    /// @brief X軸方向の移動ブロックを設定する
+    /// @param direction ブロックする方向
+    void SetBlockedDirectionX(int direction);
 
-	void SetMovementEnabled(bool enabled);
-	
-	bool IsMovementEnabled(void) const;
+    /// @brief Z軸方向の移動ブロックを設定する
+    /// @param direction ブロックする方向
+    void SetBlockedDirectionZ(int direction);
 
+    /// @brief 移動ブロックの状態をリセットする
+    void ResetBlockDirections(void);
 
+    /// @brief 移動の有効・無効を設定する
+    /// @param enabled 有効にする場合はtrue
+    void SetMovementEnabled(bool enabled);
 
-	// アニメーション種別
-	enum class ANIM_TYPE
-	{
-		NOME,
-		WALK,
-		IDLE,
-		MAX
-	};
+    /// @brief 移動が有効か判定する
+    /// @return 有効であればtrue
+    bool IsMovementEnabled(void) const;
 
-	// モデルの大きさ
-	static constexpr VECTOR SCALES = { 1.0f, 1.0f, 1.0f };
-
-	// 初期位置
-	static constexpr VECTOR DEFAULT_POS = { 0.0f, 20.0f, -200.0f };
-
-	// 標準の自己発光色
-	static constexpr COLOR_F COLOR_EMI_DEFAULT = { 0.5f, 0.5f, 0.5f, 0.5f };
-
-	// 移動スピード
-	static constexpr float SPEED_MOVE = 5.0f;
-
-	//当たり判定の半径
-	static constexpr float RADIUS = 30.0f;
-
-	void PlayAnim(ANIM_TYPE type, bool loop = true);
-
+    /// @brief アニメーションを再生する
+    /// @param type 再生するアニメーション種別
+    /// @param loop ループ再生するかどうか
+    void PlayAnimation(ANIMATION_TYPE type, bool loop = true);
 
 private:
-	// モデルID
-	int modelId_;
-	VECTOR scales_;
-	//カメラ
-	VECTOR axis_;
-	VECTOR angles_;
 
-	// 地面にいるかどうか
-	bool isOnGround_;
+    // モデルID
+    int modelHandleId_;
 
-	//所持金
-	int money_;
+    // スケール
+    VECTOR scales_;
 
-	int blockedDirX_;
+    // カメラ関連
+    VECTOR axis_;
+    VECTOR angles_;
 
-	int blockedDirZ_;
+    // 状態管理関連
+    bool isOnGround_;       // 地面にいるかどうか
+    int money_;             // 所持金
+    int blockedDirectionX_; // X軸方向のブロック
+    int blockedDirectionZ_; // Z軸方向のブロック
+    bool movementEnabled_;  // 移動可能フラグ
+    int currentAnimationType_;// 現在再生中のアニメーション種別
 
-	bool movementEnabled_;
+    // アニメーションコントローラー
+    AnimationController* animationController_;
 
-	int currentAnimType_; 
-
-
-	// アニメーション
-	AnimationController* animationController_;
-
-	// 行動制御
-	void ProcessMove(void);
-
+    /// @brief 行動制御
+    void ProcessMove(void);
 };

@@ -1,70 +1,74 @@
 #pragma once
-#include<string>
-#include<vector>
+#include <string>
+#include <vector>
 
+/// @brief リソースデータを管理するクラス
 class Resource
 {
-
 public:
 
-	//リソースタイプ
-	enum class TYPE
-	{
-		NONE,
-		IMG,
-		IMGS,
-		MASK,
-		MODEL,
-		ANIM,
-		EFFEKSEER,
-		SOUND,
-	};
+    /// @brief リソースタイプ
+    enum class TYPE
+    {
+        NONE,
+        IMAGE,        // 画像
+        IMAGES,       // 分割画像
+        MASK,         // マスク画像
+        MODEL,        // 3Dモデル
+        ANIMATION,    // アニメーション
+        EFFEKSEER,    // エフェクト
+        SOUND,        // サウンド
+    };
 
-	//コンストラクタ
-	Resource(void);
+    /// @brief デフォルトコンストラクタ
+    Resource(void);
 
-	//コンストラクタ
-	Resource(TYPE type, const std::string& path);
+    /// @brief 通常リソース用のコンストラクタ
+    /// @param resourceType リソースのタイプ
+    /// @param filePath ファイルパス
+    Resource(TYPE resourceType, const std::string& filePath);
 
-	//コンストラクタ(IMGS用)
-	Resource(TYPE type, const std::string& path, int numX, int numY, int sizeX, int sizeY);
+    /// @brief 分割画像用のコンストラクタ
+    /// @param resourceType リソースのタイプ
+    /// @param filePath ファイルパス
+    /// @param splitCountX 横方向の分割数
+    /// @param splitCountY 縦方向の分割数
+    /// @param imageWidth 1枚あたりの横幅
+    /// @param imageHeight 1枚あたりの縦幅
+    Resource(
+        TYPE resourceType,
+        const std::string& filePath,
+        int splitCountX,
+        int splitCountY,
+        int imageWidth,
+        int imageHeight
+    );
 
-	//デストラクタ
-	~Resource(void);
+    /// @brief デストラクタ
+    ~Resource(void);
 
-	//読み込み
-	void Load(void);
+    /// @brief 読み込み処理
+    void Load(void);
 
-	//解放
-	void Release(void);
+    /// @brief 解放処理
+    void Release(void);
 
-	//複数画像ハンドルを別配にコピー
-	void CoopyHandle(int* imgs);
+    /// @brief 複数画像ハンドルを別配列にコピーする
+    /// @param imageHandles コピー先の配列ポインタ
+    void CopyHandles(int* imageHandles);
 
-	//リソースタイプ
-	TYPE resType_;
+    // リソース基本情報関連
+    TYPE resourceType_;                // リソースタイプ
+    std::string filePath_;             // リソースの読み込み先ファイルパス
+    int handleId_;                     // 画像、音、モデルなどのハンドルID
 
-	//リソースの読み込み先
-	std::string path_;
+    // 分割画像情報関連
+    int* handleIds_;                   // IMAGES::LoadDivGraphで使用する複数のハンドルIDを格納
+    int splitCountX_;                  // 分割画像の横方向の分割数
+    int splitCountY_;                  // 分割画像の縦方向の分割数
+    int imageWidth_;                   // 各分割画像の横幅（ピクセル単位）
+    int imageHeight_;                  // 各分割画像の縦幅（ピクセル単位）
 
-	//画像とモデルのハンドルID
-	int handleId_;
-
-	// 配列変数: IMGS::LoadDivGraphで使用するハンドルIDを格納する
-	int* handleIds_;
-
-	// 分割画像の横方向の分割数
-	int numX_;
-
-	// 分割画像の縦方向の分割数
-	int numY_;
-
-	// 各分割画像の横幅（ピクセル単位）
-	int sizeX_;
-
-	// 各分割画像の縦幅（ピクセル単位）
-	int sizeY_;
-
-	//モデル複製用
-	std::vector<int> duplicateModelIds_;
+    // モデル複製用のハンドルIDリスト
+    std::vector<int> duplicateModelIds_; 
 };

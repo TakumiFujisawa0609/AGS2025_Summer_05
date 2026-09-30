@@ -1,10 +1,18 @@
 #include "ItemBase.h"
 
-ItemBase::ItemBase(const std::string& id, const std::string& name,
-    const std::string& description, int quantity,
-    int imageHandle, int price)
-    : id_(id), name_(name), description_(description),
-    imageHandle_(imageHandle), quantity_(quantity), price_(price)
+ItemBase::ItemBase(
+    const std::string& id,
+    const std::string& name,
+    const std::string& description,
+    int quantity,
+    int imageHandle,
+    int price)
+    : id_(id),
+    name_(name),
+    description_(description),
+    imageHandle_(imageHandle),
+    quantity_(quantity),
+    price_(price)
 {
 }
 
@@ -51,5 +59,16 @@ void ItemBase::AddQuantity(int amount)
 void ItemBase::SubtractQuantity(int amount)
 {
     quantity_ -= amount;
-    if (quantity_ < 0) quantity_ = 0;
+
+    const int MINIMUM_QUANTITY = 0;
+
+    if (quantity_ < MINIMUM_QUANTITY)
+    {
+        quantity_ = MINIMUM_QUANTITY;
+    }
+}
+
+ITEM_TYPE_MATERIAL ItemBase::GetItemType(void) const
+{
+    return ITEM_TYPE_MATERIAL::SEED; 
 }

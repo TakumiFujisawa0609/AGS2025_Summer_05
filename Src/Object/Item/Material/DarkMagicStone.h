@@ -2,9 +2,14 @@
 
 #include "MaterialItem.h"
 
-class DarkMagicStone: public MaterialItem
+/// @brief 闇の魔石のクラス
+class DarkMagicStone : public MaterialItem
 {
 public:
-	DarkMagicStone(void);
-};
 
+    /// @brief コンストラクタ
+    DarkMagicStone(void);
+
+    /// @brief デストラクタ
+    ~DarkMagicStone(void) override = default;
+};

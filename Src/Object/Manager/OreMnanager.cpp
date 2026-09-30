@@ -1,30 +1,64 @@
 #include "OreMnanager.h"
 
-OreManager::OreManager(void) : rows_(0), cols_(0), offsetX_(0.0f), offsetZ_(0.0f) {}
+OreManager::OreManager(void)
+{
+    const int INITIAL_COUNT = 0;
+    const float INITIAL_OFFSET = 0.0f;
 
-OreManager::~OreManager(void) 
+    rowCount_ = INITIAL_COUNT;
+    columnCount_ = INITIAL_COUNT;
+    offsetX_ = INITIAL_OFFSET;
+    offsetZ_ = INITIAL_OFFSET;
+}
+
+OreManager::~OreManager(void)
 {
     Release();
 }
 
-void OreManager::Init(const std::vector<std::vector<int>>& mapData, float blockSize) 
+void OreManager::Init(const std::vector<std::vector<int>>& mapData, float blockSize)
 {
-    ores_.clear();
+    oreObjects_.clear();
 
-    rows_ = static_cast<int>(mapData.size());
-    cols_ = mapData.empty() ? 0 : static_cast<int>(mapData[0].size());
+    rowCount_ = static_cast<int>(mapData.size());
 
-    offsetX_ = -(cols_ * blockSize) / 2.0f;
-    offsetZ_ = -(rows_ * blockSize) / 2.0f;
+    const int EMPTY_SIZE = 0;
+    const int FIRST_INDEX = 0;
 
-    for (int z = 0; z < rows_; ++z) {
-        for (int x = 0; x < cols_; ++x) {
-            if (mapData[z][x] == 3) { // 3‚ªzÎ‚ð•\‚·
-                auto ore = std::make_shared<OreObject>();
-                ore->Init();
-                VECTOR pos = { x * blockSize + offsetX_, -10.0f, z * blockSize + offsetZ_ };
-                ore->GetTransform().pos = pos;
-                ores_.push_back(ore);
+    if (mapData.empty())
+    {
+        columnCount_ = EMPTY_SIZE;
+    }
+    else
+    {
+        columnCount_ = static_cast<int>(mapData[FIRST_INDEX].size());
+    }
+
+    const float DIVISOR_HALF = 2.0f;
+
+    offsetX_ = -(columnCount_ * blockSize) / DIVISOR_HALF;
+    offsetZ_ = -(rowCount_ * blockSize) / DIVISOR_HALF;
+
+    const int BLOCK_TYPE_ORE = 3;
+    const float ORE_Y_POSITION = -10.0f;
+
+    for (int zIndex = 0; zIndex < rowCount_; ++zIndex)
+    {
+        for (int xIndex = 0; xIndex < columnCount_; ++xIndex)
+        {
+            if (mapData[zIndex][xIndex] == BLOCK_TYPE_ORE)
+            {
+                auto oreObject = std::make_shared<OreObject>();
+                oreObject->Init();
+
+                VECTOR position = {
+                    xIndex * blockSize + offsetX_,
+                    ORE_Y_POSITION,
+                    zIndex * blockSize + offsetZ_
+                };
+
+                oreObject->GetTransform().position = position;
+                oreObjects_.push_back(oreObject);
             }
         }
     }
@@ -32,24 +66,26 @@ void OreManager::Init(const std::vector<std::vector<int>>& mapData, float blockS
 
 void OreManager::Update(void)
 {
-    for (auto& ore : ores_) {
-        ore->Update();
+    for (auto& oreObject : oreObjects_)
+    {
+        oreObject->Update();
     }
 }
 
-void OreManager::Draw(void) 
+void OreManager::Draw(void)
 {
-    for (auto& ore : ores_) {
-        ore->Draw();
+    for (auto& oreObject : oreObjects_)
+    {
+        oreObject->Draw();
     }
 }
 
 void OreManager::Release(void)
 {
-    ores_.clear();
+    oreObjects_.clear();
 }
 
-const std::vector<std::shared_ptr<OreObject>>& OreManager::GetOreObjects() const 
+const std::vector<std::shared_ptr<OreObject>>& OreManager::GetOreObjects(void) const
 {
-    return ores_;
+    return oreObjects_;
 }

@@ -7,12 +7,14 @@ HitObject::HIT_TYPE NullHitObject::GetHitType(void) const
 
 VECTOR NullHitObject::GetHitPosition(void) const
 {
-    return { 0,0,0 };
+    const float ZERO_VALUE = 0.0f;
+    return { ZERO_VALUE, ZERO_VALUE, ZERO_VALUE };
 }
 
 float NullHitObject::GetHitRadius(void) const
 {
-    return 0.0f;
+    const float ZERO_RADIUS = 0.0f;
+    return ZERO_RADIUS;
 }
 
 VECTOR NullHitObject::GetHitMin(void) const
@@ -27,7 +29,6 @@ VECTOR NullHitObject::GetHitMax(void) const
 
 void NullHitObject::ShowUI(void)
 {
-
 }
 
 void NullHitObject::HideUI(void)
@@ -41,7 +42,6 @@ bool NullHitObject::IsValid(void) const
 
 void NullHitObject::OnPlayerHit(void)
 {
-
 }
 
 void NullHitObject::OnPlayerExit(void)

@@ -8,7 +8,7 @@
 
 ItemPickupUI::ItemPickupUI(void)
 {
-	pickups_.clear();
+    pickups_.clear();
 }
 
 ItemPickupUI::~ItemPickupUI(void)
@@ -17,63 +17,65 @@ ItemPickupUI::~ItemPickupUI(void)
 
 void ItemPickupUI::Init(void)
 {
-	ItemManager::GetInstance().RegisterQuantityChangeCallback(
-		[this](const std::string& itemId, int delta)
-		{
-			if (delta > 0)
-			{
-				auto item = ItemManager::GetInstance().FindItemById(itemId);
-				if (item)
-				{
-					AddPickup(item->GetName(), delta);
-				}
-			}
-		}
-	);
+    ItemManager::GetInstance().RegisterQuantityChangeCallback(
+        [this](const std::string& itemId, int delta)
+        {
+            if (delta > 0)
+            {
+                auto item = ItemManager::GetInstance().FindItemById(itemId);
+                if (item)
+                {
+                    AddPickup(item->GetName(), delta);
+                }
+            }
+        }
+    );
 }
 
 void ItemPickupUI::Update(void)
 {
-	for (auto it = pickups_.begin(); it != pickups_.end(); )
-	{
-		it->timer--;
-		if (it->timer <= 0)
-			it = pickups_.erase(it);
-		else
-			++it;
-	}
+    for (auto iterator = pickups_.begin(); iterator != pickups_.end(); )
+    {
+        iterator->timer--;
+        if (iterator->timer <= 0)
+        {
+            iterator = pickups_.erase(iterator);
+        }
+        else
+        {
+            ++iterator;
+        }
+    }
 }
 
 void ItemPickupUI::Draw(void)
 {
-	auto& font = Font::GetInstance();
-	int startX = 0;
-	int startY = Application::DEFA_SCREEN_SZIE_Y / 2;
-	int lineHeight = 30;
+    auto& font = Font::GetInstance();
+    int startPositionY = Application::FULL_SCREEN_SIZE_Y / 2; 
 
-	for (size_t i = 0; i < pickups_.size(); ++i)
-	{
-		const auto& p = pickups_[i];
-		std::string text = p.itemName + " Å~" + std::to_string(p.quantity) + " ì¸éËÅI";
+    for (size_t index = 0; index < pickups_.size(); ++index)
+    {
+        const auto& pickupInfo = pickups_[index];
+        std::string text = pickupInfo.itemName + " Å~" + 
+            std::to_string(pickupInfo.quantity) + " ì¸éËÅI";
 
-		font.DrawDefaultText(startX, startY + static_cast<int>(i * lineHeight),
-			text.c_str(), GetColor(255, 255, 255), 18, Font::FONT_TYPE_ANTIALIASING_EDGE);
-	}
+        font.DrawDefaultText(DRAW_START_POSITION_X, startPositionY 
+            + static_cast<int>(index * DRAW_LINE_HEIGHT),
+            text.c_str(), COLOR_WHITE, FONT_SIZE, Font::FONT_TYPE_ANTIALIASING_EDGE);
+    }
 }
 
 void ItemPickupUI::AddPickup(const std::string& itemName, int quantity)
 {
-	// Ç∑Ç≈Ç…ï\é¶íÜÇÃÇ‡ÇÃÇÕÇ‹Ç∆ÇﬂÇÈ
-	for (auto& p : pickups_)
-	{
-		if (p.itemName == itemName)
-		{
-			p.quantity += quantity;
-			p.timer = DISPLAY_TIME; // çƒï\é¶
-			return;
-		}
-	}
+    for (auto& pickupInfo : pickups_)
+    {
+        if (pickupInfo.itemName == itemName)
+        {
+            pickupInfo.quantity += quantity;
+            pickupInfo.timer = DISPLAY_TIME;
+            return;
+        }
+    }
 
-	// êVãKí«â¡
-	pickups_.push_back({ itemName, quantity, DISPLAY_TIME });
+    pickups_.push_back({ itemName, quantity, DISPLAY_TIME });
 }

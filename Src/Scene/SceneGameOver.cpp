@@ -1,15 +1,13 @@
 #include "SceneGameOver.h"
 
-#include<DxLib.h>
+#include <DxLib.h>
 
-#include"../Manager/Generic/Resource.h"
-#include"../Manager/Generic/ResourceManager.h"
-#include"../Manager/Generic/SceneManager.h"
-#include"../Manager/Generic/SceneManager.h"
-#include"../Manager/Generic/InputManager.h"
-#include"../Manager/Decoration/SoundManager.h"
-
-#include"../DrawUI/SceneUI/SceneUI.h"
+#include "../Manager/Generic/Resource.h"
+#include "../Manager/Generic/ResourceManager.h"
+#include "../Manager/Generic/SceneManager.h"
+#include "../Manager/Generic/InputManager.h"
+#include "../Manager/Decoration/SoundManager.h"
+#include "../DrawUI/SceneUI/SceneUI.h"
 
 SceneGameOver::SceneGameOver(void)
 {
@@ -17,40 +15,49 @@ SceneGameOver::SceneGameOver(void)
 
 void SceneGameOver::Init(void)
 {
-	//サウンド
-	auto& sound = SoundManager::GetInstance();
-	auto& res = ResourceManager::GetInstance();
+    const int BGM_VOLUME = 40;                              // BGMの音量
+    const int SE_VOLUME = 50;                               // 決定SEの音量
 
-	sound.Add(SoundManager::TYPE::BGM, SoundManager::SOUND::BGM_TITLE, res.Load(ResourceManager::SRC::BGM_TITLE).handleId_);
-	sound.Add(SoundManager::TYPE::SE, SoundManager::SOUND::SE_PUSH, res.Load(ResourceManager::SRC::SE_PUSH).handleId_);
-	sound.AdjustVolume(SoundManager::SOUND::BGM_TITLE, 40);
-	sound.AdjustVolume(SoundManager::SOUND::SE_PUSH, 50);
+    auto& soundManager = SoundManager::GetInstance();
+    auto& resourceManager = ResourceManager::GetInstance();
+
+    soundManager.Add(
+        SoundManager::TYPE::BGM,
+        SoundManager::SOUND::BGM_TITLE,
+        resourceManager.Load(ResourceManager::SRC::BGM_TITLE).handleId_
+    );
+    soundManager.Add(
+        SoundManager::TYPE::SE,
+        SoundManager::SOUND::SE_PUSH,
+        resourceManager.Load(ResourceManager::SRC::SE_PUSH).handleId_
+    );
+
+    soundManager.AdjustVolume(SoundManager::SOUND::BGM_TITLE, BGM_VOLUME);
+    soundManager.AdjustVolume(SoundManager::SOUND::SE_PUSH, SE_VOLUME);
 }
 
 void SceneGameOver::Update(void)
 {
-	auto& sound = SoundManager::GetInstance();
+    auto& soundManager = SoundManager::GetInstance();
 
-	//シーン遷移(デバッグ)
-	if (InputManager::GetInstance().IsTrgDown(KEY_INPUT_RETURN))
-	{
-		//決定音
-		sound.Play(SoundManager::SOUND::SE_PUSH);
+    if (InputManager::GetInstance().IsTriggerDown(KEY_INPUT_RETURN))
+    {
+        soundManager.Play(SoundManager::SOUND::SE_PUSH);
+        soundManager.Stop(SoundManager::SOUND::BGM_TITLE);
 
-		//BGM停止
-		sound.Stop(SoundManager::SOUND::BGM_TITLE);
+        SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAMECLEAR);
 
-		//シーン遷移
-		SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAMECLEAR);
-
-		//処理終了
-		return;
-	}
+        return;
+    }
 }
 
 void SceneGameOver::Draw(void)
 {
-	DrawFormatString(0, 0, 0xffffff, "ゲームオーバー");
+    const int TEXT_POSITION_X = 0;                          // テキスト描画位置X
+    const int TEXT_POSITION_Y = 0;                          // テキスト描画位置Y
+    const int TEXT_COLOR_WHITE = 0xffffff;                  // 白色テキスト
+
+    DrawFormatString(TEXT_POSITION_X, TEXT_POSITION_Y, TEXT_COLOR_WHITE, "ゲームオーバー");
 }
 
 void SceneGameOver::Release(void)

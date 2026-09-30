@@ -11,251 +11,269 @@
 #include "../../Stage/PrivateRoomStage.h"
 #include "CollisionManager.h"
 #include "../../Common/Fader.h"
-#include "../../Object/player.h"
+#include "../../Object/Player.h"
 #include "../../DrawUI/SceneUI/GameHUD.h"
 #include "../PlayerStop.h"
 
-//コンストラクタ
 StageManager::StageManager(void)
 {
-	stageId_ = STAGE_ID::NONE;
-	waitStageId_ = STAGE_ID::NONE;
-	stage_ = nullptr;
-	isStageChanging_ = false;
-	deltaTime_ = 1.0f / 60.0f;
+    stageId_ = STAGE_ID::NONE;
+    waitStageId_ = STAGE_ID::NONE;
+    stage_ = nullptr;
+    isStageChanging_ = false;
+
+    const float DEFAULT_DELTA_TIME = 1.0f / 60.0f;      // デフォルトのデルタタイム
+    deltaTime_ = DEFAULT_DELTA_TIME;
 }
 
-//デストラクタ
 StageManager::~StageManager(void)
 {
-	Destroy();
+    Destroy();
 }
 
-//初期化処理
 void StageManager::Init(std::shared_ptr<Player> player, DateTimeManager* dateTimeManager)
 {
-	player_ = player;
-	stageId_ = STAGE_ID::NONE;
-	waitStageId_ = STAGE_ID::NONE;
-	stage_ = nullptr; 
+    player_ = player;
+    stageId_ = STAGE_ID::NONE;
+    waitStageId_ = STAGE_ID::NONE;
+    stage_ = nullptr;
 
-	// フェード用UI
-	fader_ = std::make_unique<Fader>();
-	fader_->Init();
+    fader_ = std::make_unique<Fader>();
+    fader_->Init();
 
-	// 初期化時
-	gameHUD_ = std::make_unique<GameHUD>();
-	gameHUD_->Init(player_, dateTimeManager);
+    gameHUD_ = std::make_unique<GameHUD>();
+    gameHUD_->Init(player_, dateTimeManager);
 
-	DoChangeStage(STAGE_ID::ATELIER);
+    DoChangeStage(STAGE_ID::ATELIER);
 }
 
-//破棄処理
 void StageManager::Destroy(void)
 {
-	if (stage_ != nullptr)
-	{
-		stage_->Release();
-		delete stage_;
-		stage_ = nullptr;
-	}
+    if (stage_ != nullptr)
+    {
+        stage_->Release();
+        delete stage_;
+        stage_ = nullptr;
+    }
 }
 
-//更新処理
 void StageManager::Update(void)
 {
-	// デルタタイムの計算
-	auto nowTime = std::chrono::system_clock::now();
-	deltaTime_ = std::chrono::duration<float>(nowTime - preTime_).count();
-	preTime_ = nowTime;
+    auto currentTime = std::chrono::system_clock::now();
+    deltaTime_ = std::chrono::duration<float>(currentTime - previousTime_).count();
+    previousTime_ = currentTime;
 
-	gameHUD_->Update();
+    gameHUD_->Update();
 
-	// フェード更新
-	if (fader_) fader_->Update();
+    if (fader_ != nullptr)
+    {
+        fader_->Update();
+    }
 
-	// ステージ切り替えフェーズ中ならフェード処理を進める（ここでDoChangeStageは呼ぶ）
-	if (isStageChanging_)
-	{
-		Fade();  // ←ここだけ
-		return;  // ステージ切り替え中はそれ以外の処理を止める
-	}
+    if (isStageChanging_)
+    {
+        Fade();
+        return;
+    }
 
-	// 通常の更新処理
-	if (stage_)
-	{
-		stage_->Update();
-	}
+    if (stage_ != nullptr)
+    {
+        stage_->Update();
+    }
 }
 
-//描画処理
 void StageManager::Draw(void)
 {
-	if (stage_)
-	{
-		stage_->Draw();
-	}
+    if (stage_ != nullptr)
+    {
+        stage_->Draw();
+    }
 
-	gameHUD_->Draw();
+    gameHUD_->Draw();
 
-	if (fader_) fader_->Draw();
+    if (fader_ != nullptr)
+    {
+        fader_->Draw();
+    }
 }
 
-//ステージ遷移
 void StageManager::ChangeStage(STAGE_ID nextId)
 {
-	if (isStageChanging_) return;  // 二重呼び出し防止
+    if (isStageChanging_)
+    {
+        return;
+    }
 
-	waitStageId_ = nextId;
+    waitStageId_ = nextId;
 
-	// 当たり判定をクリア
-	CollisionManager::GetInstance().Clear();
+    CollisionManager::GetInstance().Clear();
 
-	// フェードアウト開始
-	if (fader_)
-	{
-		fader_->SetFade(Fader::STATE::FADE_OUT);
-	}
-	isStageChanging_ = true;
+    if (fader_ != nullptr)
+    {
+        fader_->SetFade(Fader::STATE::FADE_OUT);
+    }
+
+    isStageChanging_ = true;
 }
 
-//ステージ遷移本体
 void StageManager::DoChangeStage(STAGE_ID stageId)
 {
-	auto& sound = SoundManager::GetInstance();
+    auto& soundManager = SoundManager::GetInstance();
 
-	//現在のステージがアトリエならBGMを停止する
-	if (stageId_ == STAGE_ID::ATELIER)
-	{
-		sound.Stop(SoundManager::SOUND::BGM_ATELIER);
-	}
-	else if (stageId_ == STAGE_ID::GUILD)
-	{
-		sound.Stop(SoundManager::SOUND::BGM_GUILD);
-	}
-	else if (stageId_ == STAGE_ID::GARDEN)
-	{
-		sound.Stop(SoundManager::SOUND::BGM_GARDEN_DAY);
-		sound.Stop(SoundManager::SOUND::BGM_GARDEN_NIGHT);
-	}
+    if (stageId_ == STAGE_ID::ATELIER)
+    {
+        soundManager.Stop(SoundManager::SOUND::BGM_ATELIER);
+    }
+    else if (stageId_ == STAGE_ID::GUILD)
+    {
+        soundManager.Stop(SoundManager::SOUND::BGM_GUILD);
+    }
+    else if (stageId_ == STAGE_ID::GARDEN)
+    {
+        soundManager.Stop(SoundManager::SOUND::BGM_GARDEN_DAY);
+        soundManager.Stop(SoundManager::SOUND::BGM_GARDEN_NIGHT);
+    }
 
+    if (stage_ != nullptr)
+    {
+        stage_->Release();
+        delete stage_;
+        stage_ = nullptr;
+    }
 
-	// 既存のステージを削除
-	if (stage_ != nullptr)
-	{
-		stage_->Release();
-		delete stage_;
-		stage_ = nullptr;
-	}
+    stageId_ = stageId;
 
-	stageId_ = stageId;
+    switch (stageId_)
+    {
+    case STAGE_ID::ATELIER:
+    {
+        stage_ = new AtelierStage(this);
+        PlayerStop::GetInstance().ResumeMovement();
+        Application::GetInstance().SetActiveUI(false);
+        break;
+    }
+    case STAGE_ID::GARDEN:
+    {
+        stage_ = new GardenStage(this);
+        PlayerStop::GetInstance().ResumeMovement();
+        Application::GetInstance().SetActiveUI(false);
+        break;
+    }
+    case STAGE_ID::GUILD:
+    {
+        stage_ = new GuildStage(this);                  // コンパイルエラー箇所を修正
+        PlayerStop::GetInstance().ResumeMovement();
+        Application::GetInstance().SetActiveUI(false);
+        break;
+    }
+    case STAGE_ID::PRIVATE_ROOM:
+    {
+        stage_ = new PrivateRoomStage();
+        PlayerStop::GetInstance().ResumeMovement();
+        Application::GetInstance().SetActiveUI(false);
+        break;
+    }
+    case STAGE_ID::NONE:
+    {
+        break;
+    }
+    }
 
-	switch (stageId_)
-	{
-	case StageManager::STAGE_ID::ATELIER:
-		stage_ = new AtelierStage(this);
-		PlayerStop::GetInstance().ResumeMovement();
-		Application::GetInstance().SetActiveUI(false);
-		break;
+    if (stage_ != nullptr)
+    {
+        stage_->Init();
+    }
 
-	case StageManager::STAGE_ID::GARDEN:
-		stage_ = new GardenStage(this);
-		PlayerStop::GetInstance().ResumeMovement();
-		Application::GetInstance().SetActiveUI(false);
-		break;
+    ResetDeltaTime();
 
-	case StageManager::STAGE_ID::GUILD:
-		stage_ = new GuildStage(this);
-		PlayerStop::GetInstance().ResumeMovement();
-		Application::GetInstance().SetActiveUI(false);
-		break;
-
-	case StageManager::STAGE_ID::PRIVATE_ROOM:
-		stage_ = new PrivateRoomStage();
-		PlayerStop::GetInstance().ResumeMovement();
-		Application::GetInstance().SetActiveUI(false);
-		break;
-	}
-
-	if (stage_)
-	{
-		stage_->Init();
-	}
-
-	ResetDeltaTime();
-
-	waitStageId_ = STAGE_ID::NONE;
+    waitStageId_ = STAGE_ID::NONE;
 }
 
-//デルタタイムのリセット
 void StageManager::ResetDeltaTime(void)
 {
-	deltaTime_ = 1.0f / 60.0f;
-	preTime_ = std::chrono::system_clock::now();
+    const float DEFAULT_DELTA_TIME = 1.0f / 60.0f;      // デフォルトのデルタタイム
+
+    deltaTime_ = DEFAULT_DELTA_TIME;
+    previousTime_ = std::chrono::system_clock::now();
 }
 
-//ステージIDの取得
-StageManager::STAGE_ID StageManager::GetStageID() const
+StageManager::STAGE_ID StageManager::GetStageID(void) const
 {
-	return stageId_;
+    return stageId_;
 }
 
-//デルタタイムの取得
 float StageManager::GetDeltaTime(void) const
 {
-	return deltaTime_;
+    return deltaTime_;
 }
 
 std::shared_ptr<Player> StageManager::GetPlayer(void)
 {
-	return player_;
+    return player_;
 }
 
 void StageManager::Fade(void)
 {
-	if (!fader_) return;
+    if (fader_ == nullptr)
+    {
+        return;
+    }
 
-	switch (fader_->GetState())
-	{
-	case Fader::STATE::FADE_OUT:
-		if (fader_->IsEnd())
-		{
-			if (waitStageId_ != STAGE_ID::NONE)
-			{
-				DoChangeStage(waitStageId_);
-				waitStageId_ = STAGE_ID::NONE;
-				fader_->SetFade(Fader::STATE::FADE_IN);
-				if (player_)
-				{
-					switch (stageId_)
-					{
-					case STAGE_ID::GUILD:
-						player_->SetPos({ 0, 20, -200 });
-						break;
-					case STAGE_ID::ATELIER:
-						player_->SetPos({ 0, 20, -200 });
-						break;
-					case STAGE_ID::GARDEN:
-						player_->SetPos({ 0, 20, -200 });
-						break;
-					default:
-						break;
-					}
-				}
-			}
-		}
-		break;
+    switch (fader_->GetState())
+    {
+    case Fader::STATE::FADE_OUT:
+    {
+        if (fader_->IsEnd())
+        {
+            if (waitStageId_ != STAGE_ID::NONE)
+            {
+                DoChangeStage(waitStageId_);
+                waitStageId_ = STAGE_ID::NONE;
+                fader_->SetFade(Fader::STATE::FADE_IN);
 
-	case Fader::STATE::FADE_IN:
-		if (fader_->IsEnd())
-		{
-			fader_->SetFade(Fader::STATE::NONE);
-			isStageChanging_ = false;
-		}
-		break;
+                if (player_ != nullptr)
+                {
+                    const float DEFAULT_PLAYER_X = 0.0f;            // プレイヤー初期位置X
+                    const float DEFAULT_PLAYER_Y = 20.0f;           // プレイヤー初期位置Y
+                    const float DEFAULT_PLAYER_Z = -200.0f;         // プレイヤー初期位置Z
 
-	default:
-		break;
-	}
+                    VECTOR defaultPosition = {
+                        DEFAULT_PLAYER_X,
+                        DEFAULT_PLAYER_Y,
+                        DEFAULT_PLAYER_Z
+                    };
+
+                    switch (stageId_)
+                    {
+                    case STAGE_ID::GUILD:
+                    case STAGE_ID::ATELIER:
+                    case STAGE_ID::GARDEN:
+                    {
+                        player_->SetPosition(defaultPosition);
+                        break;
+                    }
+                    default:
+                    {
+                        break;
+                    }
+                    }
+                }
+            }
+        }
+        break;
+    }
+    case Fader::STATE::FADE_IN:
+    {
+        if (fader_->IsEnd())
+        {
+            fader_->SetFade(Fader::STATE::NONE);
+            isStageChanging_ = false;
+        }
+        break;
+    }
+    default:
+    {
+        break;
+    }
+    }
 }
-

@@ -1,544 +1,554 @@
 ﻿#include "Utility.h"
 
-#include<DxLib.h>
-#include<string>
-#include<fstream>
-#include<sstream>
-#include<vector>
-#include<math.h>
+#include <DxLib.h>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <math.h>
 
 #include "../Manager/Generic/SceneManager.h"
 
-// 小数値を四捨五入して整数に変換する
-int Utility::Round(float v)
+int Utility::Round(float value)
 {
-	return static_cast<int>(roundf(v));
+    return static_cast<int>(roundf(value));
 }
 
-// 文字列を指定された区切り文字で分割する
 std::vector<std::string> Utility::Split(std::string& line, char delimiter)
 {
-	std::istringstream stream(line);
-	std::string field;
-	std::vector<std::string> result;
+    std::istringstream stream(line);
+    std::string field;
+    std::vector<std::string> result;
 
-	while (getline(stream, field, delimiter))
-	{
-		result.push_back(field);
-	}
+    while (getline(stream, field, delimiter))
+    {
+        result.push_back(field);
+    }
 
-	return result;
+    return result;
 }
 
-// ラジアンを度に変換する（double）
-double Utility::Rad2DegD(double rad)
+double Utility::RadianToDegreeDouble(double radian)
 {
-	return rad * (180.0 / DX_PI);
+    const double HALF_CIRCLE_DEGREE = 180.0;
+    return radian * (HALF_CIRCLE_DEGREE / DX_PI);
 }
 
-// ラジアンを度に変換する（float）
-float Utility::Rad2DegF(float rad)
+float Utility::RadianToDegreeFloat(float radian)
 {
-	return rad * (180.0f / DX_PI_F);
+    const float HALF_CIRCLE_DEGREE = 180.0f;
+    return radian * (HALF_CIRCLE_DEGREE / DX_PI_F);
 }
 
-// ラジアンを度に変換して整数にする
-int Utility::Rad2DegI(int rad)
+int Utility::RadianToDegreeInt(int radian)
 {
-	return rad * Round(180.0f / DX_PI_F);
+    const float HALF_CIRCLE_DEGREE = 180.0f;
+    return radian * Round(HALF_CIRCLE_DEGREE / DX_PI_F);
 }
 
-// 度をラジアンに変換する（double）
-double Utility::Deg2RadD(double deg)
+double Utility::DegreeToRadianDouble(double degree)
 {
-	return deg * (DX_PI / 180.0);
+    const double HALF_CIRCLE_DEGREE = 180.0;
+    return degree * (DX_PI / HALF_CIRCLE_DEGREE);
 }
 
-// 度をラジアンに変換する（float）
-float Utility::Deg2RadF(float deg)
+float Utility::DegreeToRadianFloat(float degree)
 {
-	return deg * (DX_PI_F / 180.0f);
+    const float HALF_CIRCLE_DEGREE = 180.0f;
+    return degree * (DX_PI_F / HALF_CIRCLE_DEGREE);
 }
 
-// 度をラジアンに変換して整数にする
-int Utility::Deg2RadI(int deg)
+int Utility::DegreeToRadianInt(int degree)
 {
-	return deg * Round(DX_PI_F / 180.0f);
+    const float HALF_CIRCLE_DEGREE = 180.0f;
+    return degree * Round(DX_PI_F / HALF_CIRCLE_DEGREE);
 }
 
-// 角度を0〜360度の範囲に正規化する
-double Utility::DegIn360(double deg)
+double Utility::DegreeIn360(double degree)
 {
-	deg = fmod(deg, 360.0);
-	if (deg < 0.0f)
-	{
-		deg += 360.0;
-	}
-	
-	return deg;
+    const double FULL_CIRCLE_DEGREE = 360.0;
+    const double MINIMUM_DEGREE = 0.0;
+    
+    degree = fmod(degree, FULL_CIRCLE_DEGREE);
+    if (degree < MINIMUM_DEGREE)
+    {
+        degree += FULL_CIRCLE_DEGREE;
+    }
+    
+    return degree;
 }
 
-// ラジアンを0〜2πの範囲に正規化する
-double Utility::RadIn2PI(double rad)
+double Utility::RadianIn2PI(double radian)
 {
-	rad = fmod(rad, DX_TWO_PI);
-	if (rad < 0.0)
-	{
-		rad += DX_TWO_PI;
-	}
+    const double MINIMUM_RADIAN = 0.0;
+    
+    radian = fmod(radian, DX_TWO_PI);
+    if (radian < MINIMUM_RADIAN)
+    {
+        radian += DX_TWO_PI;
+    }
 
-	return rad;
+    return radian;
 }
 
-// ラジアン単位でどちら回りが近いかを判定する（-1=反時計回り、1=時計回り）
-int Utility::DirNearAroundRad(float from, float to)
+int Utility::DirectionNearAroundRadian(float from, float to)
 {
-	float ret = 1.0f;
+    const float CLOCKWISE = 1.0f;
+    const float COUNTER_CLOCKWISE = -1.0f;
+    const float ZERO_DIFFERENCE = 0.0f;
 
-	float diff = to - from;
+    float result = CLOCKWISE;
+    float difference = to - from;
 
-	if (diff >= 0.0f)
-	{
+    if (difference >= ZERO_DIFFERENCE)
+    {
+        if (difference > DX_PI_F)
+        {
+            result = COUNTER_CLOCKWISE;
+        }
+        else
+        {
+            result = CLOCKWISE;
+        }
+    }
+    else
+    {
+        if (difference < -DX_PI_F)
+        {
+            result = CLOCKWISE;
+        }
+        else
+        {
+            result = COUNTER_CLOCKWISE;
+        }
+    }
 
-		//比較元よりも時計回りに位置する
-
-		if (diff > DX_PI_F)
-		{
-
-			//でも、180度以上離れているので、反時計回りの方が近い
-			ret = -1.0f;
-		}
-		else
-		{
-			//時計回り
-			ret = 1.0f;
-		}
-
-	}
-	else
-	{
-
-		//比較元よりも反時計回りに位置する
-
-		if (diff < -DX_PI_F)
-		{
-
-			//でも、180度以上離れているので、時計回りの方が近い
-			ret = 1.0f;
-		}
-		else
-		{
-
-			//反時計回り
-			ret = -1.0f;
-		}
-	}
-
-	return static_cast<int>(ret);
+    return static_cast<int>(result);
 }
 
-// 度単位でどちら回りが近いかを判定する（-1=反時計回り、1=時計回り）
-int Utility::DirNearAroundDeg(float from, float to)
+int Utility::DirectionNearAroundDegree(float from, float to)
 {
-	float ret = 1.0f;
+    const float CLOCKWISE = 1.0f;
+    const float COUNTER_CLOCKWISE = -1.0f;
+    const float ZERO_DIFFERENCE = 0.0f;
+    const float HALF_CIRCLE = 180.0f;
+    const float NEGATIVE_HALF_CIRCLE = -180.0f;
 
-	float diff = to - from;
+    float result = CLOCKWISE;
+    float difference = to - from;
 
-	if (diff >= 0.0f)
-	{
-
-
-		//比較元よりも時計回りに位置する
-
-		if (diff > 180.0f)
-		{
-
-			//でも、180度以上離れているので、反時計回りの方が近い
-			ret = -1.0f;
-		}
-		else
-		{
-			//時計回り
-			ret = 1.0f;
-		}
-	}
-	else
-	{
-
-		//比較元よりも反時計回りに位置する
-
-		if (diff < -180.0f)
-		{
-			//でも、180度以上離れているので。時計回りの方が近い
-			ret = 1.0f;
-		}
-		else
-		{
-			//時計回り
-			ret = -1.0f;
-		}
-	}
-	
-	return static_cast<int>(ret);
+    if (difference >= ZERO_DIFFERENCE)
+    {
+        if (difference > HALF_CIRCLE)
+        {
+            result = COUNTER_CLOCKWISE;
+        }
+        else
+        {
+            result = CLOCKWISE;
+        }
+    }
+    else
+    {
+        if (difference < NEGATIVE_HALF_CIRCLE)
+        {
+            result = CLOCKWISE;
+        }
+        else
+        {
+            result = COUNTER_CLOCKWISE;
+        }
+    }
+    
+    return static_cast<int>(result);
 }
 
-// 整数値を線形補間する
-int Utility::Lerp(int start, int end, float t)
+int Utility::Lerp(int start, int end, float factor)
 {
-	//線形補間
-	if (t >= 1.0f)
-	{
-		return end;
-	}
+    const float INTERPOLATION_MAX = 1.0f;
+    if (factor >= INTERPOLATION_MAX)
+    {
+        return end;
+    }
 
-	int ret = start;
+    int result = start;
+    result += Round(factor * static_cast<float>(end - start));
 
-	ret += Round(t * static_cast<float>(end - start));
-
-	return ret;
+    return result;
 }
 
-// 浮動小数点値を線形補間する
-float Utility::Lerp(float start, float end, float t)
+float Utility::Lerp(float start, float end, float factor)
 {
-	//線形補間
-	if (t >= 1.0f)
-	{
-		return end;
-	}
+    const float INTERPOLATION_MAX = 1.0f;
+    if (factor >= INTERPOLATION_MAX)
+    {
+        return end;
+    }
 
-	float ret = start;
+    float result = start;
+    result += factor * (end - start);
 
-	ret += t * (end - start);
-
-	return ret;
+    return result;
 }
 
-// 倍精度浮動小数点値を線形補間する
-double Utility::Lerp(double start, double end, double t)
+double Utility::Lerp(double start, double end, double factor)
 {
-	//線形補間
-	if (t >= 1.0)
-	{
-		return end;
-	}
+    const double INTERPOLATION_MAX = 1.0;
+    if (factor >= INTERPOLATION_MAX)
+    {
+        return end;
+    }
 
-	double ret = start;
+    double result = start;
+    result += factor * (end - start);
 
-	ret += t * (end - start);
-
-	return ret;
+    return result;
 }
 
-// 2Dベクトルを線形補間する
-Vector2 Utility::Lerp(const Vector2& start, const Vector2& end, float t)
+Vector2 Utility::Lerp(const Vector2& start, const Vector2& end, float factor)
 {
-	//線形補間
-	if (t >= 1.0f)
-	{
-		return end;
-	}
+    const float INTERPOLATION_MAX = 1.0f;
+    if (factor >= INTERPOLATION_MAX)
+    {
+        return end;
+    }
 
-	Vector2 ret = start;
+    Vector2 result = start;
+    result.x += Round(factor * static_cast<float>((end.x - start.x)));
+    result.y += Round(factor * static_cast<float>((end.y - start.y)));
 
-	ret.x += Round(t * static_cast<float>((end.x - start.x)));
-	ret.y += Round(t * static_cast<float>((end.y - start.y)));
-
-	return end;
+    return result;
 }
 
-// 3Dベクトルを線形補間する
-VECTOR Utility::Lerp(const VECTOR& start, const VECTOR& end, float t)
+VECTOR Utility::Lerp(const VECTOR& start, const VECTOR& end, float factor)
 {
-	//線形補間
-	if (t >= 1.0f)
-	{
-		return end;
-	}
+    const float INTERPOLATION_MAX = 1.0f;
+    if (factor >= INTERPOLATION_MAX)
+    {
+        return end;
+    }
 
-	VECTOR ret = start;
+    VECTOR result = start;
+    result.x += factor * (end.x - start.x);
+    result.y += factor * (end.y - start.y);
+    result.z += factor * (end.z - start.z);
 
-	ret.x += t * (end.x - start.x);
-	ret.y += t * (end.y - start.y);
-	ret.z += t * (end.z - start.z);
-
-	return ret;
+    return result;
 }
 
-// 度単位で角度を線形補間し、360度を考慮する
-double Utility::LerpDeg(double start, double end, double t)
+double Utility::LerpDegree(double start, double end, double factor)
 {
-	double ret;
+    double result;
+    double difference = end - start;
+    
+    const double HALF_CIRCLE = 180.0;
+    const double NEGATIVE_HALF_CIRCLE = -180.0;
+    const double FULL_CIRCLE = 360.0;
+    const double MINIMUM_DEGREE = 0.0;
 
-	double diff = end - start;
+    if (difference < NEGATIVE_HALF_CIRCLE)
+    {
+        end += FULL_CIRCLE;
+        result = Lerp(start, end, factor);
+        
+        if (result >= FULL_CIRCLE)
+        {
+            result -= FULL_CIRCLE;
+        }
+    }
+    else if (difference > HALF_CIRCLE)
+    {
+        end -= FULL_CIRCLE;
+        result = Lerp(start, end, factor);
 
-	if (diff < -180.0)
-	{
-		end += 360.0;
+        if (result < MINIMUM_DEGREE)
+        {
+            result += FULL_CIRCLE;
+        }
+    }
+    else
+    {
+        result = Lerp(start, end, factor);
+    }
 
-		ret = Lerp(start, end, t);
-		
-		if (ret >= 360.0)
-		{
-			ret -= 360.0;
-		}
-	}
-	else if (diff > 180.0)
-	{
-		end -= 360.0;
-
-		ret = Lerp(start, end, t);
-
-		if (ret < 0.0)
-		{
-			ret += 360.0;
-		}
-	}
-	else
-	{
-		ret = Lerp(start, end, t);
-	}
-
-	return ret;
+    return result;
 }
 
-// 色（COLOR_F）を線形補間する
-COLOR_F Utility::Lerp(const COLOR_F& start, const COLOR_F& end, float t)
+COLOR_F Utility::Lerp(const COLOR_F& start, const COLOR_F& end, float factor)
 {
-	//線形補間
-	if (t >= 1.0f)
-	{
-		return end;
-	}
+    const float INTERPOLATION_MAX = 1.0f;
+    if (factor >= INTERPOLATION_MAX)
+    {
+        return end;
+    }
 
-	COLOR_F ret = start;
+    COLOR_F result = start;
+    result.r += factor * (end.r - start.r);
+    result.g += factor * (end.g - start.g);
+    result.b += factor * (end.b - start.b);
+    result.a += factor * (end.a - start.a);
 
-	ret.r += t * (end.r - start.r);
-	ret.g += t * (end.g - start.g);
-	ret.b += t * (end.b - start.b);
-	ret.a += t * (end.a - start.a);
-
-	return ret;
+    return result;
 }
 
-// 2Dベクトルの3点間でベジエ補間する
-Vector2 Utility::Bezier(const Vector2& p1, const Vector2& p2, const Vector2& p3, float t)
+Vector2 Utility::Bezier(
+    const Vector2& point1, 
+    const Vector2& point2, 
+    const Vector2& point3, 
+    float factor)
 {
-	Vector2 a = Lerp(p1, p2, t);
-	Vector2 b = Lerp(p2, p3, t);
+    Vector2 intermediateA = Lerp(point1, point2, factor);
+    Vector2 intermediateB = Lerp(point2, point3, factor);
 
-	return Lerp(a, b, t);
+    return Lerp(intermediateA, intermediateB, factor);
 }
 
-// 3Dベクトルの3点間でベジエ補間する
-VECTOR Utility::Bezier(const VECTOR& p1, const VECTOR& p2, const VECTOR& p3, float t)
+VECTOR Utility::Bezier(
+    const VECTOR& point1, 
+    const VECTOR& point2, 
+    const VECTOR& point3, 
+    float factor)
 {
-	VECTOR a = Lerp(p1, p2, t);
-	VECTOR b = Lerp(p2, p3, t);
+    VECTOR intermediateA = Lerp(point1, point2, factor);
+    VECTOR intermediateB = Lerp(point2, point3, factor);
 
-	return Lerp(a, b, t);
+    return Lerp(intermediateA, intermediateB, factor);
 }
 
-// XZ平面上で中心点を軸に回転後の座標を求める
-VECTOR Utility::RotXZPos(const VECTOR& centerPos, const VECTOR& radiusPos, float rad)
+VECTOR Utility::RotateXZPosition(
+    const VECTOR& centerPosition, 
+    const VECTOR& radiusPosition, 
+    float radian)
 {
-	float x = ((radiusPos.x - centerPos.x) * cosf(rad)) - ((radiusPos.z - centerPos.z) * sinf(rad));
-	float z = ((radiusPos.x - centerPos.x) * cosf(rad)) + ((radiusPos.z - centerPos.z) * cosf(rad));
+    float calculatedX = ((radiusPosition.x - centerPosition.x) * cosf(radian)) - 
+                        ((radiusPosition.z - centerPosition.z) * sinf(radian));
+                        
+    float calculatedZ = ((radiusPosition.x - centerPosition.x) * sinf(radian)) + 
+                        ((radiusPosition.z - centerPosition.z) * cosf(radian));
 
-	return VGet(centerPos.x + x, radiusPos.y, centerPos.z + z);
+    return VGet(
+        centerPosition.x + calculatedX, 
+        radiusPosition.y, 
+        centerPosition.z + calculatedZ
+    );
 }
 
-// 2Dベクトルの長さを求める
-double Utility::Magnitude(const Vector2& v)
+double Utility::Magnitude(const Vector2& vector)
 {
-	return sqrt((v.x * v.x) + (v.y * v.y));
+    return sqrt((vector.x * vector.x) + (vector.y * vector.y));
 }
 
-// 3Dベクトルの長さを求める
-double Utility::Magnitude(const VECTOR& v)
+double Utility::Magnitude(const VECTOR& vector)
 {
-	return sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+    return sqrt((vector.x * vector.x) + (vector.y * vector.y) + (vector.z * vector.z));
 }
 
-// 3Dベクトルの長さをfloatで求める
-float Utility::MagnitudeF(const VECTOR& v)
+float Utility::MagnitudeF(const VECTOR& vector)
 {
-	return sqrtf((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+    return sqrtf((vector.x * vector.x) + (vector.y * vector.y) + (vector.z * vector.z));
 }
 
-// 2Dベクトルの長さの2乗を求める
-int Utility::SqrMagnitude(const Vector2& v)
+int Utility::SqrMagnitude(const Vector2& vector)
 {
-	return v.x * v.x + v.y * v.y;
+    return (vector.x * vector.x) + (vector.y * vector.y);
 }
 
-// 3Dベクトルの長さの2乗をfloatで求める
-float Utility::SqrMagnitudeF(const VECTOR& v)
+float Utility::SqrMagnitudeF(const VECTOR& vector)
 {
-	return v.x * v.x + v.y * v.y + v.z * v.z;
+    return (vector.x * vector.x) + (vector.y * vector.y) + (vector.z * vector.z);
 }
 
-// 3Dベクトルの長さの2乗を求める
-double Utility::SqrMagnitude(const VECTOR& v)
+double Utility::SqrMagnitude(const VECTOR& vector)
 {
-	return v.x * v.x + v.y * v.y + v.z * v.z;
+    return (vector.x * vector.x) + (vector.y * vector.y) + (vector.z * vector.z);
 }
 
-// 2つの3Dベクトル間の距離の2乗を求める
-double Utility::SqrMagnitude(const VECTOR& v1, const VECTOR& v2)
+double Utility::SqrMagnitude(const VECTOR& vector1, const VECTOR& vector2)
 {
-	return pow(v2.x - v1.x, 2) + pow(v2.y - v1.y, 2) + pow(v2.z - v1.z, 2);
+    const double SQUARE_POWER = 2.0;
+    
+    double differenceX = pow(vector2.x - vector1.x, SQUARE_POWER);
+    double differenceY = pow(vector2.y - vector1.y, SQUARE_POWER);
+    double differenceZ = pow(vector2.z - vector1.z, SQUARE_POWER);
+    
+    return differenceX + differenceY + differenceZ;
 }
 
-// 2つの2Dベクトル間の距離を求める
-double Utility::Distance(const Vector2& v1, const Vector2& v2)
+double Utility::Distance(const Vector2& vector1, const Vector2& vector2)
 {
-	return sqrt(pow(v2.x - v1.x, 2) + pow(v2.y - v1.y, 2));
+    const double SQUARE_POWER = 2.0;
+    
+    double differenceX = pow(vector2.x - vector1.x, SQUARE_POWER);
+    double differenceY = pow(vector2.y - vector1.y, SQUARE_POWER);
+    
+    return sqrt(differenceX + differenceY);
 }
 
-// 2つの3Dベクトル間の距離を求める
-double Utility::Distance(const VECTOR& v1, const VECTOR& v2)
+double Utility::Distance(const VECTOR& vector1, const VECTOR& vector2)
 {
-	return sqrt(pow(v2.x - v1.x, 2) + pow(v2.y - v1.y, 2) + pow(v2.z - v1.z, 2));
+    const double SQUARE_POWER = 2.0;
+    
+    double differenceX = pow(vector2.x - vector1.x, SQUARE_POWER);
+    double differenceY = pow(vector2.y - vector1.y, SQUARE_POWER);
+    double differenceZ = pow(vector2.z - vector1.z, SQUARE_POWER);
+    
+    return sqrt(differenceX + differenceY + differenceZ);
 }
 
-// 2つの3Dベクトルが等しいかどうかを判定する
-bool Utility::Equals(const VECTOR& v1, const VECTOR& v2)
+bool Utility::Equals(const VECTOR& vector1, const VECTOR& vector2)
 {
-	if (v1.x == v2.x && v1.y == v2.y && v1.z == v2.z)
-	{
-		return true;
-	}
+    if (vector1.x == vector2.x && vector1.y == vector2.y && vector1.z == vector2.z)
+    {
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
-// ベクトルがゼロベクトルかどうかを判定する
-bool Utility::EqualsVZero(const VECTOR& v1)
+bool Utility::EqualsVZero(const VECTOR& vector)
 {
-	const VECTOR& v2 = VECTOR_ZERO;
-	if (v1.x == v2.x && v1.y == v2.y && v1.z == v2.z)
-	{
-		return true;
-	}
-	
-	return false;
+    const VECTOR& zeroVector = VECTOR_ZERO;
+    
+    if (vector.x == zeroVector.x && vector.y == zeroVector.y && vector.z == zeroVector.z)
+    {
+        return true;
+    }
+    
+    return false;
 }
 
-// 2Dベクトルを正規化して3Dベクトルで返す
-VECTOR Utility::Normalize(const Vector2& v)
+VECTOR Utility::Normalize(const Vector2& vector)
 {
-	VECTOR ret = VGet(
-		static_cast<float>(v.x),
-		static_cast<float>(v.y),
-		0.0f
-		);
+    const float Z_AXIS_VALUE = 0.0f;
+    
+    VECTOR result = VGet(
+        static_cast<float>(vector.x),
+        static_cast<float>(vector.y),
+        Z_AXIS_VALUE
+    );
 
-	float len = static_cast<float>(Magnitude(v));
+    float length = static_cast<float>(Magnitude(vector));
 
-	ret.x /= len;
-	ret.y /= len;
-	ret.z /= len;
+    result.x /= length;
+    result.y /= length;
+    result.z /= length;
 
-	return ret;
+    return result;
 }
 
-// 3Dベクトルを正規化する（ゼロベクトルのときはそのまま返す）
-VECTOR Utility::VNormalize(const VECTOR& v)
+VECTOR Utility::VNormalize(const VECTOR& vector)
 {
-	if (Utility::EqualsVZero(v))
-	{
-		//Quaternion計算でゼロを渡して、
-		//エラー(-1, -1, -1)が返ってくると困る
-		return v;
-	}
-	return VNorm(v);
+    if (Utility::EqualsVZero(vector))
+    {
+        return vector;
+    }
+    
+    return VNorm(vector);
 }
 
-// 2つの3Dベクトルのなす角（度）を求める
-double Utility::AngleDeg(const VECTOR& from, const VECTOR& to)
+double Utility::AngleDegree(const VECTOR& fromVector, const VECTOR& toVector)
 {
-	auto fLen = SqrMagnitude(from);
-	auto tLen = SqrMagnitude(to);
-	auto denominator = sqrt(fLen * tLen);
-	if (denominator < kEpsilonNormalSqrt)
-	{
-		return 0.0f;
-	}
+    auto fromLength = SqrMagnitude(fromVector);
+    auto toLength = SqrMagnitude(toVector);
+    auto denominator = sqrt(fromLength * toLength);
+    
+    const double ZERO_ANGLE = 0.0;
+    
+    if (denominator < EPSILON_NORMAL_SQRT)
+    {
+        return ZERO_ANGLE;
+    }
 
-	auto dot = VDot(from, to) / denominator;
+    auto dotProduct = VDot(fromVector, toVector) / denominator;
 
-	if (dot < -1.0f)
-	{
-		dot = -1.0f;
-	}
-	if (dot > 1.0f)
-	{
-		dot = 1.0f;
-	}
+    const float DOT_MIN = -1.0f;
+    const float DOT_MAX = 1.0f;
 
-	return acos(dot) * (180.0 / DX_PI);
+    if (dotProduct < DOT_MIN)
+    {
+        dotProduct = DOT_MIN;
+    }
+    
+    if (dotProduct > DOT_MAX)
+    {
+        dotProduct = DOT_MAX;
+    }
 
+    const double HALF_CIRCLE_DEGREE = 180.0;
+    
+    return acos(dotProduct) * (HALF_CIRCLE_DEGREE / DX_PI);
 }
 
-// 指定方向に線と終点に球体を描画する
-void Utility::DrawLineDir(const VECTOR& pos, const VECTOR& dir, int color, float len)
+void Utility::DrawLineDirection(
+    const VECTOR& position, 
+    const VECTOR& direction, 
+    int color, 
+    float length)
 {
-	auto nDir = Utility::VNormalize(dir);
-	auto sPos = VAdd(pos, VScale(nDir, -len));
-	auto ePos = VAdd(pos, VScale(nDir, len));
+    auto normalizedDirection = Utility::VNormalize(direction);
+    auto startPosition = VAdd(position, VScale(normalizedDirection, -length));
+    auto endPosition = VAdd(position, VScale(normalizedDirection, length));
 
-	DrawLine3D(sPos, ePos, color);
-	DrawSphere3D(ePos, 5.0f, 5, color, color, true);
+    DrawLine3D(startPosition, endPosition, color);
+    
+    const float SPHERE_RADIUS = 5.0f;
+    const int SPHERE_DIVISIONS = 5;
+    
+    DrawSphere3D(
+        endPosition, 
+        SPHERE_RADIUS, 
+        SPHERE_DIVISIONS, 
+        color, 
+        color, 
+        true
+    );
 }
 
-// 回転行列を基にXYZ軸方向の線を描画する
-void Utility::DrawLineXYZ(const VECTOR& pos, const MATRIX& rot, float len)
+void Utility::DrawLineXYZ(const VECTOR& position, const MATRIX& rotation, float length)
 {
-	VECTOR dir;
+    VECTOR direction;
 
-	// X
-	dir = VTransform(Utility::DIR_R, rot);
-	DrawLineDir(pos, dir, 0xff0000, len);
+    const int COLOR_RED = 0xff0000;
+    const int COLOR_GREEN = 0x00ff00;
+    const int COLOR_BLUE = 0x0000ff;
 
-	// Y
-	dir = VTransform(Utility::DIR_U, rot);
-	DrawLineDir(pos, dir, 0x00ff00, len);
+    direction = VTransform(Utility::DIRECTION_RIGHT, rotation);
+    DrawLineDirection(position, direction, COLOR_RED, length);
 
-	// Z
-	dir = VTransform(Utility::DIR_F, rot);
-	DrawLineDir(pos, dir, 0x0000ff, len);
+    direction = VTransform(Utility::DIRECTION_UP, rotation);
+    DrawLineDirection(position, direction, COLOR_GREEN, length);
+
+    direction = VTransform(Utility::DIRECTION_FORWARD, rotation);
+    DrawLineDirection(position, direction, COLOR_BLUE, length);
 }
 
-// クォータニオンを基にXYZ軸方向の線を描画する
-void Utility::DrawLineXYZ(const VECTOR& pos, const Quaternion& rot, float len)
+void Utility::DrawLineXYZ(const VECTOR& position, const Quaternion& rotation, float length)
 {
-	VECTOR dir;
+    VECTOR direction;
 
-	// X
-	dir = rot.GetRight();
-	DrawLineDir(pos, dir, 0xff0000, len);
+    const int COLOR_RED = 0xff0000;
+    const int COLOR_GREEN = 0x00ff00;
+    const int COLOR_BLUE = 0x0000ff;
 
-	// Y
-	dir = rot.GetUp();
-	DrawLineDir(pos, dir, 0x00ff00, len);
+    direction = rotation.GetRight();
+    DrawLineDirection(position, direction, COLOR_RED, length);
 
-	// Z
-	dir = rot.GetForward();
-	DrawLineDir(pos, dir, 0x0000ff, len);
+    direction = rotation.GetUp();
+    DrawLineDirection(position, direction, COLOR_GREEN, length);
+
+    direction = rotation.GetForward();
+    DrawLineDirection(position, direction, COLOR_BLUE, length);
 }
 
 bool Utility::IsTimeOver(float& totalTime, const float& waitTime)
 {
-	//デルタタイム
-	auto delta = SceneManager::GetInstance().GetDeltaTime();
-	totalTime += delta;
+    auto deltaTime = SceneManager::GetInstance().GetDeltaTime();
+    totalTime += deltaTime;
 
-	//待機時間を超過しているか判断
-	if (totalTime >= waitTime)
-	{
-		return true;
-	}
+    if (totalTime >= waitTime)
+    {
+        return true;
+    }
 
-	return false;
+    return false;
 }

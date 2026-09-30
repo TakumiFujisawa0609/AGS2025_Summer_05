@@ -2,9 +2,14 @@
 
 #include "ProductItem.h"
 
+/// @brief アースソードのクラス
 class EarthSword : public ProductItem
 {
 public:
-	EarthSword(void);
-};
 
+    /// @brief コンストラクタ
+    EarthSword(void);
+
+    /// @brief デストラクタ
+    ~EarthSword(void) override = default;
+};

@@ -2,9 +2,14 @@
 
 #include "MaterialItem.h"
 
+/// @brief 剣のクラス
 class Sword : public MaterialItem
 {
 public:
-	Sword(void);
-};
 
+    /// @brief コンストラクタ
+    Sword(void);
+
+    /// @brief デストラクタ
+    ~Sword(void) override = default;
+};

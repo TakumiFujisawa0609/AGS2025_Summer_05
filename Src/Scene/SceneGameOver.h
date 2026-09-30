@@ -1,37 +1,38 @@
 #pragma once
 
-#include<memory>
-
-#include"SceneBase.h"
+#include <memory>
+#include "SceneBase.h"
 
 class SceneUi;
 
+/// @brief ゲームオーバーシーンを管理するクラス
 class SceneGameOver : public SceneBase
 {
 public:
-	//コンストラクタ
-	SceneGameOver(void);
 
-	//デストラクタ
-	~SceneGameOver(void) = default;
+    /// @brief コンストラクタ
+    SceneGameOver(void);
 
-	//初期化処理
-	void Init(void)override;
+    /// @brief デストラクタ
+    virtual ~SceneGameOver(void) override = default;
 
-	//更新処理
-	void Update(void)override;
+    /// @brief 初期化処理
+    void Init(void) override;
 
-	//描画処理
-	void Draw(void)override;
+    /// @brief 更新処理
+    void Update(void) override;
 
-	//解放処理
-	void Release(void)override;
+    /// @brief 描画処理
+    void Draw(void) override;
+
+    /// @brief 解放処理
+    void Release(void) override;
 
 private:
-	//UI
-	std::unique_ptr<SceneUi> ui_;
 
-	//描画処理(デバッグ)
-	void DrawDebug(void);
+    // UIオブジェクト
+    std::unique_ptr<SceneUi> ui_;          
+
+    /// @brief 描画処理(デバッグ)
+    void DrawDebug(void);
 };
-

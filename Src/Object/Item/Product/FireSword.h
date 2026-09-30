@@ -2,9 +2,14 @@
 
 #include "ProductItem.h"
 
+/// @brief フレイムソードのクラス
 class FireSword : public ProductItem
 {
 public:
-	FireSword(void);
-};
 
+    /// @brief コンストラクタ
+    FireSword(void);
+
+    /// @brief デストラクタ
+    ~FireSword(void) override = default;
+};

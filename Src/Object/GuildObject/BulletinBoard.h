@@ -7,93 +7,104 @@
 #include "../Interact/HitObject.h"
 #include "../UnitBase.h"
 
+/// @brief 依頼を受けるための掲示板オブジェクトを管理するクラス
 class BulletinBoard : public HitObject, public UnitBase
 {
 public:
-	static constexpr int UI_ENTER_DELAY_FRAME = 10; // 入力無視フレーム数
 
-	static constexpr int UI_SHOW_DELAY_MAX = 30;  // UI持続猶予の最大フレーム数（適宜調整）
+    // UI遅延・距離定数関連
+    static constexpr int UI_ENTER_DELAY_FRAME = 10;     // 入力無視フレーム数
+    static constexpr int UI_SHOW_DELAY_MAX = 30;        // UI持続猶予の最大フレーム数
+    static constexpr float UI_CLOSE_DISTANCE = 100.0f;  // UIが閉じる距離
 
-	static constexpr float UI_CLOSE_DISTANCE = 100.0f;
+    // 配置・寸法定数関連
+    static constexpr float RADIUS = 50.0f;              // 当たり判定の球体半径
+    static constexpr VECTOR SCALE = { 0.05f, 0.05f, 0.05f }; // モデルのスケール
+    static constexpr VECTOR MODEL_POS = { 200.0f, -5.0f, 350.0f }; // 初期配置座標
 
+    /// @brief コンストラクタ
+    BulletinBoard(void);
 
-	//半径
-	static constexpr float RADIUS = 50.0f;
+    /// @brief デストラクタ
+    virtual ~BulletinBoard(void) override;
 
-	//モデルの大きさ
-	static constexpr VECTOR SCALE = { 0.05f,0.05f,0.05f };
+    /// @brief 初期化処理
+    void Init(void) override;
 
-	//モデルのモデル座標用
-	static constexpr VECTOR MODEL_POS = { 200.0f,-5.0f,350.0f };
+    /// @brief 更新処理
+    void Update(void) override;
 
-	//コンストラクタ
-	BulletinBoard(void);
+    /// @brief 3Dモデルを描画する
+    void DrawModel(void);
 
-	//デストラクタ
-	~BulletinBoard(void);
+    /// @brief UIを描画する
+    void DrawUI(void);
 
-	//初期化処理
-	void Init(void);
+    /// @brief 描画処理（標準用）
+    void Draw(void) override;
 
-	//更新処理
-	void Update(void) override;
+    /// @brief 解放処理
+    void Release(void) override;
 
-	void DrawModel(void);
+    /// @brief 当たり判定領域の最小座標を取得する
+    /// @return 最小座標
+    VECTOR GetHitMin(void) const override;
 
-	void DrawUI(void);
+    /// @brief 当たり判定領域の最大座標を取得する
+    /// @return 最大座標
+    VECTOR GetHitMax(void) const override;
 
-	//描画処理
-	void Draw(void) override;
+    /// @brief 当たり判定種別を取得する
+    /// @return 当たり判定種別（球体）
+    HIT_TYPE GetHitType(void) const override;
 
-	//解放
-	void Release(void)override;
+    /// @brief 当たり判定の中心座標を取得する
+    /// @return 中心座標
+    VECTOR GetHitPosition(void) const override;
 
-	VECTOR GetHitMin(void) const;
+    /// @brief 当たり判定の半径を取得する
+    /// @return 半径
+    float GetHitRadius(void) const override;
 
-	VECTOR GetHitMax(void) const;
+    /// @brief UIを表示状態にする
+    void ShowUI(void) override;
 
-	//HitObjectを継承
-	HIT_TYPE GetHitType(void) const override;
+    /// @brief UIを非表示状態にする
+    void HideUI(void) override;
 
-	VECTOR GetHitPosition(void) const override;
+    /// @brief オブジェクトが有効かどうかを取得する
+    /// @return 有効な場合はtrue
+    bool IsValid(void) const override;
 
-	float GetHitRadius(void) const override;
+    /// @brief プレイヤーと接触した時の処理
+    void OnPlayerHit(void) override;
 
-	//表示UI
-	void ShowUI(void) override;
+    /// @brief プレイヤーが離れた時の処理
+    void OnPlayerExit(void) override;
 
-	//非表示UI
-	void  HideUI(void) override;
+    /// @brief UI表示フラグを状態に合わせて更新する
+    /// @param isHit 接触しているかどうか
+    void UpdateUIVisibility(bool isHit) override;
 
-	bool IsValid(void) const override;
-
-	void OnPlayerHit(void) override;
-
-	void OnPlayerExit(void) override;
-
-	void UpdateUIVisibility(bool isHit) override;
-
-	bool GetQuestList(void) const;
+    /// @brief 依頼リストが表示中かどうかを取得する
+    /// @return 表示中の場合はtrue
+    bool GetQuestList(void) const;
 
 private:
-	//掲示板の背景画像のID
-	int imageBoardId_;
 
-	int imageQuest_;
+    // 画像ハンドル関連
+    int imageBoardId_;          // 掲示板背景画像のID
+    int imageQuest_;            // 依頼画像のID
 
-	int uiOpenWaitFrame_; // UIを開いたあとの猶予時間
+    // タイマー関連
+    int uiOpenWaitFrame_;       // UI展開後の猶予時間
+    int uiShowUIDelayFrames_;   // 表示遅延用フレーム
 
-	int uiShowUIDelayFrames_;
-	
-	//表示UIの判定
-	bool isShowUI_;
+    // 状態管理関連
+    bool isShowUI_;             // 接近UI表示フラグ
+    bool isShowQuestList_;      // クエストリスト表示フラグ
+    int selectedQuest_;         // 選択中のクエスト番号
 
-	//依頼リスト表示フラグ
-	bool isShowQuestList_;
-
-	//選択中の依頼番号
-	int selectedQuest_;
-
-	//依頼リスト
-	std::string questList_[3];
+    // クエストリストテキスト配列
+    std::string questList_[3];  
 };

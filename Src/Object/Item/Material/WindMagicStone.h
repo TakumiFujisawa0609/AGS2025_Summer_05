@@ -2,9 +2,14 @@
 
 #include "MaterialItem.h"
 
+/// @brief 風の魔石のクラス
 class WindMagicStone : public MaterialItem
 {
 public:
-	WindMagicStone(void);
-};
 
+    /// @brief コンストラクタ
+    WindMagicStone(void);
+
+    /// @brief デストラクタ
+    ~WindMagicStone(void) override = default;
+};

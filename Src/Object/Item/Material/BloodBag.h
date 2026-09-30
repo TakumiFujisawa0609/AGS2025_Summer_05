@@ -2,9 +2,14 @@
 
 #include "MaterialItem.h"
 
+/// @brief 血袋のクラス
 class BloodBag : public MaterialItem
 {
 public:
-	BloodBag(void);
-};
 
+    /// @brief コンストラクタ
+    BloodBag(void);
+
+    /// @brief デストラクタ
+    ~BloodBag(void) override = default;
+};

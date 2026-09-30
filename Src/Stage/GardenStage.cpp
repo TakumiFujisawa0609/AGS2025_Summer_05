@@ -22,167 +22,165 @@
 #include "../Object/Player.h"
 #include "../DrawUI/SceneUI/QuestUI.h"
 
-// コンストラクタ
 GardenStage::GardenStage(StageManager* stageManager)
-	: stageManager_(stageManager)
+    : stageManager_(stageManager),
+    blockManager_(nullptr),
+    plantManager_(nullptr),
+    oreManager_(nullptr),
+    fenceManager_(nullptr),
+    dateTimeManager_(nullptr),
+    currentTimeZone_(TimeZone::MORNING)
 {
-	blockManager_ = new BlockManager();
-	plantManager_ = new PlantManager();
-	oreManager_ = new OreManager();
-	fenceManager_ = new FenceManager();
-
-	TimeZone currentTimeZone_ = TimeZone::MORNING;
+    blockManager_ = new BlockManager();
+    plantManager_ = new PlantManager();
+    oreManager_ = new OreManager();
+    fenceManager_ = new FenceManager();
 }
 
-// 初期化処理
 void GardenStage::Init(void)
 {
-	auto& res = ResourceManager::GetInstance();
-	auto& sound = SoundManager::GetInstance();
-	
-	// CSVファイルからブロック読み込み
-	blockManager_->Init(Application::PATH_MAP_DATA);
+    auto& resourceManager = ResourceManager::GetInstance();
+    auto& soundManager = SoundManager::GetInstance();
 
-	// CSVデータ再取得
-	auto mapData = blockManager_->GetMapData();
+    blockManager_->Init(Application::PATH_MAP_DATA);
 
-	//カメラ設定
-	auto camera = SceneManager::GetInstance().GetCamera();
+    auto mapData = blockManager_->GetMapData();
 
-	camera->ChangeMode(Camera::MODE::FOLLOW);
+    auto camera = SceneManager::GetInstance().GetCamera();
 
-	//BGMの追加
-	sound.Add(SoundManager::TYPE::BGM, SoundManager::SOUND::BGM_GARDEN_DAY, res.Load(ResourceManager::SRC::BGM_GARDEN_DAY).handleId_);
-	sound.Add(SoundManager::TYPE::BGM, SoundManager::SOUND::BGM_GARDEN_NIGHT, res.Load(ResourceManager::SRC::BGM_GARDEN_NIGHT).handleId_);
+    camera->ChangeMode(Camera::MODE::FOLLOW);
 
-	//BGMの音量調整
-	sound.AdjustVolume(SoundManager::SOUND::BGM_GARDEN_DAY, 30);
-	sound.AdjustVolume(SoundManager::SOUND::BGM_GARDEN_NIGHT, 30);
+    const int BGM_VOLUME = 30;                          
 
-	sound.Play(SoundManager::SOUND::BGM_GARDEN_DAY);
+    soundManager.Add(
+        SoundManager::TYPE::BGM,
+        SoundManager::SOUND::BGM_GARDEN_DAY,
+        resourceManager.Load(ResourceManager::SRC::BGM_GARDEN_DAY).handleId_
+    );
+    soundManager.Add(
+        SoundManager::TYPE::BGM,
+        SoundManager::SOUND::BGM_GARDEN_NIGHT,
+        resourceManager.Load(ResourceManager::SRC::BGM_GARDEN_NIGHT).handleId_
+    );
 
-	auto& timeManager = TimeManager::GetInstance();
-	int hour = timeManager.GetGameHour();
+    soundManager.AdjustVolume(SoundManager::SOUND::BGM_GARDEN_DAY, BGM_VOLUME);
+    soundManager.AdjustVolume(SoundManager::SOUND::BGM_GARDEN_NIGHT, BGM_VOLUME);
 
+    soundManager.Play(SoundManager::SOUND::BGM_GARDEN_DAY);
 
-	// 植物初期化
-	plantManager_->Init(mapData, 50.0f);
+    const float PLANT_ORE_SCALE = 50.0f;                
 
-	oreManager_->Init(mapData, 50.0f);
+    plantManager_->Init(mapData, PLANT_ORE_SCALE);
+    oreManager_->Init(mapData, PLANT_ORE_SCALE);
+    fenceManager_->Init(mapData, PLANT_ORE_SCALE);
 
-	fenceManager_->Init(mapData, 50.0f);
+    warp_ = std::make_shared<Warp>(stageManager_);
+    warp_->Init();
 
-	warp_ = std::make_shared<Warp>(stageManager_);
-	warp_->Init();
+    well_ = std::make_shared<WellObject>();
+    well_->Init();
 
-	well_ = std::make_shared<WellObject>();
-	well_->Init();
+    dateTimeManager_ = new DateTimeManager();
+    dateTimeManager_->Init();
 
-	dateTimeManager_ = new DateTimeManager();
-	dateTimeManager_->Init();
+    auto& collisionManager = CollisionManager::GetInstance();
 
-	CollisionManager::GetInstance().Register(well_);
+    collisionManager.Register(well_);
+    collisionManager.Register(warp_);
 
-	CollisionManager::GetInstance().Register(warp_);
+    for (const auto& plantObject : plantManager_->GetPlantObjects())
+    {
+        collisionManager.Register(plantObject);
+    }
 
-	for (const auto& plant : plantManager_->GetPlantObjects())
-	{
-		CollisionManager::GetInstance().Register(plant);
-	}
+    for (const auto& oreObject : oreManager_->GetOreObjects())
+    {
+        collisionManager.Register(oreObject);
+    }
 
-	for (const auto& ore : oreManager_->GetOreObjects())
-	{
-		CollisionManager::GetInstance().Register(ore);
-	}
+    for (const auto& fenceObject : fenceManager_->GetFenceObjects())
+    {
+        collisionManager.Register(fenceObject);
+    }
 
-	for (const auto& fne : fenceManager_->GetFenceObjects())
-	{
-		CollisionManager::GetInstance().Register(fne);
-	}
+    for (const auto& fenceObjectX : fenceManager_->GetFenceObjectsX())
+    {
+        collisionManager.Register(fenceObjectX);
+    }
 
-	for (const auto& fneX : fenceManager_->GetFenceObjectsX())
-	{
-		CollisionManager::GetInstance().Register(fneX);
-	}
-
-	// カメラをプレイヤーに追従
-    auto player = stageManager_->GetPlayer();  
+    auto player = stageManager_->GetPlayer();
     camera->SetFollow(&player->GetTransform());
 }
 
-// 更新処理
 void GardenStage::Update(void)
 {
-	auto& input = InputManager::GetInstance();
+    blockManager_->Update();
+    plantManager_->Update(stageManager_->GetPlayer()->GetPosition());
+    oreManager_->Update();
+    fenceManager_->Update();
+    warp_->Update();
+    well_->Update();
+
+    dateTimeManager_->Update();
 
 #ifdef _DEBUG
-	if (input.IsTrgDown(KEY_INPUT_P))
-	{
-		stageManager_->ChangeStage(StageManager::STAGE_ID::GUILD);
-	}
+    auto& inputManager = InputManager::GetInstance();
+
+    if (inputManager.IsTriggerDown(KEY_INPUT_P))
+    {
+        if (stageManager_ != nullptr)
+        {
+            stageManager_->ChangeStage(StageManager::STAGE_ID::GUILD);
+        }
+    }
 #endif
-
-
-	// 各オブジェクトの更新
-	blockManager_->Update();
-	plantManager_->Update(stageManager_->GetPlayer()->GetPos());
-	oreManager_->Update();
-	fenceManager_->Update();
-	warp_->Update();
-	well_->Update();
-
-	// DateTimeManager の更新も忘れずに
-	dateTimeManager_->Update();
 }
 
-// 描画処理
 void GardenStage::Draw(void)
 {
-	blockManager_->Draw();
-	plantManager_->Draw();
-	oreManager_->Draw();
-	fenceManager_->Draw();
-	warp_->Draw();
-	well_->Draw();
+    blockManager_->Draw();
+    plantManager_->Draw();
+    oreManager_->Draw();
+    fenceManager_->Draw();
+    warp_->Draw();
+    well_->Draw();
 
-	QuestUI::GetInstance().Draw();
-
+    QuestUI::GetInstance().Draw();
 }
 
-// 解放処理
 void GardenStage::Release(void)
 {
-	if (oreManager_ != nullptr)
-	{
-		oreManager_->Release();
-		delete oreManager_;
-		oreManager_ = nullptr;
-	}
+    if (oreManager_ != nullptr)
+    {
+        oreManager_->Release();
+        delete oreManager_;
+        oreManager_ = nullptr;
+    }
 
-	if (fenceManager_!= nullptr)
-	{
-		fenceManager_->Release();
-		delete fenceManager_;
-		fenceManager_ = nullptr;
-	}
+    if (fenceManager_ != nullptr)
+    {
+        fenceManager_->Release();
+        delete fenceManager_;
+        fenceManager_ = nullptr;
+    }
 
-	if (plantManager_ != nullptr)
-	{
-		plantManager_->Release();
-		delete plantManager_;
-		plantManager_ = nullptr;
-	}
+    if (plantManager_ != nullptr)
+    {
+        plantManager_->Release();
+        delete plantManager_;
+        plantManager_ = nullptr;
+    }
 
-	if (blockManager_ != nullptr)
-	{
-		blockManager_->Release();
-		delete blockManager_;
-		blockManager_ = nullptr;
-	}
+    if (blockManager_ != nullptr)
+    {
+        blockManager_->Release();
+        delete blockManager_;
+        blockManager_ = nullptr;
+    }
 
-	if (dateTimeManager_ != nullptr)
-	{
-		delete dateTimeManager_;
-		dateTimeManager_ = nullptr;
-	}
+    if (dateTimeManager_ != nullptr)
+    {
+        delete dateTimeManager_;
+        dateTimeManager_ = nullptr;
+    }
 }

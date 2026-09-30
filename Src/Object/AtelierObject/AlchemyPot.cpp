@@ -9,13 +9,11 @@
 #include "../../Object/Manager/AlchemyManager.h"
 #include "../../DrawUI/Font.h"
 #include "../../Application.h"
-#include "../player.h"
-
+#include "../Player.h"
 
 AlchemyPot::AlchemyPot(void)
 {
-	isShowUI_ = false;
-	
+    isShowUserInterface_ = false;
 }
 
 AlchemyPot::~AlchemyPot(void)
@@ -24,91 +22,121 @@ AlchemyPot::~AlchemyPot(void)
 
 void AlchemyPot::SetPlayer(std::shared_ptr<Player> player)
 {
-	player_ = player;
+    player_ = player;
 }
 
 void AlchemyPot::Init(void)
 {
-	auto& res = ResourceManager::GetInstance();
-	trans_.SetModel(res.LoadModelDuplicate(ResourceManager::SRC::ALCHEMYPOT));
-	radius_ = RADIUS;
-	isShowUI_ = false;
+    auto& resourceManager = ResourceManager::GetInstance();
+    transform_.SetModel(resourceManager.LoadModelDuplicate(ResourceManager::SRC::ALCHEMYPOT));
 
-	trans_.pos = MODEL_POS;
-	trans_.scl = SCALE;
-	trans_.rot = { 0.0f, 0.0f, 0.0f };
+    radius_ = RADIUS;
+    isShowUserInterface_ = false;
 
+    transform_.position = MODEL_POSITION;
+    transform_.scale = MODEL_SCALE;
 
-	
+    const float ROTATION_ZERO = 0.0f;
+    transform_.rotation = { ROTATION_ZERO, ROTATION_ZERO, ROTATION_ZERO };
 }
 
 void AlchemyPot::Update(void)
 {
-	auto& input = InputManager::GetInstance();
-	auto& alchemy = AlchemyManager::GetInstance();
+    auto& inputManager = InputManager::GetInstance();
+    auto& alchemyManager = AlchemyManager::GetInstance();
 
-	bool start = false;
+    const int INPUT_PRESSED = 1;
 
-	// エンターキーが押された時の処理
-	if (isShowUI_ && input.IsTrgDown(KEY_INPUT_RETURN))
-	{
-		Application::GetInstance().SetActiveUI(true);
-		SoundManager::GetInstance().Play(SoundManager::SOUND::SE_PUSH);
-		// 錬金メニューが閉じている時のみ開く
-		if (!alchemy.IsOpen())
-		{
-			alchemy.Open();
-		}
-		
-	}
+    if (isShowUserInterface_ && inputManager.IsTriggerDown(KEY_INPUT_RETURN) == INPUT_PRESSED)
+    {
+        Application::GetInstance().SetActiveUI(true);
+        SoundManager::GetInstance().Play(SoundManager::SOUND::SE_PUSH);
 
-	// 錬金メニューが開いているときのみ更新
-	if (alchemy.IsOpen())
-	{
-		alchemy.Update();
-		isShowUI_ = false;
-	}
+        if (!alchemyManager.IsOpen())
+        {
+            alchemyManager.Open();
+        }
+    }
+
+    if (alchemyManager.IsOpen())
+    {
+        alchemyManager.Update();
+        isShowUserInterface_ = false;
+    }
 }
 
 void AlchemyPot::Draw(void)
 {
-	auto& alchemy = AlchemyManager::GetInstance();
+    auto& alchemyManager = AlchemyManager::GetInstance();
 
-	if (trans_.modelId >= 0)
-	{
-		MV1SetScale(trans_.modelId, trans_.scl);
-		MV1SetPosition(trans_.modelId, trans_.pos);
-		MV1SetRotationXYZ(trans_.modelId, trans_.rot);
-		MV1DrawModel(trans_.modelId);
-	}
+    const int INVALID_MODEL_ID = -1;
 
-	const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
-	const int screenHeight = Application::DEFA_SCREEN_SZIE_Y;
+    if (transform_.modelId > INVALID_MODEL_ID)
+    {
+        MV1SetScale(transform_.modelId, transform_.scale);
+        MV1SetPosition(transform_.modelId, transform_.position);
+        MV1SetRotationXYZ(transform_.modelId, transform_.rotation);
+        MV1DrawModel(transform_.modelId);
+    }
 
-	
+    const int SCREEN_WIDTH = Application::FULL_SCREEN_SIZE_X;
+    const int SCREEN_HEIGHT = Application::FULL_SCREEN_SIZE_Y;
 
-	if (alchemy.IsOpen())
-	{
-		alchemy.Draw();
-	}
+    if (alchemyManager.IsOpen())
+    {
+        alchemyManager.Draw();
+    }
 
-	if (isShowUI_)
-	{
-		// テキスト内容
-		const char* text = "錬金";
-		int fontSize = 24;
-		int textWidth = GetDrawStringWidth(text, strlen(text), fontSize);
-		int boxWidth = textWidth + 30;
-		int boxHeight = 30;
+    if (isShowUserInterface_)
+    {
+        const char* TEXT = "錬金";
+        const int FONT_SIZE = 24;
+        const int TEXT_MARGIN = 30;
+        const int BOX_HEIGHT = 30;
 
-		int boxX = (screenWidth - boxWidth) / 2;
-		int boxY = screenHeight / 2 + 100;
+        int textWidth = GetDrawStringWidth(TEXT, static_cast<int>(strlen(TEXT)), FONT_SIZE);
+        int boxWidth = textWidth + TEXT_MARGIN;
 
-		// UI表示（中央）
-		DrawBox(boxX - 20, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(0, 0, 0), TRUE);
-		DrawBox(boxX - 20, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(255, 255, 255), FALSE);
-		Font::GetInstance().DrawDefaultText(boxX + 5, boxY + 5, text, GetColor(255, 255, 255), fontSize);
-	}
+        const int HALF_DIVISOR = 2;
+        const int Y_OFFSET = 100;
+
+        int boxX = (SCREEN_WIDTH - boxWidth) / HALF_DIVISOR;
+        int boxY = SCREEN_HEIGHT / HALF_DIVISOR + Y_OFFSET;
+
+        const int BOX_MARGIN_X = 20;
+        const int BOX_MARGIN_Y = 10;
+
+        const int COLOR_BLACK = GetColor(0, 0, 0);
+        const int COLOR_WHITE = GetColor(255, 255, 255);
+
+        DrawBox(
+            boxX - BOX_MARGIN_X,
+            boxY - BOX_MARGIN_Y,
+            boxX + boxWidth + BOX_MARGIN_X,
+            boxY + BOX_HEIGHT + BOX_MARGIN_Y,
+            COLOR_BLACK,
+            true
+        );
+
+        DrawBox(
+            boxX - BOX_MARGIN_X,
+            boxY - BOX_MARGIN_Y,
+            boxX + boxWidth + BOX_MARGIN_X,
+            boxY + BOX_HEIGHT + BOX_MARGIN_Y,
+            COLOR_WHITE,
+            false
+        );
+
+        const int TEXT_OFFSET = 5;
+
+        Font::GetInstance().DrawDefaultText(
+            boxX + TEXT_OFFSET,
+            boxY + TEXT_OFFSET,
+            TEXT,
+            COLOR_WHITE,
+            FONT_SIZE
+        );
+    }
 }
 
 void AlchemyPot::Release(void)
@@ -117,47 +145,47 @@ void AlchemyPot::Release(void)
 
 HitObject::HIT_TYPE AlchemyPot::GetHitType(void) const
 {
-	return HIT_TYPE::SPHERE;
+    return HIT_TYPE::SPHERE;
 }
 
 VECTOR AlchemyPot::GetHitPosition(void) const
 {
-	return trans_.pos;
+    return transform_.position;
 }
 
 float AlchemyPot::GetHitRadius(void) const
 {
-	return radius_;
+    return radius_;
 }
 
 void AlchemyPot::ShowUI(void)
 {
-	isShowUI_ = true;
+    isShowUserInterface_ = true;
 }
 
 void AlchemyPot::HideUI(void)
 {
-	isShowUI_ = false;
-	AlchemyManager::GetInstance().Close();
+    isShowUserInterface_ = false;
+    AlchemyManager::GetInstance().Close();
 }
 
 bool AlchemyPot::IsValid(void) const
 {
-	return true;
+    return true;
 }
 
-void AlchemyPot::OnPlayerHit(void)  
-{  
-   ShowUI();  
-   VECTOR playerPos = player_->GetPos();
+void AlchemyPot::OnPlayerHit(void)
+{
+    ShowUI();
+    VECTOR playerPosition = player_->GetPosition();
 }
 
 void AlchemyPot::OnPlayerExit(void)
 {
-	HideUI();
+    HideUI();
 }
 
-bool AlchemyPot::isOpen(void) const
+bool AlchemyPot::IsOpen(void) const
 {
-	return AlchemyManager::GetInstance().IsOpen();
+    return AlchemyManager::GetInstance().IsOpen();
 }

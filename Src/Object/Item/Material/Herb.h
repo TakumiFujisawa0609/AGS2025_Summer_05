@@ -2,11 +2,14 @@
 
 #include "MaterialItem.h"
 
-/// <summary>
-/// 薬草アイテムクラス（素材）
-/// </summary>
+/// @brief 薬草アイテムのクラス
 class Herb : public MaterialItem
 {
 public:
+
+    /// @brief コンストラクタ
     Herb(void);
+
+    /// @brief デストラクタ
+    ~Herb(void) override = default;
 };

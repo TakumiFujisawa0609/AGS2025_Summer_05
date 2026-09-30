@@ -2,11 +2,14 @@
 
 #include "SeedItem.h"
 
-//種子
+/// @brief ランダムな結果をもたらす特殊な種子クラス
 class RandomSeed : public SeedItem
 {
 public:
-	//コンストラクタ
-	RandomSeed(void);
-};
 
+    /// @brief コンストラクタ
+    RandomSeed(void);
+
+    /// @brief デストラクタ
+    ~RandomSeed(void) override = default;
+};

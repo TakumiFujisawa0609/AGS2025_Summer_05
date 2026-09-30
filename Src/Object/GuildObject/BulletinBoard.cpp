@@ -12,318 +12,416 @@
 
 BulletinBoard::BulletinBoard(void)
 {
-	trans_ = Transform();
-	trans_.pos = VECTOR();
-	trans_.localPos = VAdd(trans_.pos, MODEL_POS);
-	radius_ = 0.0f;
-	speed_ = 0.0f;
-	isShowUI_ = false;
-	isShowQuestList_ = false;
-	selectedQuest_ = 0;
-	imageBoardId_ = 0;
+    const float INITIAL_RADIUS = 0.0f;                  // 初期当たり判定半径
+    const int INITIAL_QUEST_INDEX = 0;                  // 初期選択クエストインデックス
+    const int INITIAL_IMAGE_ID = 0;                     // 初期画像ID
+    const int INITIAL_TIMER = 0;                        // 初期タイマー値
+    const bool INITIAL_FLAG = false;                    // 初期フラグ状態
 
-	imageQuest_ = 0;
+    transform_ = Transform();
+    transform_.position = VECTOR();
+    transform_.localPosition = VAdd(transform_.position, MODEL_POS);
+    radius_ = INITIAL_RADIUS;
+    isShowUI_ = INITIAL_FLAG;
+    isShowQuestList_ = INITIAL_FLAG;
+    selectedQuest_ = INITIAL_QUEST_INDEX;
+    imageBoardId_ = INITIAL_IMAGE_ID;
 
-	uiOpenWaitFrame_ = 0;
+    imageQuest_ = INITIAL_IMAGE_ID;
 
-	uiShowUIDelayFrames_ = 0;
+    uiOpenWaitFrame_ = INITIAL_TIMER;
+    uiShowUIDelayFrames_ = INITIAL_TIMER;
 }
 
 BulletinBoard::~BulletinBoard(void)
 {
-
 }
 
 void BulletinBoard::Init(void)
 {
-	auto& res = ResourceManager::GetInstance();
+    const float ROTATION_ANGLE = 180.0f;                // 向き調整用の回転角（度）
+    const float MODEL_ROTATION_Y = -105.3f;             // モデル初期Y軸回転角
+    const float ROTATION_ZERO = 0.0f;                   // 回転ゼロ値
+    const int INITIAL_QUEST_INDEX = 0;                  // 初期選択クエストインデックス
+    const bool INITIAL_FLAG = false;                    // 初期フラグ状態
 
-	//モデル
-	trans_.SetModel(res.LoadModelDuplicate(ResourceManager::SRC::BULLETIN_BOARD));
-	trans_.quaRot = Quaternion();
-	trans_.quaRotLocal = Quaternion::AngleAxis(Utility::Deg2RadF(180.0f), Utility::AXIS_Y);
-	trans_.scl = SCALE;
-	trans_.rot = { 0.0f, -105.3f, 0.0f };
-	trans_.pos = MODEL_POS;
-	radius_ = RADIUS;
-	speed_ = 0.0f;
-	isShowUI_ = false;
-	isShowQuestList_ = false;
-	selectedQuest_ = 0;
+    auto& resourceManager = ResourceManager::GetInstance();
 
-	//掲示板の画像
-	imageBoardId_ = res.Load(ResourceManager::SRC::IMAGE_BOARD).handleId_;
+    transform_.SetModel(resourceManager.LoadModelDuplicate(ResourceManager::SRC::BULLETIN_BOARD));
+    transform_.quaternionRotation = Quaternion();
+    transform_.quaternionRotationLocal = Quaternion::AngleAxis(
+        Utility::DegreeToRadianDouble(ROTATION_ANGLE),
+        Utility::AXIS_Y
+    );
+    transform_.scale = SCALE;
+    transform_.rotation = { ROTATION_ZERO, MODEL_ROTATION_Y, ROTATION_ZERO };
+    transform_.position = MODEL_POS;
+    radius_ = RADIUS;
+    isShowUI_ = INITIAL_FLAG;
+    isShowQuestList_ = INITIAL_FLAG;
+    selectedQuest_ = INITIAL_QUEST_INDEX;
 
-	imageQuest_ = res.Load(ResourceManager::SRC::IMAGE_REQUEST).handleId_;
+    imageBoardId_ = resourceManager.Load(ResourceManager::SRC::IMAGE_BOARD).handleId_;
+    imageQuest_ = resourceManager.Load(ResourceManager::SRC::IMAGE_REQUEST).handleId_;
 
-	MV1SetScale(trans_.modelId, trans_.scl);
-	MV1SetPosition(trans_.modelId, trans_.pos);
-	MV1SetRotationXYZ(trans_.modelId, trans_.rot);
-
+    MV1SetScale(transform_.modelId, transform_.scale);
+    MV1SetPosition(transform_.modelId, transform_.position);
+    MV1SetRotationXYZ(transform_.modelId, transform_.rotation);
 }
 
 void BulletinBoard::Update(void)
 {
-	auto& input = InputManager::GetInstance();
-	auto& sound = SoundManager::GetInstance();
-	auto& app = Application::GetInstance();
+    const int QUEST_LIST_COUNT = 3;                     // クエストの総数
+    const int STEP_OFFSET = 1;                          // 選択位置移動量
+    const int MINIMUM_INDEX = 0;                        // 最小インデックス
+    const int ZERO_FLAG = 0;                            // 未選択フラグ判定値
+    const bool FLAG_true = true;                        // 有効フラグ
+    const bool FLAG_false = false;                      // 無効フラグ
 
-	// エンターキーが押された時の処理
-	if (isShowUI_ && input.IsTrgDown(KEY_INPUT_RETURN))
-	{
-		// --- UI優先度を QUEST に設定 ---
-		app.SetsActiveUI(ActiveUI::QUEST);
-		app.SetActiveUI(true);
+    auto& inputManager = InputManager::GetInstance();
+    auto& soundManager = SoundManager::GetInstance();
+    auto& application = Application::GetInstance();
 
-		sound.Play(SoundManager::SOUND::SE_PUSH);
+    if (isShowUI_ && inputManager.IsTriggerDown(KEY_INPUT_RETURN))
+    {
+        application.SetActiveUIType(Application::ACTIVE_UI_TYPE::QUEST);
+        application.SetActiveUI(FLAG_true);
 
-		if (!isShowQuestList_)
-		{
-			isShowQuestList_ = true;
-		}
-		else
-		{
-			auto& questUI = QuestUI::GetInstance();
-			const auto& selectedQuests = questUI.GetSelectedQuests();
+        soundManager.Play(SoundManager::SOUND::SE_PUSH);
 
-			if (selectedQuest_ >= 0 && selectedQuest_ < (int)selectedQuests.size())
-			{
-				int questId = selectedQuests[selectedQuest_].id;
-				questUI.AcceptQuest(questId);
-			}
+        if (!isShowQuestList_)
+        {
+            isShowQuestList_ = FLAG_true;
+        }
+        else
+        {
+            auto& questUI = QuestUI::GetInstance();
+            const auto& selectedQuests = questUI.GetSelectedQuests();
 
-			PlayerStop::GetInstance().ResumeMovement();
-			isShowQuestList_ = false;
-			isShowUI_ = false;
+            if (selectedQuest_ >= MINIMUM_INDEX &&
+                selectedQuest_ < static_cast<int>(selectedQuests.size()))
+            {
+                int questId = selectedQuests[selectedQuest_].id;
+                questUI.AcceptQuest(questId);
+            }
 
-			// --- UI閉じたら優先度を解除 ---
-			app.SetsActiveUI(ActiveUI::NONE);
-			app.SetActiveUI(false);
-		}
-	}
+            PlayerStop::GetInstance().ResumeMovement();
+            isShowQuestList_ = FLAG_false;
+            isShowUI_ = FLAG_false;
 
-	// 依頼リスト表示中の選択処理
-	if (isShowQuestList_)
-	{
-		if (input.IsTrgDown(KEY_INPUT_LEFT))
-		{
-			sound.Play(SoundManager::SOUND::SE_SELECT);
-			selectedQuest_ = (selectedQuest_ - 1 + 3) % 3;
-		}
-		else if (input.IsTrgDown(KEY_INPUT_RIGHT))
-		{
-			sound.Play(SoundManager::SOUND::SE_SELECT);
-			selectedQuest_ = (selectedQuest_ + 1) % 3;
-		}
+            application.SetActiveUIType(Application::ACTIVE_UI_TYPE::NONE);
+            application.SetActiveUI(FLAG_false);
+        }
+    }
 
-		if (input.IsTrgDown(KEY_INPUT_ESCAPE))
-		{
-			sound.Play(SoundManager::SOUND::SE_CANCEL);
-			isShowQuestList_ = false;
-			isShowUI_ = false;
-			PlayerStop::GetInstance().ResumeMovement();
+    if (isShowQuestList_)
+    {
+        if (inputManager.IsTriggerDown(KEY_INPUT_LEFT))
+        {
+            soundManager.Play(SoundManager::SOUND::SE_SELECT);
+            selectedQuest_ = (selectedQuest_ - STEP_OFFSET + QUEST_LIST_COUNT) % QUEST_LIST_COUNT;
+        }
+        else if (inputManager.IsTriggerDown(KEY_INPUT_RIGHT))
+        {
+            soundManager.Play(SoundManager::SOUND::SE_SELECT);
+            selectedQuest_ = (selectedQuest_ + STEP_OFFSET) % QUEST_LIST_COUNT;
+        }
 
-			// --- ESCで閉じるときも優先度解除 ---
-			app.SetsActiveUI(ActiveUI::NONE);
-			app.SetActiveUI(false);
-		}
-	}
+        if (inputManager.IsTriggerDown(KEY_INPUT_ESCAPE))
+        {
+            soundManager.Play(SoundManager::SOUND::SE_CANCEL);
+            isShowQuestList_ = FLAG_false;
+            isShowUI_ = FLAG_false;
+            PlayerStop::GetInstance().ResumeMovement();
 
-	if (!selectedQuest_)
-	{
-		PlayerStop::GetInstance().ResumeMovement();
-	}
+            application.SetActiveUIType(Application::ACTIVE_UI_TYPE::NONE);
+            application.SetActiveUI(FLAG_false);
+        }
+    }
+
+    if (selectedQuest_ == ZERO_FLAG)
+    {
+        PlayerStop::GetInstance().ResumeMovement();
+    }
 }
 
 void BulletinBoard::DrawModel(void)
 {
-	// 3Dモデル描画（Zバッファ有効）
-	MV1DrawModel(trans_.modelId);
+    MV1DrawModel(transform_.modelId);
 }
 
 void BulletinBoard::DrawUI(void)
 {
-	// Zバッファ無効化してUIを描画
-	SetUseZBufferFlag(FALSE);
+    SetUseZBufferFlag(false);
 
-	const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
-	const int screenHeight = Application::DEFA_SCREEN_SZIE_Y;
+    const int screenWidth = Application::FULL_SCREEN_SIZE_X;
+    const int screenHeight = Application::FULL_SCREEN_SIZE_Y;
 
-	if (!isShowUI_) {
-		// UI非表示ならここで終わり
-		SetUseZBufferFlag(TRUE);
-		return;
-	}
+    if (!isShowUI_)
+    {
+        SetUseZBufferFlag(true);
+        return;
+    }
 
-	auto& questUI = QuestUI::GetInstance();
-	const auto& quests = questUI.GetSelectedQuests();
+    auto& questUI = QuestUI::GetInstance();
+    const auto& quests = questUI.GetSelectedQuests();
 
-	if (!isShowQuestList_)
-	{
-		const char* text = "依頼";
-		int fontSize = 24;
-		int textWidth = GetDrawStringWidth(text, strlen(text), fontSize);
-		int boxWidth = textWidth + 30;
-		int boxHeight = 30;
-		int boxX = (screenWidth - boxWidth) / 2;
-		int boxY = screenHeight / 2 + 100;
+    const int COLOR_MIN = 0;                            // 色の最小値
+    const int COLOR_MAX = 255;                          // 色の最大値
+    const int COLOR_BLACK = GetColor(COLOR_MIN, COLOR_MIN, COLOR_MIN); // 黒色
+    const int COLOR_WHITE = GetColor(COLOR_MAX, COLOR_MAX, COLOR_MAX); // 白色
 
-		DrawBox(boxX - 20, boxY-10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(0, 0, 0), TRUE);
-		DrawBox(boxX - 20, boxY-10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(255, 255, 255), FALSE);
-		Font::GetInstance().DrawDefaultText(boxX + 5, boxY + 5, text, GetColor(255, 255, 255), fontSize);
-	}
-	else
-	{
-		PlayerStop::GetInstance().StopMovement();
+    if (!isShowQuestList_)
+    {
+        const int FONT_SIZE = 24;                       // フォントサイズ
+        const int TEXT_PADDING_WIDTH = 30;              // テキスト背景枠の余白幅
+        const int BOX_HEIGHT = 30;                      // 背景ボックスの高さ
+        const int SCREEN_HALF_DIVISOR = 2;              // 画面半分除数
+        const int BOX_OFFSET_Y = 100;                   // ボックス表示位置Yオフセット
+        const int BG_OFFSET_LEFT = 20;                  // 背景左側オフセット
+        const int BG_OFFSET_TOP = 10;                   // 背景上部オフセット
+        const int BG_EXPAND_RIGHT = 20;                 // 背景右側拡張幅
+        const int BG_EXPAND_BOTTOM = 10;                // 背景下部拡張幅
+        const int TEXT_OFFSET_INNER = 5;                // ボックス内テキスト余白
 
-		uiOpenWaitFrame_ = UI_ENTER_DELAY_FRAME;
-		// 依頼ボックスの設定
-		const int boxWidth = 400;
-		const int boxHeight = 600;
-		const int spacing = 100;
-		const int startX = (screenWidth - (3 * boxWidth + 2 * spacing)) / 2;
-		const int startY = 200;
+        const char* text = "依頼";
+        int textWidth = GetDrawStringWidth(text, static_cast<int>(strlen(text)), FONT_SIZE);
+        int boxWidth = textWidth + TEXT_PADDING_WIDTH;
+        int boxPositionX = (screenWidth - boxWidth) / SCREEN_HALF_DIVISOR;
+        int boxPositionY = (screenHeight / SCREEN_HALF_DIVISOR) + BOX_OFFSET_Y;
 
-		DrawRotaGraph3(-5, -5, 0, 0, 1.23f, 1.23f, 0, imageBoardId_, TRUE);
+        DrawBox(
+            boxPositionX - BG_OFFSET_LEFT,
+            boxPositionY - BG_OFFSET_TOP,
+            boxPositionX + boxWidth + BG_EXPAND_RIGHT,
+            boxPositionY + BOX_HEIGHT + BG_EXPAND_BOTTOM,
+            COLOR_BLACK,
+            true
+        );
+        DrawBox(
+            boxPositionX - BG_OFFSET_LEFT,
+            boxPositionY - BG_OFFSET_TOP,
+            boxPositionX + boxWidth + BG_EXPAND_RIGHT,
+            boxPositionY + BOX_HEIGHT + BG_EXPAND_BOTTOM,
+            COLOR_WHITE,
+            false
+        );
+        Font::GetInstance().DrawDefaultText(
+            boxPositionX + TEXT_OFFSET_INNER,
+            boxPositionY + TEXT_OFFSET_INNER,
+            text,
+            COLOR_WHITE,
+            FONT_SIZE
+        );
+    }
+    else
+    {
+        PlayerStop::GetInstance().StopMovement();
 
-		Font::GetInstance().DrawDefaultText(startX, startY - 100, "===== 納品依頼一覧 =====", 0xffffff, 24, Font::FONT_TYPE_ANTIALIASING_EDGE);
+        uiOpenWaitFrame_ = UI_ENTER_DELAY_FRAME;
 
-		for (int i = 0; i < 3; i++)
-		{
-			int xPos = startX + i * (boxWidth + spacing);
-			int boxColor = (i == selectedQuest_) ? GetColor(50, 50, 80) : GetColor(0, 0, 0);
-			int borderColor = (i == selectedQuest_) ? GetColor(255, 0, 255) : GetColor(255, 255, 255);
-			int textColor = (i == selectedQuest_) ? 0xffff00 : 0xffffff;
+        const int BOX_WIDTH = 400;                      // 依頼枠の幅
+        const int BOX_HEIGHT = 600;                     // 依頼枠の高さ
+        const int SPACING = 100;                        // 枠間のスペース
+        const int TOTAL_BOXES = 3;                      // 表示する枠の数
+        const int MARGIN_SPACES = 2;                    // 全体のスペース数
+        const int SCREEN_HALF_DIVISOR = 2;              // 中央配置用除数
+        const int START_POSITION_Y = 200;               // 描画開始Y座標
 
-			int imgW, imgH;
-			GetGraphSize(imageQuest_, &imgW, &imgH);
+        const int startPositionX = (screenWidth - (TOTAL_BOXES * BOX_WIDTH + MARGIN_SPACES * SPACING)) / SCREEN_HALF_DIVISOR;
 
-			int imgX = xPos + (boxWidth / 2) - (imgW / 2);
-			int imgY = startY + (boxHeight / 2) - (imgH / 2);
+        const float BG_OFFSET = -5.0f;                  // 背景描画位置オフセット
+        const int BG_CENTER_POS = 0;                    // 背景描画の中心位置
+        const double ROTATION_ANGLE_ZERO = 0.0;         // 背景回転角ゼロ
+        const double BG_SCALE = 1.23;                   // 背景拡大率
 
-			DrawGraph(imgX, imgY, imageQuest_, TRUE);
+        const int TITLE_OFFSET_Y = 100;                 // タイトルのYオフセット
+        const int TITLE_FONT_SIZE = 24;                 // タイトルフォントサイズ
+        const int TEXT_COLOR_WHITE = 0xffffff;          // 白色テキスト
+        const int TEXT_COLOR_YELLOW = 0xffff00;         // 黄色テキスト
+        const int TEXT_COLOR_GRAY = 0xcccccc;           // 灰色テキスト
 
-			//DrawBox(xPos, startY, xPos + boxWidth, startY + boxHeight, boxColor, TRUE);
-			//DrawBox(xPos, startY, xPos + boxWidth, startY + boxHeight, borderColor, FALSE);
-			
-			std::string questText = "未設定";
-			if (i < (int)quests.size())
-			{
-				const auto& quest = quests[i];
-				questText = quest.title + " x" + std::to_string(quest.requiredAmount);
-			}
+        const int LOOP_START = 0;                       // ループ開始インデックス
 
-			Font::GetInstance().DrawDefaultText(xPos + 10, startY + boxHeight / 2 - 10,
-				questText.c_str(), textColor, 32);
-		}
+        DrawRotaGraph3(
+            BG_OFFSET,
+            BG_OFFSET,
+            BG_CENTER_POS,
+            BG_CENTER_POS,
+            BG_SCALE,
+            BG_SCALE,
+            ROTATION_ANGLE_ZERO,
+            imageBoardId_,
+            true
+        );
 
-		Font::GetInstance().DrawDefaultText(startX, startY + boxHeight + 30,
-			"←→キー: 選択  Enter: 決定  ESC: 閉じる", 0xcccccc, 24);
-	}
+        Font::GetInstance().DrawDefaultText(
+            startPositionX,
+            START_POSITION_Y - TITLE_OFFSET_Y,
+            "===== 納品依頼一覧 =====",
+            TEXT_COLOR_WHITE,
+            TITLE_FONT_SIZE,
+            Font::FONT_TYPE_ANTIALIASING_EDGE
+        );
 
-	// UI描画終了後はZバッファを元に戻す
-	SetUseZBufferFlag(TRUE);
+        for (int i = LOOP_START; i < TOTAL_BOXES; i++)
+        {
+            int currentPositionX = startPositionX + i * (BOX_WIDTH + SPACING);
+            int textColor = (i == selectedQuest_) ? TEXT_COLOR_YELLOW : TEXT_COLOR_WHITE;
+
+            int imageWidth;
+            int imageHeight;
+            GetGraphSize(imageQuest_, &imageWidth, &imageHeight);
+
+            int imagePositionX = currentPositionX + (BOX_WIDTH / SCREEN_HALF_DIVISOR) - (imageWidth / SCREEN_HALF_DIVISOR);
+            int imagePositionY = START_POSITION_Y + (BOX_HEIGHT / SCREEN_HALF_DIVISOR) - (imageHeight / SCREEN_HALF_DIVISOR);
+
+            DrawGraph(imagePositionX, imagePositionY, imageQuest_, true);
+
+            std::string questText = "未設定";
+
+            if (i < static_cast<int>(quests.size()))
+            {
+                const auto& quest = quests[i];
+                questText = quest.title + " x" + std::to_string(quest.requiredAmount);
+            }
+
+            const int TEXT_OFFSET_X = 10;               // 依頼名テキストのXオフセット
+            const int TEXT_OFFSET_Y = 10;               // 依頼名テキストのYオフセット
+            const int QUEST_FONT_SIZE = 32;             // 依頼名フォントサイズ
+
+            Font::GetInstance().DrawDefaultText(
+                currentPositionX + TEXT_OFFSET_X,
+                START_POSITION_Y + (BOX_HEIGHT / SCREEN_HALF_DIVISOR) - TEXT_OFFSET_Y,
+                questText.c_str(),
+                textColor,
+                QUEST_FONT_SIZE
+            );
+        }
+
+        const int HELP_OFFSET_Y = 30;                   // 操作説明テキストのYオフセット
+
+        Font::GetInstance().DrawDefaultText(
+            startPositionX,
+            START_POSITION_Y + BOX_HEIGHT + HELP_OFFSET_Y,
+            "←→キー: 選択  Enter: 決定  ESC: 閉じる",
+            TEXT_COLOR_GRAY,
+            TITLE_FONT_SIZE
+        );
+    }
+
+    SetUseZBufferFlag(true);
 }
 
 void BulletinBoard::Draw(void)
 {
 }
 
-
-
 void BulletinBoard::Release(void)
 {
-
 }
 
 VECTOR BulletinBoard::GetHitMin(void) const
 {
-	return { trans_.pos.x - radius_, trans_.pos.y - radius_, trans_.pos.z - radius_ };
+    return {
+        transform_.position.x - radius_,
+        transform_.position.y - radius_,
+        transform_.position.z - radius_
+    };
 }
 
 VECTOR BulletinBoard::GetHitMax(void) const
 {
-	return { trans_.pos.x + radius_, trans_.pos.y + radius_, trans_.pos.z + radius_ };
+    return {
+        transform_.position.x + radius_,
+        transform_.position.y + radius_,
+        transform_.position.z + radius_
+    };
 }
 
 HitObject::HIT_TYPE BulletinBoard::GetHitType(void) const
 {
-	return HIT_TYPE::SPHERE;
+    return HIT_TYPE::SPHERE;
 }
 
-VECTOR BulletinBoard::GetHitPosition() const
+VECTOR BulletinBoard::GetHitPosition(void) const
 {
-	return trans_.pos;
+    return transform_.position;
 }
 
-float BulletinBoard::GetHitRadius() const
+float BulletinBoard::GetHitRadius(void) const
 {
-	return radius_;
+    return radius_;
 }
 
 void BulletinBoard::ShowUI(void)
 {
-	isShowUI_ = true;
-	isShowQuestList_ = false;
-}
+    const bool FLAG_true = true;                        // 有効フラグ
+    const bool FLAG_false = false;                      // 無効フラグ
 
+    isShowUI_ = FLAG_true;
+    isShowQuestList_ = FLAG_false;
+}
 
 void BulletinBoard::HideUI(void)
 {
-	isShowUI_ = false;
-	isShowQuestList_ = false;
+    const bool FLAG_false = false;                      // 無効フラグ
+
+    isShowUI_ = FLAG_false;
+    isShowQuestList_ = FLAG_false;
 }
 
 bool BulletinBoard::IsValid(void) const
 {
-	return true;
+    return true;
 }
 
 void BulletinBoard::OnPlayerHit(void)
 {
-	ShowUI();
+    ShowUI();
 }
 
 void BulletinBoard::OnPlayerExit(void)
 {
-	HideUI();
+    HideUI();
 }
 
 void BulletinBoard::UpdateUIVisibility(bool isHit)
 {
-	// UIがすでに表示中で、プレイヤーが離れていなければ何もしない
-	if (isShowUI_)
-	{
-		// UIを維持しつつ、非表示用のカウントは止める
-		uiVisible_ = true;
-		uiHideDelayFrames_ = UI_HIDE_DELAY_MAX;
-		return;
-	}
+    const bool FLAG_true = true;                        // 有効フラグ
+    const bool FLAG_false = false;                      // 無効フラグ
+    const int ZERO_FRAME = 0;                           // 遅延フレーム判定のゼロ値
 
-	// UIが未表示時のみ、接触中ならUIを出す
-	if (isHit)
-	{
-		uiVisible_ = true;
-		uiHideDelayFrames_ = UI_HIDE_DELAY_MAX;
-		ShowUI();
-	}
-	else
-	{
-		if (uiHideDelayFrames_ > 0)
-		{
-			uiHideDelayFrames_--;
-			ShowUI();
-		}
-		else if (uiVisible_)
-		{
-			uiVisible_ = false;
-			HideUI();
-			OnPlayerExit();
-		}
-	}
+    if (isShowUI_)
+    {
+        uiVisible_ = FLAG_true;
+        uiHideDelayFrames_ =  UI_SHOW_DELAY_MAX;
+        return;
+    }
+
+    if (isHit)
+    {
+        uiVisible_ = FLAG_true;
+        uiHideDelayFrames_ = UI_SHOW_DELAY_MAX;
+        ShowUI();
+    }
+    else
+    {
+        if (uiHideDelayFrames_ > ZERO_FRAME)
+        {
+            uiHideDelayFrames_--;
+            ShowUI();
+        }
+        else if (uiVisible_)
+        {
+            uiVisible_ = FLAG_false;
+            HideUI();
+            OnPlayerExit();
+        }
+    }
 }
 
 bool BulletinBoard::GetQuestList(void) const
 {
-	return isShowQuestList_;
+    return isShowQuestList_;
 }

@@ -1,113 +1,112 @@
 #include "Transform.h"
 
-#include<DxLib.h>
+#include <DxLib.h>
 
-#include"../../Utility/Utility.h"
+#include "../../Utility/Utility.h"
 
 Transform::Transform(void)
 {
-	modelId = -1;
+    const int INVALID_MODEL_ID = -1;
+    modelId = INVALID_MODEL_ID;
 
-	scl = Utility::VECTOR_ONE;
-	rot = Utility::VECTOR_ZERO;
-	pos = Utility::VECTOR_ZERO;
-	localPos = Utility::VECTOR_ZERO;
+    scale = Utility::VECTOR_ONE;
+    rotation = Utility::VECTOR_ZERO;
+    position = Utility::VECTOR_ZERO;
+    localPosition = Utility::VECTOR_ZERO;
 
-	matScl = MGetIdent();
-	matRot = MGetIdent();
-	matPos = MGetIdent();
-	quaRot = Quaternion();
+    matrixScale = MGetIdent();
+    matrixRotation = MGetIdent();
+    matrixPosition = MGetIdent();
 
-	quaRotLocal = Quaternion();
+    quaternionRotation = Quaternion();
+    quaternionRotationLocal = Quaternion();
 }
 
-Transform::Transform(int model)
+Transform::Transform(int modelHandleId)
 {
-	modelId = model;
+    modelId = modelHandleId;
 
-	scl = Utility::VECTOR_ONE;
-	rot = Utility::VECTOR_ZERO;
-	pos = Utility::VECTOR_ZERO;
-	localPos = Utility::VECTOR_ZERO;
+    scale = Utility::VECTOR_ONE;
+    rotation = Utility::VECTOR_ZERO;
+    position = Utility::VECTOR_ZERO;
+    localPosition = Utility::VECTOR_ZERO;
 
-	matScl = MGetIdent();
-	matRot = MGetIdent();
-	matPos = MGetIdent();
-	quaRot = Quaternion();
-	quaRotLocal = Quaternion();
+    matrixScale = MGetIdent();
+    matrixRotation = MGetIdent();
+    matrixPosition = MGetIdent();
+
+    quaternionRotation = Quaternion();
+    quaternionRotationLocal = Quaternion();
 }
 
 Transform::~Transform(void)
 {
-
 }
 
 void Transform::Update(void)
 {
-	//大きさ
-	matScl = MGetScale(scl);
+    matrixScale = MGetScale(scale);
 
-	//回転
-	rot = quaRot.ToEuler();
-	matRot = quaRot.ToMatrix();
+    rotation = quaternionRotation.ToEuler();
+    matrixRotation = quaternionRotation.ToMatrix();
 
-	//位置
-	matPos = MGetTranslate(pos);
+    matrixPosition = MGetTranslate(position);
 
-	//行列の合成
-	MATRIX mat = MGetIdent();
-	Quaternion  q = quaRot.Mult(quaRotLocal);
-	mat = MMult(mat, q.ToMatrix());
-	mat = MMult(mat, matPos);
+    MATRIX combinedMatrix = MGetIdent();
+    Quaternion combinedQuaternion = quaternionRotation.Mult(
+        quaternionRotation, quaternionRotationLocal);
 
-	//行列をモデルに判定
-	if (modelId != -1)
-	{
-		MV1SetMatrix(modelId, mat);
-	}
+    combinedMatrix = MMult(combinedMatrix, combinedQuaternion.ToMatrix());
+    combinedMatrix = MMult(combinedMatrix, matrixPosition);
+
+    const int INVALID_MODEL_ID = -1;
+
+    if (modelId != INVALID_MODEL_ID)
+    {
+        MV1SetMatrix(modelId, combinedMatrix);
+    }
 }
 
 void Transform::Release(void)
 {
-
 }
 
-void Transform::SetModel(int model)
+void Transform::SetModel(int modelHandleId)
 {
-	modelId = model;
+    modelId = modelHandleId;
 }
 
 VECTOR Transform::GetForward(void) const
 {
-	return GetDir(Utility::DIR_F);
+    return GetDirection(Utility::DIRECTION_FORWARD);
 }
 
 VECTOR Transform::GetBack(void) const
 {
-	return GetDir(Utility::DIR_B);
+    return GetDirection(Utility::DIRECTION_BACKWARD);
 }
 
 VECTOR Transform::GetRight(void) const
 {
-	return GetDir(Utility::DIR_R);
+    return GetDirection(Utility::DIRECTION_RIGHT);
 }
 
 VECTOR Transform::GetLeft(void) const
 {
-	return GetDir(Utility::DIR_L);
+    return GetDirection(Utility::DIRECTION_LEFT);
 }
 
 VECTOR Transform::GetUp(void) const
 {
-	return GetDir(Utility::DIR_U);
+    return GetDirection(Utility::DIRECTION_UP);
 }
 
 VECTOR Transform::GetDown(void) const
 {
-	return GetDir(Utility::DIR_D);
+    return GetDirection(Utility::DIRECTION_DOWN);
 }
 
-VECTOR Transform::GetDir(const VECTOR& vec) const
+VECTOR Transform::GetDirection(const VECTOR& targetVector) const
 {
-	return quaRot.PosAxis(vec);
+    return quaternionRotation.PosAxis(targetVector);
 }

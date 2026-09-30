@@ -1,6 +1,7 @@
 #include "AlchemyRecipe.h"
 
-AlchemyRecipe::AlchemyRecipe(const std::map<std::string, int>& materials, std::shared_ptr<ItemBase> result)
+AlchemyRecipe::AlchemyRecipe(const std::map<std::string, int>& materials, 
+    std::shared_ptr<ItemBase> result)
     : requiredMaterials_(materials), result_(result)
 {
 }

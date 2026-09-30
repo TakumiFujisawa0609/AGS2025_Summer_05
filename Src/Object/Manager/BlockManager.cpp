@@ -2,86 +2,112 @@
 #include <fstream>
 #include <sstream>
 
-BlockManager::BlockManager(void) 
+BlockManager::BlockManager(void)
 {
 }
-BlockManager::~BlockManager(void) 
+
+BlockManager::~BlockManager(void)
 {
-    Release(); 
+    Release();
 }
 
 void BlockManager::Init(const std::string& csvFilePath)
 {
     mapData_ = LoadCSV(csvFilePath);
 
-    int rows = static_cast<int>(mapData_.size());
-    int cols = mapData_.empty() ? 0 : static_cast<int>(mapData_[0].size());
+    int rowCount = static_cast<int>(mapData_.size());
+
+    const int EMPTY_SIZE = 0;
+    const int FIRST_INDEX = 0;
+
+    int columnCount = mapData_.empty() ? EMPTY_SIZE : static_cast<int>(mapData_[FIRST_INDEX].size());
+
+    const float DIVISOR_HALF = 2.0f;
 
     // 原点を中央にずらすためのオフセット
-    float offsetX = -(cols * blockSize_) / 2.0f;
-    float offsetZ = -(rows * blockSize_) / 2.0f;
+    float offsetX = -(columnCount * blockSize_) / DIVISOR_HALF;
+    float offsetZ = -(rowCount * blockSize_) / DIVISOR_HALF;
 
-    for (int z = 0; z < rows; ++z)
+    const float BLOCK_Y_POSITION = -50.0f;
+    const float DEFAULT_ALPHA = 0.3f;
+    const float ROAD_ALPHA = 0.255f;
+
+    const int CELL_TYPE_DIRT = 1;
+    const int CELL_TYPE_GRASS_MIN = 2;
+    const int CELL_TYPE_GRASS_MAX = 5;
+    const int CELL_TYPE_ROAD = 6;
+
+    for (int zIndex = 0; zIndex < rowCount; ++zIndex)
     {
-        for (int x = 0; x < cols; ++x)
+        for (int xIndex = 0; xIndex < columnCount; ++xIndex)
         {
-            int cell = mapData_[z][x];
+            int cellType = mapData_[zIndex][xIndex];
 
             // オフセットを加味した位置
-            VECTOR pos = VGet(x * blockSize_ + offsetX, -50.0f, z * blockSize_ + offsetZ);
+            VECTOR position = VGet(
+                xIndex * blockSize_ + offsetX,
+                BLOCK_Y_POSITION,
+                zIndex * blockSize_ + offsetZ
+            );
 
-            switch (cell)
+            if (cellType == CELL_TYPE_DIRT)
             {
-            case 1:
-                blocks_.emplace_back(std::make_unique<Block>(ResourceManager::SRC::BLOCK_DIRT, pos, blockSize_, 0.3f));
-                break;
-
-            case 2:
-                blocks_.emplace_back(std::make_unique<Block>(ResourceManager::SRC::BLOCK_GFRASS, pos, blockSize_, 0.3f)); 
-                break;
-
-            case 3:
-                blocks_.emplace_back(std::make_unique<Block>(ResourceManager::SRC::BLOCK_GFRASS, pos, blockSize_, 0.3f));
-                break;
-
-            case 4:
-                blocks_.emplace_back(std::make_unique<Block>(ResourceManager::SRC::BLOCK_GFRASS, pos, blockSize_, 0.3f));
-                break;
-
-            case 5:
-                blocks_.emplace_back(std::make_unique<Block>(ResourceManager::SRC::BLOCK_GFRASS, pos, blockSize_, 0.3f));
-                break;
-
-
-            case 6:
-                blocks_.emplace_back(std::make_unique<Block>(ResourceManager::SRC::BLOCK_LOOD, pos, blockSize_, 0.255f));
-                break;
-
-            default:
-                break;
+                blocks_.emplace_back(std::make_unique<Block>(
+                    ResourceManager::SRC::BLOCK_DIRT,
+                    position,
+                    blockSize_,
+                    DEFAULT_ALPHA
+                ));
+            }
+            else if (cellType >= CELL_TYPE_GRASS_MIN && cellType <= CELL_TYPE_GRASS_MAX)
+            {
+                blocks_.emplace_back(std::make_unique<Block>(
+                    ResourceManager::SRC::BLOCK_GRASS,
+                    position,
+                    blockSize_,
+                    DEFAULT_ALPHA
+                ));
+            }
+            else if (cellType == CELL_TYPE_ROAD)
+            {
+                blocks_.emplace_back(std::make_unique<Block>(
+                    ResourceManager::SRC::BLOCK_ROAD,
+                    position,
+                    blockSize_,
+                    ROAD_ALPHA
+                ));
+            }
+            else
+            {
+                // その他のセルタイプは何もしない
             }
         }
     }
 }
 
-
-void BlockManager::Update()
+void BlockManager::Update(void)
 {
     for (auto& block : blocks_)
     {
-        block->Update();
+        if (block != nullptr)
+        {
+            block->Update();
+        }
     }
 }
 
-void BlockManager::Draw()
+void BlockManager::Draw(void)
 {
     for (auto& block : blocks_)
     {
-        block->Draw();
+        if (block != nullptr)
+        {
+            block->Draw();
+        }
     }
 }
 
-void BlockManager::Release()
+void BlockManager::Release(void)
 {
     blocks_.clear();
 }
@@ -97,13 +123,16 @@ std::vector<std::vector<int>> BlockManager::LoadCSV(const std::string& filePath)
     std::ifstream file(filePath);
 
     std::string line;
+
     while (std::getline(file, line))
     {
-        std::stringstream ss(line);
+        std::stringstream stringStream(line);
         std::string cell;
         std::vector<int> row;
 
-        while (std::getline(ss, cell, ','))
+        const char COMMA_DELIMITER = ',';
+
+        while (std::getline(stringStream, cell, COMMA_DELIMITER))
         {
             row.push_back(std::stoi(cell));
         }

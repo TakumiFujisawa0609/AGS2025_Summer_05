@@ -5,29 +5,22 @@
 #include "../Object/Common/AnimationController.h"
 #include "../Object/Manager/CollisionManager.h"
 #include "../Manager/Generic/ResourceManager.h"
-#include"player.h"
+#include "player.h"
 
 Player::Player(void)
 {
-	//モデル
-	modelId_ = 0;
+    const int INITIAL_VALUE = 0;
+    const int INVALID_ID = -1;
 
-	//所持金
-	money_ = 0;
+    modelHandleId_ = INITIAL_VALUE;
+    money_ = INITIAL_VALUE;
+    blockedDirectionX_ = INITIAL_VALUE;
+    blockedDirectionZ_ = INITIAL_VALUE;
+    movementEnabled_ = true;
+    currentAnimationType_ = INVALID_ID;
 
-	blockedDirX_ = 0;
-
-	blockedDirZ_ = 0;
-
-	movementEnabled_ = true;
-
-	currentAnimType_ = -1;
-
-	//角度
-	angles_ = VECTOR();
-
-	//大きさ
-	scales_ = VECTOR();
+    angles_ = VECTOR();
+    scales_ = VECTOR();
 }
 
 Player::~Player(void)
@@ -36,212 +29,267 @@ Player::~Player(void)
 
 void Player::Init(void)
 {
-	movementEnabled_ = true;
+    movementEnabled_ = true;
 
-	//モデルのロード
-	modelId_ = ResourceManager::GetInstance().LoadModelDuplicate(ResourceManager::SRC::MODEL_PLAYER);
+    modelHandleId_ = ResourceManager::GetInstance().LoadModelDuplicate(
+        ResourceManager::SRC::MODEL_PLAYER
+    );
 
-	// 座標設定
-	//初期化
-	trans_.pos = DEFAULT_POS;
-	prePos_ = trans_.pos;
-	MV1SetPosition(modelId_, trans_.pos);
+    transform_.position = DEFAULT_POSITION;
+    previousPosition_ = transform_.position;
+    MV1SetPosition(modelHandleId_, transform_.position);
 
-	// 大きさ設定
-	scales_ = SCALES;
-	MV1SetScale(modelId_, scales_);
+    scales_ = SCALES;
+    MV1SetScale(modelHandleId_, scales_);
 
-	//当たり判定の半径
-	radius_ = RADIUS;
+    radius_ = RADIUS;
 
-	// 色の調整(自己発光)
-	MV1SetMaterialEmiColor(modelId_, 0, COLOR_EMI_DEFAULT);
+    const int MATERIAL_INDEX = 0;
+    MV1SetMaterialEmiColor(modelHandleId_, MATERIAL_INDEX, COLOR_EMI_DEFAULT);
 
-	// モデルの角度
-	angles_ = { 0.0f, Utility::Deg2RadF(180.0f), 0.0f };
-	MV1SetRotationXYZ(modelId_, angles_);
+    const float ROTATION_ZERO = 0.0f;
+    const float ROTATION_HALF_CIRCLE = 180.0f;
 
-	// アニメーションコントローラ初期化
-	animationController_ = new AnimationController(modelId_);
+    angles_ = {
+        ROTATION_ZERO,
+        Utility::DegreeToRadianFloat(ROTATION_HALF_CIRCLE),
+        ROTATION_ZERO
+    };
+    MV1SetRotationXYZ(modelHandleId_, angles_);
 
-	// アニメーション登録（外部ファイル）
-	animationController_->AddExternal(static_cast<int>(ANIM_TYPE::IDLE), Application::PATH_MODEL + "player/Idle.mv1", 35.0f);
-	animationController_->AddExternal(static_cast<int>(ANIM_TYPE::WALK), Application::PATH_MODEL + "player/Walk.mv1", 25.0f);
+    animationController_ = new AnimationController(modelHandleId_);
 
-	// 再生
-	animationController_->Play(static_cast<int>(ANIM_TYPE::IDLE), true);
-	currentAnimType_ = static_cast<int>(ANIM_TYPE::IDLE);
+    const float SPEED_IDLE = 35.0f;
+    const float SPEED_WALK = 25.0f;
 
-	//カメラ方向初期化
-	axis_ = { 0.0f,0.0f,0.0f };
+    animationController_->AddExternal(
+        static_cast<int>(ANIMATION_TYPE::IDLE),
+        Application::PATH_MODEL + "player/Idle.mv1",
+        SPEED_IDLE
+    );
 
-	//所持金の初期化
-	money_ = 5000;
+    animationController_->AddExternal(
+        static_cast<int>(ANIMATION_TYPE::WALK),
+        Application::PATH_MODEL + "player/Walk.mv1",
+        SPEED_WALK
+    );
+
+    animationController_->Play(static_cast<int>(ANIMATION_TYPE::IDLE), true);
+    currentAnimationType_ = static_cast<int>(ANIMATION_TYPE::IDLE);
+
+    axis_ = { ROTATION_ZERO, ROTATION_ZERO, ROTATION_ZERO };
+
+    const int INITIAL_MONEY = 5000;
+    money_ = INITIAL_MONEY;
 }
 
 void Player::Update(void)
 {
-	//移動前座標保存
-	prePos_ = trans_.pos;
+    previousPosition_ = transform_.position;
 
-	animationController_->Update();
+    animationController_->Update();
 
-	ProcessMove();
+    ProcessMove();
 
-	
-
-	// プレイヤーの座標と半径を使って当たり判定
-	CollisionManager::GetInstance().CheckHitWithPlayer(this, trans_.pos, radius_, GetHitMin(), GetHitMax());
-
+    CollisionManager::GetInstance().CheckHitWithPlayer(
+        this,
+        transform_.position,
+        radius_,
+        GetHitMin(),
+        GetHitMax()
+    );
 }
 
 void Player::Draw(void)
 {
-	// プレイヤーの描画
-	MV1DrawModel(modelId_);
+    MV1DrawModel(modelHandleId_);
+
 #ifdef _DEBUG
-	// プレイヤー座標
-	DrawFormatString(0, 40, 0x0, "プレイヤー座標:(%.2f, %.2f, %.2f)", trans_.pos.x, trans_.pos.y, trans_.pos.z);
-	DrawSphere3D(trans_.pos, radius_, 16, 0xffffff, 0xffffff, false);
-	DrawFormatString(0, 120, 0xffffff,"所持金 :%d", money_);
-	
-#endif //_DEBUG
+    const int DRAW_X = 0;
+    const int DRAW_Y_POSITION = 40;
+    const int DRAW_Y_MONEY = 120;
+    const int COLOR_BLACK = 0x0;
+    const int COLOR_WHITE = 0xffffff;
+    const int SPHERE_DIVISIONS = 16;
+
+    DrawFormatString(
+        DRAW_X,
+        DRAW_Y_POSITION,
+        COLOR_BLACK,
+        "プレイヤー座標:(%.2f, %.2f, %.2f)",
+        transform_.position.x,
+        transform_.position.y,
+        transform_.position.z
+    );
+
+    DrawSphere3D(
+        transform_.position,
+        radius_,
+        SPHERE_DIVISIONS,
+        COLOR_WHITE,
+        COLOR_WHITE,
+        false
+    );
+
+    DrawFormatString(
+        DRAW_X,
+        DRAW_Y_MONEY,
+        COLOR_WHITE,
+        "所持金 :%d",
+        money_
+    );
+#endif 
 }
 
 void Player::Release(void)
 {
-	// プレイヤーモデルの解放
-	MV1SetScale(trans_.modelId, trans_.scl);
-	MV1SetPosition(trans_.modelId, trans_.pos);
-	MV1SetRotationXYZ(trans_.modelId, trans_.rot);
-	MV1DrawModel(trans_.modelId);
+    MV1SetScale(transform_.modelId, transform_.scale);
+    MV1SetPosition(transform_.modelId, transform_.position);
+    MV1SetRotationXYZ(transform_.modelId, transform_.rotation);
+    MV1DrawModel(transform_.modelId);
 
-	// アニメーションコントローラの解放
-	//animationController_->Release();
-	delete animationController_;
+    delete animationController_;
+    animationController_ = nullptr;
 }
 
-VECTOR Player::GetPos(void) const
+VECTOR Player::GetPosition(void) const
 {
-	return trans_.pos;
+    return transform_.position;
 }
 
-void Player::SetPos(VECTOR pos)
+void Player::SetPosition(VECTOR position)
 {
-	trans_.pos = pos;
-	MV1SetPosition(modelId_, trans_.pos);
+    transform_.position = position;
+    MV1SetPosition(modelHandleId_, transform_.position);
 }
 
 VECTOR Player::GetHitMin(void) const
 {
-	return {
-		trans_.pos.x - radius_,
-		trans_.pos.y - radius_,
-		trans_.pos.z - radius_
-	};
+    return {
+        transform_.position.x - radius_,
+        transform_.position.y - radius_,
+        transform_.position.z - radius_
+    };
 }
 
 VECTOR Player::GetHitMax(void) const
 {
-	return {
-		trans_.pos.x + radius_,
-		trans_.pos.y + radius_,
-		trans_.pos.z + radius_
-	};
+    return {
+        transform_.position.x + radius_,
+        transform_.position.y + radius_,
+        transform_.position.z + radius_
+    };
 }
 
 float Player::GetRadius(void) const
 {
-	return radius_;
+    return radius_;
 }
 
 int Player::GetMoney(void) const
 {
-	return money_;
+    return money_;
 }
 
 void Player::AddMoney(int money)
 {
-	money_ += money;
+    money_ += money;
 }
 
-void Player::SetBlockedDirX(int dir)
+void Player::SetBlockedDirectionX(int direction)
 {
-	blockedDirX_ = dir;
+    blockedDirectionX_ = direction;
 }
 
-void Player::SetBlockedDirZ(int dir)
+void Player::SetBlockedDirectionZ(int direction)
 {
-	blockedDirZ_ = dir;
+    blockedDirectionZ_ = direction;
 }
 
-void Player::ResetBlockDirs(void)
+void Player::ResetBlockDirections(void)
 {
-	blockedDirX_ = 0;
-	blockedDirZ_ = 0;
+    const int RESET_DIRECTION = 0;
+    blockedDirectionX_ = RESET_DIRECTION;
+    blockedDirectionZ_ = RESET_DIRECTION;
 }
 
 void Player::SetMovementEnabled(bool enabled)
 {
-	movementEnabled_ = enabled;
-	if (!movementEnabled_)
-	{
-		PlayAnim(ANIM_TYPE::IDLE, true);
-	}
+    movementEnabled_ = enabled;
+    if (!movementEnabled_)
+    {
+        PlayAnimation(ANIMATION_TYPE::IDLE, true);
+    }
 }
 
 bool Player::IsMovementEnabled(void) const
 {
-	return movementEnabled_;
+    return movementEnabled_;
 }
 
-
-void Player::PlayAnim(ANIM_TYPE type, bool loop)
+void Player::PlayAnimation(ANIMATION_TYPE type, bool loop)
 {
-	int animIndex = static_cast<int>(type);
-	if (currentAnimType_ != animIndex)
-	{
-		animationController_->Play(animIndex, loop);
-		currentAnimType_ = animIndex;
-	}
-}
+    int animationIndex = static_cast<int>(type);
 
+    if (currentAnimationType_ != animationIndex)
+    {
+        animationController_->Play(animationIndex, loop);
+        currentAnimationType_ = animationIndex;
+    }
+}
 
 void Player::ProcessMove(void)
 {
+    if (!movementEnabled_)
+    {
+        return;
+    }
 
-	if (!movementEnabled_) return;
+    InputManager& inputManager = InputManager::GetInstance();
+    ResetBlockDirections();
 
-	InputManager& ins = InputManager::GetInstance();
-	ResetBlockDirs();
+    VECTOR moveDirection = Utility::VECTOR_ZERO;
 
-	VECTOR moveDir = Utility::VECTOR_ZERO;
+    const int DIRECTION_POSITIVE = 1;
+    const int DIRECTION_NEGATIVE = -1;
 
-	if (ins.IsNew(KEY_INPUT_W) && blockedDirZ_ != 1)
-		moveDir = VAdd(moveDir, Utility::DIR_F);
-	if (ins.IsNew(KEY_INPUT_S) && blockedDirZ_ != -1)
-		moveDir = VAdd(moveDir, Utility::DIR_B);
-	if (ins.IsNew(KEY_INPUT_A) && blockedDirX_ != 1)
-		moveDir = VAdd(moveDir, Utility::DIR_L);
-	if (ins.IsNew(KEY_INPUT_D) && blockedDirX_ != -1)
-		moveDir = VAdd(moveDir, Utility::DIR_R);
+    if (inputManager.IsNew(KEY_INPUT_W) && blockedDirectionZ_ != DIRECTION_POSITIVE)
+    {
+        moveDirection = VAdd(moveDirection, Utility::DIRECTION_FORWARD);
+    }
 
-	if (!Utility::EqualsVZero(moveDir))
-	{
-		moveDir = VNorm(moveDir);
-		VECTOR movePow = VScale(moveDir, SPEED_MOVE);
-		trans_.pos = VAdd(trans_.pos, movePow);
+    if (inputManager.IsNew(KEY_INPUT_S) && blockedDirectionZ_ != DIRECTION_NEGATIVE)
+    {
+        moveDirection = VAdd(moveDirection, Utility::DIRECTION_BACKWARD);
+    }
 
-		angles_.y = atan2(moveDir.x, moveDir.z) + Utility::Deg2RadF(180.0f);
-		MV1SetRotationXYZ(modelId_, angles_);
-		MV1SetPosition(modelId_, trans_.pos);
+    if (inputManager.IsNew(KEY_INPUT_A) && blockedDirectionX_ != DIRECTION_POSITIVE)
+    {
+        moveDirection = VAdd(moveDirection, Utility::DIRECTION_LEFT);
+    }
 
-		// 歩行アニメ再生
-		PlayAnim(ANIM_TYPE::WALK);
-	}
-	else
-	{
-		// 待機アニメ再生
-		PlayAnim(ANIM_TYPE::IDLE);
-	}
+    if (inputManager.IsNew(KEY_INPUT_D) && blockedDirectionX_ != DIRECTION_NEGATIVE)
+    {
+        moveDirection = VAdd(moveDirection, Utility::DIRECTION_RIGHT);
+    }
+
+    if (!Utility::EqualsVZero(moveDirection))
+    {
+        moveDirection = VNorm(moveDirection);
+        VECTOR movementPower = VScale(moveDirection, SPEED_MOVE);
+        transform_.position = VAdd(transform_.position, movementPower);
+
+        const float HALF_CIRCLE_DEGREE = 180.0f;
+        angles_.y = atan2(moveDirection.x, moveDirection.z) +
+            Utility::DegreeToRadianFloat(HALF_CIRCLE_DEGREE);
+
+        MV1SetRotationXYZ(modelHandleId_, angles_);
+        MV1SetPosition(modelHandleId_, transform_.position);
+
+        PlayAnimation(ANIMATION_TYPE::WALK);
+    }
+    else
+    {
+        PlayAnimation(ANIMATION_TYPE::IDLE);
+    }
 }

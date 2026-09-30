@@ -1,116 +1,116 @@
 #pragma once
 
-#include<chrono>
-#include<vector>
-#include<memory>
+#include <chrono>
+#include <vector>
+#include <memory>
 
-#include"../../Application.h"
-#include"../../Common/Fader.h"
+#include "../../Application.h"
+#include "../../Common/Fader.h"
 
 class SceneBase;
 class Fader;
 class Camera;
 
+/// @brief シーンの進行と切り替えを管理するシングルトンクラス
 class SceneManager
 {
 public:
 
-	//シーン管理用
-	enum class SCENE_ID
-	{
-		NONE,
-		TITLE,
-		GAME,
-		GAMECLEAR,
-		GAMEOVER,
-	};
+    /// @brief シーン管理用ID
+    enum class SCENE_ID
+    {
+        NONE,       // 指定なし
+        TITLE,      // タイトルシーン
+        GAME,       // ゲームシーン
+        GAMECLEAR,  // ゲームクリアシーン
+        GAMEOVER,   // ゲームオーバーシーン
+    };
 
-	//コントローラ系統
-	enum class CNTL
-	{
-		NONE,
-		KEYBOARD,
-		PAD
-	};
+    /// @brief コントローラ系統
+    enum class CONTROLLER
+    {
+        NONE,       // 指定なし
+        KEYBOARD,   // キーボード
+        PAD         // ゲームパッド
+    };
 
-	//インスタンスの生成
-	static void CreateInstance(void);
+    /// @brief インスタンスの生成
+    static void CreateInstance(void);
 
-	//インスタンスの取得
-	static SceneManager& GetInstance(void);
+    /// @brief インスタンスの取得
+    /// @return SceneManagerのインスタンス参照
+    static SceneManager& GetInstance(void);
 
-	//初期化処理
-	void Init(void);
+    /// @brief 初期化処理
+    void Init(void);
 
-	//3Dの初期化処理
-	void Init3D(void);
+    /// @brief 3Dの初期化処理
+    void Init3D(void);
 
-	//更新処理
-	void Update(void);
+    /// @brief 更新処理
+    void Update(void);
 
-	//描画処理
-	void Draw(void);
+    /// @brief 描画処理
+    void Draw(void);
 
-	//リソースの破棄
-	void Destroy(void);
+    /// @brief リソースの破棄
+    void Destroy(void);
 
-	//状態遷移
-	void ChangeScene(SCENE_ID nextId);
+    /// @brief 状態遷移
+    /// @param nextId 遷移先のシーンID
+    void ChangeScene(SCENE_ID nextId);
 
-	// シーンIDの取得
-	SCENE_ID GetSceneID(void);
+    /// @brief シーンIDの取得
+    /// @return 現在のシーンID
+    SCENE_ID GetSceneID(void);
 
-	//デルタタイムの取得
-	float GetDeltaTime(void) const;
+    /// @brief デルタタイムの取得
+    /// @return デルタタイム
+    float GetDeltaTime(void) const;
 
-	SceneBase* GetScene(void) const;
+    /// @brief 現在のシーンを取得する
+    /// @return 現在のシーンのポインタ
+    SceneBase* GetScene(void) const;
 
-	//カメラの取得
-	std::shared_ptr<Camera> GetCamera(void) const;
+    /// @brief カメラの取得
+    /// @return カメラのshared_ptr
+    std::shared_ptr<Camera> GetCamera(void) const;
 
 private:
 
-	//静的インスタンス
-	static SceneManager* instance_;
+    /// 静的インスタンス
+    static SceneManager* instance_;
 
-	SCENE_ID sceneId_;		//現在のシーン
-	SCENE_ID waitSceneId_;	//次のシーン
+    // シーン状態管理関連
+    SCENE_ID sceneId_;              // 現在のシーン
+    SCENE_ID waitSceneId_;          // 次のシーン
+    bool isSceneChanging_;          // シーン遷移中判定
 
-	//フェード
-	std::unique_ptr<Fader> fader_;
+    // オブジェクト管理関連
+    std::unique_ptr<Fader> fader_;  // フェード
+    SceneBase* scene_;              // 各種シーン
+    std::shared_ptr<Camera> camera_;// カメラ
 
-	//各種シーン
-	SceneBase* scene_;
+    // デルタタイム管理関連
+    std::chrono::system_clock::time_point preTime_; // 前回計測時の時間
+    float deltaTime_;                               // デルタタイム
 
-	//カメラ
-	std::shared_ptr<Camera> camera_;
+    /// @brief デフォルトコンストラクタ（外部からの生成を禁止）
+    SceneManager(void);
 
-	//シーン遷移中判定
-	bool isSceneChanging_;
+    /// @brief コピーコンストラクタ（使用禁止）
+    SceneManager(const SceneManager&);
 
-	//デルタタイム
-	std::chrono::system_clock::time_point preTime_;
-	float deltaTime_;
+    /// @brief デストラクタ
+    ~SceneManager(void) = default;
 
-	//デフォルトコンストラクタをpriateにして、
-	//外部から生成できないようにする
-	SceneManager(void);
+    /// @brief デルタタイムをリセットする
+    void ResetDeltaTime(void);
 
-	//コピーコンストラクタ
-	SceneManager(const SceneManager&);
+    /// @brief シーン遷移
+    /// @param sceneId 遷移先のシーンID
+    void DoChangeScene(SCENE_ID sceneId);
 
-	//デストラクタも同様
-	~SceneManager(void) = default;
-
-
-
-	//デルタタイムをリセットする
-	void ResetDeltaTime(void);
-
-	//シーン遷移
-	void DoChangeScene(SCENE_ID sceneId);
-
-	//フェード
-	void Fade(void);
+    /// @brief フェード
+    void Fade(void);
 };
-

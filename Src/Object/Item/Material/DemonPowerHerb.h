@@ -2,9 +2,14 @@
 
 #include "MaterialItem.h"
 
+/// @brief 鬼力草のクラス
 class DemonPowerHerb : public MaterialItem
 {
 public:
-	DemonPowerHerb(void);
-};
 
+    /// @brief コンストラクタ
+    DemonPowerHerb(void);
+
+    /// @brief デストラクタ
+    ~DemonPowerHerb(void) override = default;
+};

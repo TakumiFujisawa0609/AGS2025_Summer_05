@@ -1,65 +1,68 @@
-#include"FpsControll.h"
+#include "FpsControll.h"
 
 #include <math.h>
 #include <DxLib.h>
 
-//デフォルトコンストラクタ
 Fps::Fps(void)
+    : startTime_(0), frameCount_(0), currentFps_(0.0f)
 {
-	_mStartTime = 0;
-	_mConut = 0;
-	_mFps = 0;
 }
 
-//デストラクタ
 Fps::~Fps(void)
 {
-
 }
 
-//初期化
-void Fps::FpsControll_Initialize()
+void Fps::FpsControll_Initialize(void)
 {
-	_mStartTime = GetNowCount();
-	_mConut = 0;
-	_mFps = 0;
+    startTime_ = GetNowCount();
+    frameCount_ = 0;
+    currentFps_ = 0.0f;
 }
 
-
-//FPS制御
-bool Fps::FpsControll_Update()
+bool Fps::FpsControll_Update(void)
 {
-	if (_mConut == 0)
-	{
-		_mStartTime = GetNowCount();
-	}
+    if (frameCount_ == 0)
+    {
+        startTime_ = GetNowCount();
+    }
 
-	if (_mConut == N)
-	{
-		int t = GetNowCount();
-		_mFps = 1000.f / ((t - _mStartTime) / (float)N);
-		_mConut = 0;
-		_mStartTime = t;
-	}
-	_mConut++;
+    if (frameCount_ == SAMPLE_COUNT)
+    {
+        const float MILLISECONDS_PER_SECOND = 1000.0f;
 
-	return true;
+        int currentTime = GetNowCount();
+
+        // 100文字を超えないように計算式を改行
+        currentFps_ = MILLISECONDS_PER_SECOND /
+            ((currentTime - startTime_) / static_cast<float>(SAMPLE_COUNT));
+
+        frameCount_ = 0;
+        startTime_ = currentTime;
+    }
+
+    frameCount_++;
+
+    return true;
 }
 
-//FPS表示
-void Fps::FpsControll_Draw()
+void Fps::FpsControll_Draw(void)
 {
-	DrawFormatString(0, 0, GetColor(255, 255, 255), "%.1f", _mFps);
+    const int DRAW_POSITION_X = 0;             // 描画位置X座標
+    const int DRAW_POSITION_Y = 0;             // 描画位置Y座標
+    const unsigned int COLOR_WHITE = 0xffffff; // 描画色（白色）
+
+    DrawFormatString(DRAW_POSITION_X, DRAW_POSITION_Y, COLOR_WHITE, "%.1f", currentFps_);
 }
 
-//時間測定
-void Fps::FpsControll_Wait()
+void Fps::FpsControll_Wait(void)
 {
-	int _tookTime = GetNowCount() - _mStartTime;         //かかった時間
-	int _waitTime = _mConut * 1000 / FPS - _tookTime;    //待つべき時間
+    const int MILLISECONDS_PER_SECOND = 1000; // 1秒間のミリ秒数
 
-	if (_waitTime > 0)
-	{
-		Sleep(_waitTime);
-	}
+    int tookTime = GetNowCount() - startTime_;                                    // かかった時間
+    int waitTime = frameCount_ * MILLISECONDS_PER_SECOND / TARGET_FPS - tookTime; // 待つべき時間
+
+    if (waitTime > 0)
+    {
+        Sleep(waitTime);
+    }
 }

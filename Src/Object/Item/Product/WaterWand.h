@@ -2,9 +2,14 @@
 
 #include "ProductItem.h"
 
+/// @brief ウォーターワンドのクラス
 class WaterWand : public ProductItem
 {
 public:
-	WaterWand(void);
-};
 
+    /// @brief コンストラクタ
+    WaterWand(void);
+
+    /// @brief デストラクタ
+    ~WaterWand(void) override = default;
+};

@@ -21,7 +21,7 @@ int WinMain(
 	// インスタンスの取得
 	Application& instance = Application::GetInstance();
 
-	if (instance.IsInitFail())
+	if (instance.IsInitializeFailed())
 	{
 		// 初期化失敗
 		return -1;

@@ -25,11 +25,15 @@
 *.la
 *.a
 *.lib
+*.dxa
 
 # Executables
 *.exe
+*.cso
+*.pdb
 *.out
 *.app
+
 
 # New addition
 .vs/
@@ -38,5 +42,5 @@ x86/
 Win32/
 Debug/
 Release/
-Log.txt/
 Log.txt
+*.sln

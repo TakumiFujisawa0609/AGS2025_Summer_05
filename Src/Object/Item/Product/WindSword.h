@@ -2,9 +2,14 @@
 
 #include "ProductItem.h"
 
+/// @brief ウィンドソードのクラス
 class WindSword : public ProductItem
 {
 public:
-	WindSword(void);
-};
 
+    /// @brief コンストラクタ
+    WindSword(void);
+
+    /// @brief デストラクタ
+    ~WindSword(void) override = default;
+};

@@ -120,7 +120,7 @@ void SceneGame::Update(void)
 	auto& alchemy = AlchemyManager::GetInstance();
 
 	////シーン遷移(デバッグ)
-	//if (input.IsTrgDown(KEY_INPUT_SPACE))
+	//if (input.IsTriggerDown(KEY_INPUT_SPACE))
 	//{
 	//	//決定音
 	//	sound.Play(SoundManager::SOUND::SE_PUSH);
@@ -144,7 +144,7 @@ void SceneGame::Update(void)
 	
 
 	//// Rキーで錬金メニューの開閉
-	//if (input.IsTrgDown(KEY_INPUT_R))
+	//if (input.IsTriggerDown(KEY_INPUT_R))
 	//{
 	//	if (alchemy.IsOpen())
 	//		alchemy.Close();
@@ -183,7 +183,7 @@ void SceneGame::Draw(void)
 	stageManager_->Draw();
 
 	int x;
-	x = Application::DEFA_SCREEN_SIZE_X;
+	x = Application::FULL_SCREEN_SIZE_X;
 
 	//QuestUI::GetInstance().Draw();
 

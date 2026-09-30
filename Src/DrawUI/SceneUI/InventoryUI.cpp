@@ -14,7 +14,7 @@
 InventoryUI::InventoryUI(void)
     : isVisible_(false)
     , selectedItemIndex_(-1)
-    , currentTab_(TAB::Material) // 初期は素材タブ
+    , currentTab_(TAB::MATERIAL)
     , frameCount_(0)
 {
 }
@@ -27,7 +27,7 @@ void InventoryUI::Init(void)
 {
     isVisible_ = false;
     selectedItemIndex_ = -1;
-    currentTab_ = TAB::Material;
+    currentTab_ = TAB::MATERIAL;
     frameCount_ = 0;
 }
 
@@ -35,7 +35,7 @@ void InventoryUI::Show(void)
 {
     isVisible_ = true;
     selectedItemIndex_ = 0;
-    currentTab_ = TAB::Material;
+    currentTab_ = TAB::MATERIAL;
 }
 
 void InventoryUI::Hide(void)
@@ -49,58 +49,86 @@ void InventoryUI::Update(void)
     auto& itemManager = ItemManager::GetInstance();
     auto& sound = SoundManager::GetInstance();
 
-    if (!isVisible_) return;
+    if (!isVisible_)
+    {
+        return;
+    }
 
     frameCount_++;
 
-    // --- 表示対象アイテムリストを作成 ---
     visibleItems_.clear();
-    int itemCount = (currentTab_ == TAB::Material)
+    int itemCount = (currentTab_ == TAB::MATERIAL)
         ? itemManager.GetMaterialItemCount()
         : itemManager.GetProductItemCount();
 
-    for (int i = 0; i < itemCount; ++i) {
+    for (int index = 0; index < itemCount; ++index)
+    {
         std::shared_ptr<ItemBase> item;
-        if (currentTab_ == TAB::Material) {
-            item = itemManager.GetMaterialItem(i);
+        if (currentTab_ == TAB::MATERIAL)
+        {
+            item = itemManager.GetMaterialItem(index);
         }
-        else {
-            item = itemManager.GetProductItem(i);
+        else
+        {
+            item = itemManager.GetProductItem(index);
         }
 
-        if (item && item->GetQuantity() > 0) {
+        if (item && item->GetQuantity() > 0)
+        {
             visibleItems_.push_back(item);
         }
     }
 
-    // --- 入力処理 ---
-    if (visibleItems_.empty()) return; // 表示アイテムがなければ終了
-
-    selectedItemIndex_ = std::clamp(selectedItemIndex_, 0, (int)visibleItems_.size() - 1);
-
-    int row = selectedItemIndex_ / MAX_COLUMNS;
-    int col = selectedItemIndex_ % MAX_COLUMNS;
-
-    if (input.IsTrgDown(KEY_INPUT_UP)) {
-        sound.Play(SoundManager::SOUND::SE_SELECT);
-        if (row > 0) selectedItemIndex_ -= MAX_COLUMNS;
+    if (visibleItems_.empty())
+    {
+        return;
     }
-    if (input.IsTrgDown(KEY_INPUT_DOWN)) {
+
+    selectedItemIndex_ = std::clamp(selectedItemIndex_, 0,
+        static_cast<int>(visibleItems_.size()) - 1);
+
+    int currentRow = selectedItemIndex_ / MAX_COLUMNS;
+    int currentColumn = selectedItemIndex_ % MAX_COLUMNS;
+
+    if (input.IsTriggerDown(KEY_INPUT_UP))
+    {
         sound.Play(SoundManager::SOUND::SE_SELECT);
-        if (selectedItemIndex_ + MAX_COLUMNS < (int)visibleItems_.size())
+        if (currentRow > 0)
+        {
+            selectedItemIndex_ -= MAX_COLUMNS;
+        }
+    }
+
+    if (input.IsTriggerDown(KEY_INPUT_DOWN))
+    {
+        sound.Play(SoundManager::SOUND::SE_SELECT);
+        if (selectedItemIndex_ + MAX_COLUMNS < static_cast<int>(visibleItems_.size()))
+        {
             selectedItemIndex_ += MAX_COLUMNS;
-    }
-    if (input.IsTrgDown(KEY_INPUT_LEFT)) {
-        sound.Play(SoundManager::SOUND::SE_SELECT);
-        if (col > 0) selectedItemIndex_ -= 1;
-    }
-    if (input.IsTrgDown(KEY_INPUT_RIGHT)) {
-        sound.Play(SoundManager::SOUND::SE_SELECT);
-        if (col < MAX_COLUMNS - 1 && selectedItemIndex_ + 1 < (int)visibleItems_.size())
-            selectedItemIndex_ += 1;
+        }
     }
 
-    if (input.IsTrgDown(KEY_INPUT_ESCAPE)) {
+    if (input.IsTriggerDown(KEY_INPUT_LEFT))
+    {
+        sound.Play(SoundManager::SOUND::SE_SELECT);
+        if (currentColumn > 0)
+        {
+            selectedItemIndex_ -= 1;
+        }
+    }
+
+    if (input.IsTriggerDown(KEY_INPUT_RIGHT))
+    {
+        sound.Play(SoundManager::SOUND::SE_SELECT);
+        if (currentColumn < MAX_COLUMNS - 1 && selectedItemIndex_ + 1 
+            < static_cast<int>(visibleItems_.size()))
+        {
+            selectedItemIndex_ += 1;
+        }
+    }
+
+    if (input.IsTriggerDown(KEY_INPUT_ESCAPE))
+    {
         sound.Play(SoundManager::SOUND::SE_CANCEL);
         Hide();
     }
@@ -108,87 +136,105 @@ void InventoryUI::Update(void)
 
 void InventoryUI::Draw(void)
 {
-    if (!isVisible_) return;
+    if (!isVisible_)
+    {
+        return;
+    }
 
     auto& font = Font::GetInstance();
 
-    // 各種定数
-    const int fontSize = 24;
-    const int iconSize = ICON_SIZE;
-    const int padding = PADDING;
+    // テキスト・描画関連のローカル定数
+    const int FONT_SIZE_NAME = 24;
+    const int FONT_SIZE_QUANTITY = 20;
+    const int FONT_SIZE_DESCRIPTION = 24;
+    const unsigned int COLOR_GRAY = 0xc8c8c8;
+    const int TEXT_OFFSET_Y_NAME = 4;
+    const int TEXT_OFFSET_Y_QUANTITY = 24;
+    const int SELECTION_BORDER_WIDTH = 3;
+    const int DESCRIPTION_ALPHA = 180;
+    const int DESCRIPTION_OFFSET_X = 120;
+    const int DESCRIPTION_OFFSET_Y_TOP = 5;
+    const int DESCRIPTION_OFFSET_RIGHT = 50;
+    const int DESCRIPTION_OFFSET_BOTTOM = 100;
+    const int START_POSITION_X = 150;
+    const int START_POSITION_Y = 150;
 
-    // 表示行数と列数の決定
-    const int maxColumns = MAX_COLUMNS;
-    const int rowCount = (visibleItems_.size() + maxColumns - 1) / maxColumns;
+    int rowCount = (static_cast<int>(visibleItems_.size()) + MAX_COLUMNS - 1) / MAX_COLUMNS;
+    int gridWidth = MAX_COLUMNS * (ICON_SIZE + PADDING) - PADDING;
+    int gridHeight = rowCount * (ICON_SIZE * 2 + PADDING);
 
-    // グリッド全体のサイズ
-    const int gridWidth = maxColumns * (iconSize + padding) - padding;
-    const int gridHeight = rowCount * (iconSize * 2 + padding);
+    SetDrawBlendMode(DX_BLENDMODE_ALPHA, ALPHA_MAX);
 
-    // 中央揃えの描画開始位置
-    const int startX = 150;
-    const int startY = 150;
+    DrawBox(START_POSITION_X - BACKGROUND_OFFSET_X, BACKGROUND_OFFSET_Y_TOP, START_POSITION_X
+        + gridWidth + BACKGROUND_OFFSET_W, START_POSITION_Y + gridHeight + 
+        (Application::FULL_SCREEN_SIZE_Y / 2) + BACKGROUND_OFFSET_H, COLOR_BLACK, true);
 
-    // 背景
-    SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
-    DrawBox(startX - 100, 140, startX + gridWidth + 200, startY + gridHeight + (Application::DEFA_SCREEN_SZIE_Y / 2) + 200, GetColor(0, 0, 0), TRUE);
     SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-    DrawBox(startX - 100, 140, startX + gridWidth + 200, startY + gridHeight + (Application::DEFA_SCREEN_SZIE_Y / 2) + 200, GetColor(255, 255, 255), FALSE);
+    DrawBox(START_POSITION_X - BACKGROUND_OFFSET_X, BACKGROUND_OFFSET_Y_TOP, START_POSITION_X
+        + gridWidth + BACKGROUND_OFFSET_W, START_POSITION_Y + gridHeight + 
+        (Application::FULL_SCREEN_SIZE_Y / 2) + BACKGROUND_OFFSET_H, COLOR_WHITE, false);
 
-    // アイテム描画ループ
-    for (int i = 0; i < (int)visibleItems_.size(); ++i)
+    for (int index = 0; index < static_cast<int>(visibleItems_.size()); ++index)
     {
-        auto item = visibleItems_[i];
-        if (!item) continue;
+        auto item = visibleItems_[index];
+        if (!item)
+        {
+            continue;
+        }
 
-        int row = i / MAX_COLUMNS;
-        int col = i % MAX_COLUMNS;
+        int itemRow = index / MAX_COLUMNS;
+        int itemColumn = index % MAX_COLUMNS;
 
-        int x = startX + col * (iconSize + padding);
-        int y = startY + row * (iconSize * 2 + padding);
+        int drawPositionX = START_POSITION_X + itemColumn * (ICON_SIZE + PADDING);
+        int drawPositionY = START_POSITION_Y + itemRow * (ICON_SIZE * 2 + PADDING);
 
-        // アイコン
-        DrawGraph(x, y, item->GetImageHandle(), true);
+        DrawGraph(drawPositionX, drawPositionY, item->GetImageHandle(), true);
 
-        // 名前
-        font.DrawDefaultText(x, y + iconSize + 4,
+        font.DrawDefaultText(drawPositionX, drawPositionY + ICON_SIZE + TEXT_OFFSET_Y_NAME,
             item->GetName().c_str(),
-            GetColor(255, 255, 255), 24,
+            COLOR_WHITE, FONT_SIZE_NAME,
             Font::FONT_TYPE_ANTIALIASING_EDGE);
 
-        // 数量
-        std::string quantityStr = "x" + std::to_string(item->GetQuantity());
-        font.DrawDefaultText(x, y + iconSize + 24,
-            quantityStr.c_str(),
-            GetColor(200, 200, 200), 20,
+        std::string quantityString = "x" + std::to_string(item->GetQuantity());
+        font.DrawDefaultText(drawPositionX, drawPositionY + ICON_SIZE + TEXT_OFFSET_Y_QUANTITY,
+            quantityString.c_str(),
+            COLOR_GRAY, FONT_SIZE_QUANTITY,
             Font::FONT_TYPE_ANTIALIASING_EDGE);
 
-        // 選択枠
-        if (i == selectedItemIndex_) {
-            const int border = 3;
-            int color = GetColor(255, 255, 0);
-            DrawBox(x - border, y - border, x + iconSize + border, y + iconSize + border, color, false);
+        if (index == selectedItemIndex_)
+        {
+            DrawBox(drawPositionX - SELECTION_BORDER_WIDTH, drawPositionY - 
+                SELECTION_BORDER_WIDTH, drawPositionX + ICON_SIZE + SELECTION_BORDER_WIDTH,
+                drawPositionY + ICON_SIZE + SELECTION_BORDER_WIDTH, COLOR_YELLOW, false);
         }
     }
 
-    // 説明文（選択中）
-    if (selectedItemIndex_ >= 0 && selectedItemIndex_ < (int)visibleItems_.size())
+    if (selectedItemIndex_ >= 0 && selectedItemIndex_ < static_cast<int>(visibleItems_.size()))
     {
         auto selectedItem = visibleItems_[selectedItemIndex_];
         if (selectedItem)
         {
             const std::string& description = selectedItem->GetDescription();
-            int descX = (Application::SCREEN_SIZE_X / 2) + 120;
-            int descY = Application::DEFA_SCREEN_SZIE_Y / 2;
+            int descriptionPositionX = (Application::SCREEN_SIZE_X / 2) + DESCRIPTION_OFFSET_X;
+            int descriptionPositionY = Application::FULL_SCREEN_SIZE_Y / 2;
 
-            SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180);
-            DrawBox(descX, descY - 5, Application::DEFA_SCREEN_SIZE_X - 50, descY + fontSize + (Application::DEFA_SCREEN_SZIE_Y / 2) - 100, GetColor(0, 0, 0), true);
+            SetDrawBlendMode(DX_BLENDMODE_ALPHA, DESCRIPTION_ALPHA);
+
+            DrawBox(descriptionPositionX, descriptionPositionY - DESCRIPTION_OFFSET_Y_TOP, 
+                Application::FULL_SCREEN_SIZE_X - DESCRIPTION_OFFSET_RIGHT, descriptionPositionY 
+                + FONT_SIZE_DESCRIPTION + (Application::FULL_SCREEN_SIZE_Y / 2)
+                - DESCRIPTION_OFFSET_BOTTOM, COLOR_BLACK, true);
+
             SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-            DrawBox(descX, descY - 5, Application::DEFA_SCREEN_SIZE_X - 50, descY + fontSize + (Application::DEFA_SCREEN_SZIE_Y / 2) - 100, GetColor(255, 255, 255), false);
+            DrawBox(descriptionPositionX, descriptionPositionY - DESCRIPTION_OFFSET_Y_TOP,
+                Application::FULL_SCREEN_SIZE_X - DESCRIPTION_OFFSET_RIGHT, descriptionPositionY 
+                + FONT_SIZE_DESCRIPTION + (Application::FULL_SCREEN_SIZE_Y / 2)
+                - DESCRIPTION_OFFSET_BOTTOM, COLOR_WHITE, false);
 
-            font.DrawDefaultText(descX, descY, description.c_str(), GetColor(255, 255, 255), fontSize);
+            font.DrawDefaultText(descriptionPositionX, descriptionPositionY,
+                description.c_str(), COLOR_WHITE, FONT_SIZE_DESCRIPTION);
         }
     }
 }

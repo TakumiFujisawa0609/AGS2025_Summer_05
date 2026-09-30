@@ -1,131 +1,77 @@
 #pragma once
 
-/// <summary>
-/// フェード処理を管理するクラス
-/// </summary>
+/// @brief フェード処理を管理するクラス
 class Fader
 {
 public:
-	/// <summary>
-	/// 透過最大値
-	/// </summary>
-	static constexpr int ALPHA_MAX = 255;
+    /// @brief フェード状態
+    enum class STATE
+    {
+        NONE,           // 何もしていない
+        FADE_OUT,       // 徐々に暗転
+        FADE_IN,        // 徐々に明転
+        FADE_KEEP,      // 現在の状態を保つ
+        SET_FADE_OUT    // アルファ値を決めて暗転
+    };
 
-	/// <summary>
-	/// 少し暗くする時のアルファ値
-	/// </summary>
-	static constexpr int LITTLE_ALPHA = 150;
+    // 透過関連
+    static constexpr int ALPHA_MAX = 255;                      // 透過最大値
+    static constexpr int LITTLE_ALPHA = 150;                   // 少し暗くする時のアルファ値
 
-	/// <summary>
-	/// 少し暗くする時のフェードアウト速度
-	/// </summary>
-	static constexpr float LITTLE_FADE_OUT_SPEED = 2.0f;
+    // フェード速度関連
+    static constexpr float LITTLE_FADE_OUT_SPEED = 2.0f;       // 少し暗くする時のフェードアウト速度
+    static constexpr float SPEED_SCENE = 5.0f;                 // シーン遷移時のフェード速度
+    static constexpr float SPEED_PHASE = 2.0f;                 // フェーズ遷移時のフェード速度
+    static constexpr float SPEED_ALPHA = 3.0f;                 // 汎用フェード操作時の速度
 
+    /// @brief 現在のフェード状態を取得する
+    /// @param void 
+    /// @return 現在の状態
+    STATE GetState(void) const;
 
-	/// <summary>
-	/// シーン遷移時のフェード速度
-	/// </summary>
-	static constexpr float SPEED_SCENE = 5.0f;
+    /// @brief フェード処理が完了しているかどうかを判定する
+    /// @param void 
+    /// @return 完了している場合はtrue
+    bool IsEnd(void) const;
 
-	/// <summary>
-	/// フェーズ遷移時のフェード速度
-	/// </summary>
-	static constexpr float SPEED_PHASE = 2.0f;
+    /// @brief 指定されたフェード処理を開始する
+    /// @param state 設定するフェード状態
+    void SetFade(STATE state);
 
-	/// <summary>
-	/// 汎用フェード操作時の速度
-	/// </summary>
-	static constexpr float SPEED_ALPHA = 3.0f;
+    /// @brief 任意のアルファ値を設定する
+    /// @param alpha 設定するアルファ値
+    void SetAlpha(float alpha);
 
-	/// <summary>
-	/// フェード状態
-	/// </summary>
-	enum class STATE
-	{
-		NONE,				//何もしていない
-		FADE_OUT,			//徐々に暗転
-		FADE_IN,			//徐々に明転
-		FADE_KEEP,			//現在の状態を保つ
-		SET_FADE_OUT		//アルファ値を決めて暗転
-	};
+    /// @brief 初期化処理
+    /// @param void 
+    virtual void Init(void);
 
-	/// <summary>
-	/// 現在のフェード状態を取得する
-	/// </summary>
-	STATE GetState(void) const;
+    /// @brief 更新処理
+    /// @param void 
+    virtual void Update(void);
 
-	/// <summary>
-	/// フェード処理が完了しているかどうかを判定する
-	/// </summary>
-	bool IsEnd(void)const;
-
-	/// <summary>
-	/// 指定されたフェード処理を開始する
-	/// </summary>
-	void SetFade(STATE state);
-
-	/// <summary>
-	/// 任意のアルファ値を設定する
-	/// </summary>
-	void SetAlpha(float alpha);
-
-	/// <summary>
-	/// 初期化処理
-	/// </summary>
-	virtual void Init(void);
-
-	/// <summary>
-	/// 更新処理
-	/// </summary>
-	virtual void Update(void);
-
-	/// <summary>
-	/// 描画処理
-	/// </summary>
-	virtual void Draw(void);
+    /// @brief 描画処理
+    /// @param void 
+    virtual void Draw(void);
 
 protected:
+    // フェード状態関連
+    STATE state_;                                              // 現在のフェード状態
+    bool isPreEnd_;                                            // 状態(STATE)を保ったまま終了判定を行うため、Update->Draw->Updateの1フレーム判定用
+    bool isEnd_;                                               // フェード処理の終了判定
 
-	/// <summary>
-	/// 現在のフェード状態
-	/// </summary>
-	STATE state_;
+    // 透過度関連
+    float alpha_;                                              // 暗転・明転用透過度
+    float alphaMax_;                                           // 透明度の指定値用
 
-	///<summary>
-	///暗転・明転用透過度
-	/// </summary>
-	float alpha_;
-
-	/// <summary>
-	///フェード速度
-	/// </summary>
-	float spped_;
-
-	///<summary>
-	///透明度の指定値用
-	///</summary>
-	float alphaMax_;
-
-	///<summary>
-	///状態(STATE)を保ったまま終了判定を行うため、
-	///Update->Draw->Updateの1フレーム判定用
-	///</summary>
-	bool isPreEnd_;
-
-	///<summary>
-	///フェード処理の終了判定
-	///</summary>
-	bool isEnd_;
+    // フェード速度
+    float speed_;                                              // フェード速度
 
 private:
+    // マスク画像領域
+    int temporaryScene_;                                       
 
-	///<summary>
-	///マスク画像領域
-	///</summary>
-	int tmpScene_;
-
-	///<summary>
-	///マスク描画処理
-	///</summary>
-	void CricleMask(void);
+    /// @brief マスク描画処理
+    /// @param void 
+    void CircleMask(void);
 };

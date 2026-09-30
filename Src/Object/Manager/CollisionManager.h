@@ -9,71 +9,101 @@
 
 class Player;
 
+/// @brief プレイヤーとヒットオブジェクトとの当たり判定を管理するクラス
 class CollisionManager
 {
 public:
-	// 表示開始距離
-	static constexpr float SHOW_RADIUS = 50.0f; 
-	
-	// 非表示開始距離（少し大きく）
-	static constexpr float HIDE_RADIUS = 60.0f; 
 
-	// インスタンスの生成
-	static void CreateInstance(void);
+    // 表示開始距離
+    static constexpr float SHOW_RADIUS = 50.0f;
 
-	// インスタンスの取得
-	static CollisionManager& GetInstance(void);
+    // 非表示開始距離
+    static constexpr float HIDE_RADIUS = 60.0f;
 
-	// 初期化処理
-	void Init(void);
+    /// @brief インスタンスを生成する
+    static void CreateInstance(void);
 
+    /// @brief インスタンスを取得する
+    /// @return CollisionManagerのインスタンス参照
+    static CollisionManager& GetInstance(void);
 
-	// 登録(ポインタ渡し)
-	void Register(const std::shared_ptr<HitObject>& obj);
+    /// @brief 初期化処理
+    void Init(void);
 
-	// 全てクリア
-	void Clear(void);
+    /// @brief 当たり判定オブジェクトを登録する
+    /// @param object 登録するヒットオブジェクトのshared_ptr
+    void Register(const std::shared_ptr<HitObject>& object);
 
-	// プレイヤーとの当たり判定チェック(UI表示)
-	void CheckHitWithPlayer(Player* player, VECTOR& playerPos, float playerRadius, const VECTOR& playerMin, const VECTOR& playerMax);
+    /// @brief 全ての当たり判定オブジェクトをクリアする
+    void Clear(void);
 
+    /// @brief プレイヤーとの当たり判定をチェックする
+    /// @param player プレイヤーのポインタ
+    /// @param playerPosition プレイヤーの座標
+    /// @param playerRadius プレイヤーの半径
+    /// @param playerMin プレイヤーのAABB最小値
+    /// @param playerMax プレイヤーのAABB最大値
+    void CheckHitWithPlayer(
+        Player* player,
+        VECTOR& playerPosition,
+        float playerRadius,
+        const VECTOR& playerMin,
+        const VECTOR& playerMax
+    );
 
-
-	// リソースの解放
-	void Destroy(void);
+    /// @brief リソースの解放処理
+    void Destroy(void);
 
 private:
 
-	// 静的インスタンス
-	static CollisionManager* instance_;
+    // 静的インスタンス関連
+    static CollisionManager* instance_;
 
-	// コンストラクタ
-	CollisionManager(void) = default;
+    /// @brief コンストラクタ
+    CollisionManager(void) = default;
 
-	// デストラクタ
-	~CollisionManager(void) = default;
+    /// @brief デストラクタ
+    ~CollisionManager(void) = default;
 
-	std::vector<std::shared_ptr<HitObject>> hitObjects_;
+    // 当たり判定オブジェクト関連
+    std::vector<std::shared_ptr<HitObject>> hitObjects_;
+    NullHitObject nullObject_;
 
-	NullHitObject nullObject_;
+    // 作業用変数関連
+    VECTOR objectPosition_;
+    float objectRadius_;
+    VECTOR objectMinimum_;
+    VECTOR objectMaximum_;
+    float objectSizeX_;
+    float objectSizeZ_;
+    VECTOR difference_;
 
-	VECTOR objPos_;
+    /// @brief 安全にヒットオブジェクトを取得する
+    /// @param object 取得対象のヒットオブジェクト
+    /// @return 取得したヒットオブジェクト
+    HitObject* SafeGet(HitObject* object);
 
-	float objRadius_;
+    /// @brief 球体同士の当たり判定をチェックする
+    /// @param object ヒットオブジェクト
+    /// @param playerPosition プレイヤーの座標
+    /// @param playerRadius プレイヤーの半径
+    void CheckHitSphere(
+        std::shared_ptr<HitObject> object,
+        VECTOR& playerPosition,
+        float playerRadius
+    );
 
-	VECTOR objMin_;
-
-	VECTOR objMax_;
-
-	float objSizeX_;
-	
-	float objSizeZ_;
-
-	VECTOR diff_;
-
-	HitObject* SafeGet(HitObject* obj);
-
-	//判定方式別の処理
-	void CheckHitSphere(std::shared_ptr<HitObject> obj, VECTOR& playerPos, float playerRadius);
-	void CheckHitAABB(std::shared_ptr<HitObject> obj, Player* player, VECTOR& playerPos, const VECTOR& playerMin, const VECTOR& playerMax);
+    /// @brief AABB同士の当たり判定をチェックする
+    /// @param object ヒットオブジェクト
+    /// @param player プレイヤーのポインタ
+    /// @param playerPosition プレイヤーの座標
+    /// @param playerMin プレイヤーのAABB最小値
+    /// @param playerMax プレイヤーのAABB最大値
+    void CheckHitAABB(
+        std::shared_ptr<HitObject> object,
+        Player* player,
+        VECTOR& playerPosition,
+        const VECTOR& playerMin,
+        const VECTOR& playerMax
+    );
 };

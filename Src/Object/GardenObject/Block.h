@@ -5,48 +5,57 @@
 #include "../Interact/HitObject.h"
 #include "../../Manager/Generic/ResourceManager.h"
 
+/// @brief ブロックオブジェクトを管理するクラス
 class Block : public HitObject
 {
 public:
 
-	//コンストラクタ
-	Block(ResourceManager::SRC modelType, const VECTOR& pos, float blockSize, float scale);
+    /// @brief コンストラクタ
+    /// @param modelType 読み込むモデルのタイプ
+    /// @param position 初期座標
+    /// @param blockSize ブロックのサイズ
+    /// @param scale スケール値
+    Block(ResourceManager::SRC modelType, const VECTOR& position, float blockSize, float scale);
 
-	//デストラクタ
-	~Block(void);
+    /// @brief デストラクタ
+    virtual ~Block(void) override;
 
-	//更新処理
-	void Update(void);
+    /// @brief 更新処理
+    void Update(void);
 
-	//描画処理
-	void Draw(void);
+    /// @brief 描画処理
+    void Draw(void);
 
-	//当たり判定のタイプ
-	HIT_TYPE GetHitType(void) const override;
+    /// @brief 当たり判定のタイプを取得する
+    /// @return 当たり判定のタイプ（AABB）
+    HIT_TYPE GetHitType(void) const override;
 
-	//判定用の最小点を取得
-	VECTOR GetHitMin(void) const override;
+    /// @brief 当たり判定AABBの最小座標を取得する
+    /// @return 最小座標
+    VECTOR GetHitMin(void) const override;
 
-	// 判定用の最大点を取得
-	VECTOR GetHitMax(void) const override;
+    /// @brief 当たり判定AABBの最大座標を取得する
+    /// @return 最大座標
+    VECTOR GetHitMax(void) const override;
 
-	// UIを表示する処理
-	void ShowUI(void) override;
+    /// @brief UIを表示する
+    void ShowUI(void) override;
 
-	// UIを非表示にする処理
-	void HideUI(void) override;
+    /// @brief UIを非表示にする
+    void HideUI(void) override;
 
-	void OnPlayerHit(void) override;
+    /// @brief プレイヤーが接触したときの処理
+    void OnPlayerHit(void) override;
 
-	void OnPlayerExit(void) override;
+    /// @brief プレイヤーが離れたときの処理
+    void OnPlayerExit(void) override;
+
 private:
-	
-	//モデルのハンドル
-	int modelHandle_;
 
-	//座標
-	VECTOR pos_;
+    // モデルのハンドル
+    int modelHandle_;   
 
-	//中心からの距離
-	VECTOR halfSize_;
+    // 位置情報関連
+    VECTOR position_;   // 座標
+    VECTOR halfSize_;   // 中心からの距離
 };

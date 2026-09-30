@@ -1,13 +1,10 @@
 #include "TableSetGuild.h"
-
 #include "../../Manager/Generic/ResourceManager.h"
 
 TableSetGuild::TableSetGuild(void)
     : isValid_(false)
 {
-    radius_ = 50.0f;
-    speed_ = 0.0f;
-    movePow_ = { 0.0f, 0.0f, 0.0f };
+    radius_ = RADIUS;
 }
 
 TableSetGuild::~TableSetGuild(void)
@@ -17,33 +14,47 @@ TableSetGuild::~TableSetGuild(void)
 
 void TableSetGuild::Init(void)
 {
-    trans_.modelId = ResourceManager::GetInstance().LoadModelDuplicate(ResourceManager::SRC::TABLE_SET);
+    const float POSITION_X = 0.0f;                      // 配置X座標
+    const float POSITION_Y = 0.0f;                      // 配置Y座標
+    const float POSITION_Z = 0.0f;                      // 配置Z座標
+    const float MODEL_SCALE = 0.07f;                    // モデル描画スケール
+    const float ROTATION_ZERO = 0.0f;                   // 回転角のゼロ値
 
-    // フェンスの位置を地面に固定（例）
-    trans_.pos = { 0.0f, 0.0f, 0.0f };
-    trans_.scl = { 0.07f, 0.07f, 0.07f };
-    trans_.rot = { 0.0f, 0.0f, 0.0f };
+    transform_.modelId = ResourceManager::GetInstance().LoadModelDuplicate(
+        ResourceManager::SRC::TABLE_SET
+    );
+
+    transform_.position = { POSITION_X, POSITION_Y, POSITION_Z };
+    transform_.scale = { MODEL_SCALE, MODEL_SCALE, MODEL_SCALE };
+    transform_.rotation = { ROTATION_ZERO, ROTATION_ZERO, ROTATION_ZERO };
     radius_ = RADIUS;
-
 
     isValid_ = true;
 }
 
 void TableSetGuild::Update(void)
 {
-    // 当たり判定の範囲
-    hitMin_ = { trans_.pos.x - WIDTH / 2, trans_.pos.y - HEIGHT / 2, trans_.pos.z - DEPTH / 2 };
-    hitMax_ = { trans_.pos.x + WIDTH / 2, trans_.pos.y + HEIGHT / 2, trans_.pos.z + DEPTH / 2 };
+    hitMin_ = {
+        transform_.position.x - WIDTH / 2,
+        transform_.position.y - HEIGHT / 2,
+        transform_.position.z - DEPTH / 2
+    };
+
+    hitMax_ = {
+        transform_.position.x + WIDTH / 2,
+        transform_.position.y + HEIGHT / 2,
+        transform_.position.z + DEPTH / 2
+    };
 }
 
 void TableSetGuild::Draw(void)
 {
-    if (trans_.modelId >= 0)
+    if (transform_.modelId >= 0)
     {
-        MV1SetScale(trans_.modelId, trans_.scl);
-        MV1SetPosition(trans_.modelId, trans_.pos);
-        MV1SetRotationXYZ(trans_.modelId, trans_.rot);
-        MV1DrawModel(trans_.modelId);
+        MV1SetScale(transform_.modelId, transform_.scale);
+        MV1SetPosition(transform_.modelId, transform_.position);
+        MV1SetRotationXYZ(transform_.modelId, transform_.rotation);
+        MV1DrawModel(transform_.modelId);
     }
 }
 
@@ -52,29 +63,29 @@ void TableSetGuild::Release(void)
     isValid_ = false;
 }
 
-VECTOR  TableSetGuild::GetHitMin(void) const
+VECTOR TableSetGuild::GetHitMin(void) const
 {
     return hitMin_;
 }
 
-VECTOR  TableSetGuild::GetHitMax(void) const
+VECTOR TableSetGuild::GetHitMax(void) const
 {
     return hitMax_;
 }
 
-HitObject::HIT_TYPE TableSetGuild::GetHitType() const
+HitObject::HIT_TYPE TableSetGuild::GetHitType(void) const
 {
     return HIT_TYPE::SPHERE;
 }
 
 VECTOR TableSetGuild::GetHitPosition(void) const
 {
-    return trans_.pos;
+    return transform_.position;
 }
 
-float  TableSetGuild::GetHitRadius(void) const
+float TableSetGuild::GetHitRadius(void) const
 {
-    return radius_;  // フェンスはAABBなので半径は不要
+    return radius_;
 }
 
 bool TableSetGuild::IsValid(void) const
@@ -82,7 +93,7 @@ bool TableSetGuild::IsValid(void) const
     return isValid_;
 }
 
-void  TableSetGuild::ShowUI(void)
+void TableSetGuild::ShowUI(void)
 {
 }
 
@@ -92,16 +103,13 @@ void TableSetGuild::HideUI(void)
 
 void TableSetGuild::OnPlayerHit(void)
 {
-    // フェンスに当たったら特に何もしない（必要ならここに処理）
 }
 
 void TableSetGuild::OnPlayerExit(void)
 {
-    // フェンスから離れたときの処理があればここに
 }
 
 Transform& TableSetGuild::GetTransform(void)
 {
-    return trans_;
+    return transform_;
 }
-

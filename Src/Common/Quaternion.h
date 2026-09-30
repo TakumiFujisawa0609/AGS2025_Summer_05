@@ -1,312 +1,262 @@
 #pragma once
 
-#include<DxLib.h>
-#include<iostream>
-#include<algorithm>
+#include <DxLib.h>
+#include <iostream>
+#include <algorithm>
 
-/// <summary>
-/// 回転を表現するためのクォータニオンクラス
-/// </summary>
+/// @brief 回転を表現するためのクォータニオンクラス
 class Quaternion
 {
 public:
 
-	/// <summary>
-	/// 正規化時の極小値（ゼロ割防止）
-	/// </summary>
-	static constexpr float kEpsilonNorMalSqrt = 1e-15F;
+    /// @brief 正規化時の極小値（ゼロ割防止）
+    static constexpr float kEpsilonNormalSqrt = 1e-15f;
 
-	/// <summary>
-	/// クォータニオンのスカラー成分（回転量の余弦）
-	/// </summary>
-	double w;
+    // クォータニオン成分
+    double w; // クォータニオンのスカラー成分（回転量の余弦）
+    double x; // クォータニオンのX成分（ベクトル部）
+    double y; // クォータニオンのY成分（ベクトル部）
+    double z; // クォータニオンのZ成分（ベクトル部）
 
-	/// <summary>
-	/// クォータニオンのX成分（ベクトル部）
-	/// </summary>
-	double x;
+    /// @brief デフォルトコンストラクタ
+    Quaternion(void);
 
-	/// <summary>
-	/// クォータニオンのY成分（ベクトル部）
-	/// </summary>
-	double y;
+    /// @brief オイラー角（ラジアン）から初期化
+    /// @param radian X, Y, Z軸の回転角
+    /// @return なし
+    Quaternion(const VECTOR& radian);
 
-	/// <summary>
-	/// クォータニオンのZ成分（ベクトル部）
-	/// </summary>
-	double z;
+    /// @brief 各成分から初期化
+    /// @param scalar スカラー成分
+    /// @param vectorX X軸成分
+    /// @param vectorY Y軸成分
+    /// @param vectorZ Z軸成分
+    /// @return なし
+    Quaternion(double scalar, double vectorX, double vectorY, double vectorZ);
 
-	/// <summary>
-	/// デフォルトコンストラクタ（すべて0）
-	/// </summary>
-	Quaternion(void);
+    /// @brief デストラクタ
+    ~Quaternion(void);
 
-	/// <summary>
-	/// オイラー角（ラジアン）から初期化
-	/// </summary>
-	/// <param name="rad">X, Y, Z軸の回転角</param>
-	Quaternion(const VECTOR& rad);
-	
-	/// <summary>
-    /// 各成分から初期化
-    /// </summary>
-    /// <param name="w">スカラー成分</param>
-    /// <param name="x">X軸成分</param>
-    /// <param name="y">Y軸成分</param>
-    /// <param name="z">Z軸成分</param>
-	Quaternion(double w, double x, double y, double z);
+    /// @brief オイラー角からクォータニオンを生成
+    /// @param radian 各軸の回転角
+    /// @return 生成されたクォータニオン
+    static Quaternion Euler(const VECTOR& radian);
 
-	/// <summary>
-    /// デストラクタ
-    /// </summary>
-	~Quaternion(void);
+    /// @brief XYZ各軸からクォータニオンを生成
+    /// @param radianX X軸角度
+    /// @param radianY Y軸角度
+    /// @param radianZ Z軸角度
+    /// @return 生成されたクォータニオン
+    static Quaternion Euler(double radianX, double radianY, double radianZ);
 
-	/// <summary>
-    /// オイラー角からクォータニオンを生成
-    /// </summary>
-    /// <param name="rad">各軸の回転角</param>
-	static Quaternion Euler(const VECTOR& rad);
+    /// @brief 2つのクォータニオンを合成
+    /// @param quaternion1 第1クォータニオン
+    /// @param quaternion2 第2クォータニオン
+    /// @return 合成されたクォータニオン
+    static Quaternion Mult(const Quaternion& quaternion1, const Quaternion& quaternion2);
 
-	/// <summary>
-	/// XYZ各軸からクォータニオンを生成
-	/// </summary>
-	/// <param name="radX">X軸角度</param>
-	/// <param name="radY">Y軸角度</param>
-	/// <param name="radZ">Z軸角度</param>
-	static Quaternion Euler(double radX, double radY, double radZ);
+    /// @brief 現在のクォータニオンと指定クォータニオンを合成
+    /// @param quaternion 合成相手のクォータニオン
+    /// @return 合成されたクォータニオン
+    Quaternion Mult(const Quaternion& quaternion) const;
 
-	/// <summary>
-	/// 2つのクォータニオンを合成
-	/// </summary>
-	/// <param name="q1">第1クォータニオン</param>
-	/// <param name="q2">第2クォータニオン</param>
-	static Quaternion Mult(const Quaternion& q1, const Quaternion& q2);
+    /// @brief 指定軸・角度の回転を表すクォータニオンを生成
+    /// @param radian 回転角
+    /// @param axis 回転軸ベクトル
+    /// @return 生成されたクォータニオン
+    static Quaternion AngleAxis(double radian, VECTOR axis);
 
-	/// <summary>
-    /// 現在のクォータニオンと指定クォータニオンを合成
-    /// </summary>
-    /// <param name="q">合成相手のクォータニオン</param>
-	Quaternion Mult(const Quaternion& q) const;
+    /// @brief ベクトルを回転させる（静的）
+    /// @param quaternion 回転クォータニオン
+    /// @param axis 回転対象ベクトル
+    /// @return 回転後のベクトル
+    static VECTOR PosAxis(const Quaternion& quaternion, VECTOR axis);
 
-	/// <summary>
-	/// 指定軸・角度の回転を表すクォータニオンを生成
-	/// </summary>
-	/// <param name="rad">回転角</param>
-	/// <param name="axis">回転軸ベクトル</param>
-	static Quaternion AngleAxis(double rad, VECTOR axis);
+    /// @brief ベクトルを回転させる（メンバ）
+    /// @param position 回転対象ベクトル
+    /// @return 回転後のベクトル
+    VECTOR PosAxis(VECTOR position) const;
 
-	/// <summary>
-	/// ベクトルを回転させる（静的）
-	/// </summary>
-	/// <param name="q">回転クォータニオン</param>
-	/// <param name="axis">回転対象ベクトル</param>
-	static VECTOR PosAxis(const Quaternion& q, VECTOR axis);
+    /// @brief クォータニオンからオイラー角に変換（静的）
+    /// @param quaternion 変換対象
+    /// @return オイラー角
+    static VECTOR ToEuler(const Quaternion& quaternion);
 
-	/// <summary>
-    /// ベクトルを回転させる（メンバ）
-    /// </summary>
-    /// <param name="pos">回転対象ベクトル</param>
-	VECTOR PosAxis(VECTOR pos) const;
+    /// @brief クォータニオンからオイラー角に変換（メンバ）
+    /// @param void
+    /// @return オイラー角
+    VECTOR ToEuler(void) const;
 
-	/// <summary>
-	/// クォータニオンからオイラー角に変換（静的）
-	/// </summary>
-	/// <param name="q">変換対象</param>
-	static VECTOR ToEuler(const Quaternion& q);
+    /// @brief クォータニオンを回転行列に変換（静的）
+    /// @param quaternion 変換対象
+    /// @return 回転行列
+    static MATRIX ToMatrix(const Quaternion& quaternion);
 
-	/// <summary>
-	/// クォータニオンからオイラー角に変換（メンバ）
-	/// </summary>
-	/// <param name="pos">無視される（将来的な拡張？）</param>
-	VECTOR ToEuler(void) const;
+    /// @brief クォータニオンを回転行列に変換（メンバ）
+    /// @param void 
+    /// @return 回転行列
+    MATRIX ToMatrix(void) const;
 
-	/// <summary>
-	/// クォータニオンを回転行列に変換（静的）
-	/// </summary>
-	/// <param name="q">変換対象</param>
-	static MATRIX ToMatrix(const Quaternion& q);
+    /// @brief 方向ベクトルからクォータニオンを生成（前方向のみ）
+    /// @param direction 向く方向
+    /// @return 生成されたクォータニオン
+    static Quaternion LookRotation(VECTOR direction);
 
-	/// <summary>
-	/// クォータニオンを回転行列に変換（メンバ）
-	/// </summary>
-	MATRIX ToMatrix(void) const;
+    /// @brief 方向ベクトルからクォータニオンを生成（前方向と上方向を指定）
+    /// @param direction 向く方向
+    /// @param up 上方向
+    /// @return 生成されたクォータニオン
+    static Quaternion LookRotation(VECTOR direction, VECTOR up);
 
-	/// <summary>
-	/// 方向ベクトルからクォータニオンを生成（前方向のみ）
-	/// </summary>
-	/// <param name="dir">向く方向</param>
-	static Quaternion LookRotation(VECTOR dir);
+    /// @brief 行列から回転クォータニオンを抽出
+    /// @param matrix 回転行列
+    /// @return 抽出されたクォータニオン
+    static Quaternion GetRotation(MATRIX matrix);
 
-	/// <summary>
-	/// 方向ベクトルからクォータニオンを生成（前方向のみ）
-	/// </summary>
-	/// <param name="dir">向く方向</param>
-	static Quaternion LookRotation(VECTOR dir, VECTOR up);
+    /// @brief 前方向ベクトルを取得
+    /// @param void 
+    /// @return 前方向ベクトル
+    VECTOR GetForward(void) const;
 
-	/// <summary>
-    /// 行列から回転クォータニオンを抽出
-    /// </summary>
-    /// <param name="mat">回転行列</param>
-	static Quaternion GetRotation(MATRIX mat);
+    /// @brief 後方向ベクトルを取得
+    /// @param void 
+    /// @return 後方向ベクトル
+    VECTOR GetBack(void) const;
 
-	/// <summary>
-	/// 前方向ベクトルを取得
-	/// </summary>
-	VECTOR GetForward(void) const;
+    /// @brief 右方向ベクトルを取得
+    /// @param void 
+    /// @return 右方向ベクトル
+    VECTOR GetRight(void) const;
 
-	/// <summary>
-	/// 後方向ベクトルを取得
-	/// </summary>
-	VECTOR GetBack(void) const;
+    /// @brief 左方向ベクトルを取得
+    /// @param void 
+    /// @return 左方向ベクトル
+    VECTOR GetLeft(void) const;
 
-	/// <summary>
-	/// 右方向ベクトルを取得
-	/// </summary>
-	VECTOR GetRight(void) const;
+    /// @brief 上方向ベクトルを取得
+    /// @param void 
+    /// @return 上方向ベクトル
+    VECTOR GetUp(void) const;
 
-	/// <summary>
-	/// 左方向ベクトルを取得
-	/// </summary>
-	VECTOR GetLeft(void) const;
+    /// @brief 下方向ベクトルを取得
+    /// @param void 
+    /// @return 下方向ベクトル
+    VECTOR GetDown(void) const;
 
-	/// <summary>
-	/// 上方向ベクトルを取得
-	/// </summary>
-	VECTOR GetUp(void) const;
+    /// @brief クォータニオンの内積を計算
+    /// @param quaternion1 第1クォータニオン
+    /// @param quaternion2 第2クォータニオン
+    /// @return 内積値
+    static double Dot(const Quaternion& quaternion1, const Quaternion& quaternion2);
 
-	/// <summary>
-	/// 下方向ベクトルを取得
-	/// </summary>
-	VECTOR GetDown(void) const;
+    /// @brief 現在のクォータニオンと別のクォータニオンとの内積
+    /// @param quaternion 比較対象
+    /// @return 内積値
+    double Dot(const Quaternion& quaternion) const;
 
-	/// <summary>
-	/// クォータニオンの内積を計算
-	/// </summary>
-	/// <param name="q1">第1クォータニオン</param>
-	/// <param name="q2">第2クォータニオン</param>
-	static double Dot(const Quaternion& q1, const Quaternion& q2);
+    /// @brief クォータニオンを正規化（静的）
+    /// @param quaternion 正規化対象
+    /// @return 正規化されたクォータニオン
+    static Quaternion Normalize(const Quaternion& quaternion);
 
-	/// <summary>
-    /// 現在のクォータニオンと別のクォータニオンとの内積
-    /// </summary>
-    /// <param name="b">比較対象</param>
-	double Dot(const Quaternion& b) const;
+    /// @brief 正規化されたクォータニオンを返す（非破壊）
+    /// @param void 
+    /// @return 正規化されたクォータニオン
+    Quaternion Normalized(void) const;
 
-	/// <summary>
-	/// クォータニオンを正規化（静的）
-	/// </summary>
-	/// <param name="q">正規化対象</param>
-	static Quaternion Normalize(const Quaternion& q);
+    /// @brief クォータニオンを正規化（破壊的）
+    /// @param void 
+    /// @return なし
+    void Normalize(void);
 
-	/// <summary>
-    /// 正規化されたクォータニオンを返す（非破壊）
-    /// </summary>
-	Quaternion Normalized(void) const;
+    /// @brief 逆クォータニオン（共役）を返す
+    /// @param void 
+    /// @return 逆クォータニオン
+    Quaternion Inverse(void) const;
 
-	/// <summary>
-	/// クォータニオンを正規化（破壊的）
-	/// </summary>
-	void Normalize(void);
+    /// @brief 球面線形補間（Slerp）
+    /// @param from 開始回転
+    /// @param to 終了回転
+    /// @param ratio 補間率（0.0～1.0）
+    /// @return 補間されたクォータニオン
+    static Quaternion Slerp(Quaternion from, Quaternion to, double ratio);
 
-	/// <summary>
-    /// 逆クォータニオン（共役）を返す
-    /// </summary>
-	Quaternion Inverse(void) const;
+    /// @brief fromからtoへの回転を取得
+    /// @param fromDirection 開始方向
+    /// @param toDirection 目標方向
+    /// @return 回転を表すクォータニオン
+    static Quaternion FromToRotation(VECTOR fromDirection, VECTOR toDirection);
 
-	/// <summary>
-	/// 球面線形補間（Slerp）
-	/// </summary>
-	/// <param name="from">開始回転</param>
-	/// <param name="to">終了回転</param>
-	/// <param name="t">補間率（0.0～1.0）</param>
-	static Quaternion Slerp(Quaternion from, Quaternion to, double t);
+    /// @brief 最大角度制限付きの回転補間
+    /// @param from 現在の回転
+    /// @param to 目標回転
+    /// @param maxDegreesDelta 最大回転角（度）
+    /// @return 補間されたクォータニオン
+    static Quaternion RotateTowards(const Quaternion& from, const Quaternion& to, float maxDegreesDelta);
 
-	/// <summary>
-	/// from→to の回転を取得
-	/// </summary>
-	/// <param name="fromDir">開始方向</param>
-	/// <param name="toDir">目標方向</param>
-	static Quaternion FromToRotation(VECTOR fromDir, VECTOR toDir);
-	
-	/// <summary>
-	/// 最大角度制限付きの回転補間
-	/// </summary>
-	/// <param name="from">現在の回転</param>
-	/// <param name="to">目標回転</param>
-	/// <param name="maxDegreesDelta">最大回転角（度）</param>
-	static Quaternion RotateTowards(const Quaternion& from, const Quaternion& to, float maxDegreesDelta);
-	
-	/// <summary>
-    /// 2つのクォータニオンの角度差を計算
-    /// </summary>
-    /// <param name="q1">クォータニオン1</param>
-    /// <param name="q2">クォータニオン2</param>
-	static double Angle(const Quaternion& q1, const Quaternion& q2);
+    /// @brief 2つのクォータニオンの角度差を計算
+    /// @param quaternion1 クォータニオン1
+    /// @param quaternion2 クォータニオン2
+    /// @return 角度差（度）
+    static double Angle(const Quaternion& quaternion1, const Quaternion& quaternion2);
 
-	/// <summary>
-	/// 補間率を制限しないSlerp
-	/// </summary>
-	/// <param name="a">開始クォータニオン</param>
-	/// <param name="b">終了クォータニオン</param>
-	/// <param name="t">補間係数</param>
-	static Quaternion SlerpUnclamped(Quaternion a, Quaternion b, float t);
+    /// @brief 補間率を制限しないSlerp
+    /// @param from 開始クォータニオン
+    /// @param to 終了クォータニオン
+    /// @param ratio 補間係数
+    /// @return 補間されたクォータニオン
+    static Quaternion SlerpUnclamped(Quaternion from, Quaternion to, float ratio);
 
-	/// <summary>
-	/// 単位クォータニオン（回転なし）を取得
-	/// </summary>
-	static Quaternion Identity(void);
+    /// @brief 単位クォータニオン（回転なし）を取得
+    /// @param void 
+    /// @return 単位クォータニオン
+    static Quaternion Identity(void);
 
-	/// <summary>
-    /// クォータニオンの長さを取得
-    /// </summary>
-	double Length(void) const;
+    /// @brief クォータニオンの長さを取得
+    /// @param void 
+    /// @return 長さ
+    double Length(void) const;
 
-	/// <summary>
-	/// クォータニオンの長さの2乗を取得
-	/// </summary>
-	double LengthSquared(void) const;
+    /// @brief クォータニオンの長さの2乗を取得
+    /// @param void 
+    /// @return 長さの2乗
+    double LengthSquared(void) const;
 
-	/// <summary>
-	/// x, y, z 成分をベクトルで取得
-	/// </summary>
-	VECTOR xyz(void) const;
+    /// @brief x, y, z 成分をベクトルで取得
+    /// @param void 
+    /// @return x, y, z成分を持つベクトル
+    VECTOR xyz(void) const;
 
-	/// <summary>
-	/// クォータニオンを角度と軸に分解（未実装の可能性あり）
-	/// </summary>
-	void ToAngleAxis(float* angle, VECTOR* axis);
+    /// @brief クォータニオンを角度と軸に分解
+    /// @param angle 抽出された角度（ラジアン）
+    /// @param axis 抽出された回転軸
+    /// @return なし
+    void ToAngleAxis(float* angle, VECTOR* axis);
 
 private:
 
-	/// <summary>
-	/// 指定方向のベクトルを現在の回転で回す
-	/// </summary>
-	/// <param name="dir">方向ベクトル</param>
-	VECTOR GetDir(VECTOR dir) const;
+    /// @brief 指定方向のベクトルを現在の回転で回す
+    /// @param direction 方向ベクトル
+    /// @return 回転後の方向ベクトル
+    VECTOR GetDir(VECTOR direction) const;
 
-	/// <summary>
-	/// スカラー乗算（破壊的）
-	/// </summary>
-	/// <param name="rhs">係数</param>
-	Quaternion operator*(float& rhs);
+    /// @brief スカラー乗算（破壊的）
+    /// @param rhs 係数
+    /// @return 乗算後のクォータニオン
+    Quaternion operator*(float& rhs);
 
-	/// <summary>
-	/// スカラー乗算（非破壊）
-	/// </summary>
-	/// <param name="rhs">係数</param>
-	const Quaternion operator*(const float& rhs);
+    /// @brief スカラー乗算（非破壊）
+    /// @param rhs 係数
+    /// @return 乗算後のクォータニオン
+    const Quaternion operator*(const float& rhs);
 
-	/// <summary>
-	/// 加算（破壊的）
-	/// </summary>
-	/// <param name="rhs">加算対象</param>
-	Quaternion operator+(Quaternion& rhs);
+    /// @brief 加算（破壊的）
+    /// @param rhs 加算対象
+    /// @return 加算後のクォータニオン
+    Quaternion operator+(Quaternion& rhs);
 
-	/// <summary>
-	/// 加算（非破壊）
-	/// </summary>
-	/// <param name="rhs">加算対象</param>
-	const Quaternion operator+(const Quaternion& rhs);
-	
+    /// @brief 加算（非破壊）
+    /// @param rhs 加算対象
+    /// @return 加算後のクォータニオン
+    const Quaternion operator+(const Quaternion& rhs);
 };
-

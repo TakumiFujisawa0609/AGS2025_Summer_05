@@ -1,36 +1,35 @@
 #include "PrivateRoomStage.h"
 
-#include<DxLib.h>
+#include <DxLib.h>
 
-#include"../Application.h"
-#include"../Manager/Generic/Resource.h"
-#include"../Manager/Generic/ResourceManager.h"
-#include"../Manager/Generic/InputManager.h"
-#include"../Object/Manager/StageManager.h"
+#include "../Application.h"
+#include "../Manager/Generic/Resource.h"
+#include "../Manager/Generic/ResourceManager.h"
+#include "../Manager/Generic/InputManager.h"
+#include "../Object/Manager/StageManager.h"
 
-//コンストラクタ
 PrivateRoomStage::PrivateRoomStage(void)
 {
 }
 
-//初期化処理
 void PrivateRoomStage::Init(void)
 {
 }
 
-//更新処理
 void PrivateRoomStage::Update(void)
 {
-	auto& input = InputManager::GetInstance();
+    auto& inputManager = InputManager::GetInstance();
 }
 
-//描画処理
 void PrivateRoomStage::Draw(void)
 {
-	DrawFormatString(0, 20, 0xffffff, "プライベート");
+    const int DRAW_X = 0;
+    const int DRAW_Y = 20;
+    const int COLOR_WHITE = 0xffffff;
+
+    DrawFormatString(DRAW_X, DRAW_Y, COLOR_WHITE, "プライベート");
 }
 
-//解放処理
 void PrivateRoomStage::Release(void)
 {
 }

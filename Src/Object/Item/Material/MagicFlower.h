@@ -2,11 +2,14 @@
 
 #include "MaterialItem.h"
 
-/// <summary>
-/// 魔力草（素材）
-/// </summary>
+/// @brief 魔力草のクラス
 class MagicFlower : public MaterialItem
 {
 public:
-    MagicFlower();
+
+    /// @brief コンストラクタ
+    MagicFlower(void);
+
+    /// @brief デストラクタ
+    ~MagicFlower(void) override = default;
 };

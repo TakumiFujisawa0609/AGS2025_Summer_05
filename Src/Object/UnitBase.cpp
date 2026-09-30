@@ -3,31 +3,33 @@
 #include "../Application.h"
 #include "../Utility/Utility.h"
 
-UnitBase::UnitBase()
+UnitBase::UnitBase(void)
 {
-	trans_.modelId = -1;
-	trans_.pos = { 0.0f,0.0f,0.0f };
-	trans_.scl = { 0.0f,0.0f,0.0f };
-	trans_.rot = { 0.0f,0.0f,0.0f };
+    const int INVALID_MODEL_ID = -1;
+    const float INITIAL_VALUE = 0.0f;
 
-	radius_ = 0.0f;
-	speed_ = 0.0f;
-	movePow_ = Utility::VECTOR_ZERO;
+    transform_.modelId = INVALID_MODEL_ID;
+    transform_.position = { INITIAL_VALUE, INITIAL_VALUE, INITIAL_VALUE };
+    transform_.scale = { INITIAL_VALUE, INITIAL_VALUE, INITIAL_VALUE };
+    transform_.rotation = { INITIAL_VALUE, INITIAL_VALUE, INITIAL_VALUE };
+
+    radius_ = INITIAL_VALUE;
+    speed_ = INITIAL_VALUE;
+    movementVector_ = Utility::VECTOR_ZERO;
 }
 
-UnitBase::~UnitBase()
+UnitBase::~UnitBase(void)
 {
 }
 
-
-void UnitBase::Turn(const float _deg, const VECTOR& _axis)
+void UnitBase::Turn(const float degree, const VECTOR& axis)
 {
-	trans_.quaRot =
-		trans_.quaRot.Mult(trans_.quaRot, (Quaternion::AngleAxis(Utility::Deg2RadF(_deg), _axis)));
+    transform_.quaternionRotation = transform_.quaternionRotation.Mult(
+        transform_.quaternionRotation,
+        Quaternion::AngleAxis(Utility::DegreeToRadianFloat(degree), axis)
+    );
 }
 
 void UnitBase::InitAnimation(void)
 {
-
 }
-

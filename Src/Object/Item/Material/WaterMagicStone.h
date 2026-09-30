@@ -2,9 +2,14 @@
 
 #include "MaterialItem.h"
 
-class WaterMagicStone: public MaterialItem
+/// @brief 水の魔石のクラス
+class WaterMagicStone : public MaterialItem
 {
 public:
-	WaterMagicStone(void);
-};
 
+    /// @brief コンストラクタ
+    WaterMagicStone(void);
+
+    /// @brief デストラクタ
+    ~WaterMagicStone(void) override = default;
+};

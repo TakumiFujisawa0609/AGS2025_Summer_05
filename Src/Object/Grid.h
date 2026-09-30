@@ -1,39 +1,32 @@
 #pragma once
+
+/// @brief グリッドの描画を管理するクラス
 class Grid
 {
-
 public:
 
-	//線の長さ
-	static constexpr float LEN = 1200.0f;
+    // グリッドサイズ・描画関連
+    static constexpr float LENGTH = 1200.0f;                           // 線の長さ
+    static constexpr float HALF_LENGTH = LENGTH / 2.0f;                // 線の長さの半分
+    static constexpr float INTERVAL = 50.0f;                           // 線の間隔
+    static const int LINE_COUNT = static_cast<int>(LENGTH / INTERVAL); // 線の数
+    static const int HALF_LINE_COUNT = LINE_COUNT / 2;                 // 線の数の半分
 
-	//線の長さの半分
-	static constexpr float HLEN = LEN / 2.0f;
+    /// @brief コンストラクタ
+    Grid(void);
 
-	//線の間隔
-	static constexpr float TERM = 50.0f;
+    /// @brief デストラクタ
+    ~Grid(void);
 
-	//線の数
-	static const int NUM = static_cast<int>(LEN / TERM);
+    /// @brief 初期化処理
+    void Init(void);
 
-	//線の数の半分
-	static const int HNUM = NUM / 2;
+    /// @brief 更新処理
+    void Update(void);
 
-	//コンストラクタ
-	Grid(void);
+    /// @brief 描画処理
+    void Draw(void);
 
-	//デストラクタ
-	~Grid(void);
-
-	//初期化
-	void Init(void);
-
-	//更新処理
-	void Update(void);
-
-	//描画処理
-	void Draw(void);
-
-	//解放処理
-	void Release(void);
+    /// @brief 解放処理
+    void Release(void);
 };

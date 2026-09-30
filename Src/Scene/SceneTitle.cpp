@@ -14,207 +14,256 @@
 
 SceneTitle::SceneTitle(void)
 {
-    logo_ = -1;
+    const int INITIAL_ALPHA = 0;                            // 初期アルファ値
+    const int INITIAL_PAGE = 0;                             // 初期ページ番号
+    const int INITIAL_COUNT = 0;                            // 初期カウント値
+    const bool INITIAL_FLAG = false;                        // 初期フラグ状態
+
+    logoHandle_ = -1;
     grid_ = nullptr;
-    isDecided_ = false;
-    blackAlpha_ = 0;
+    isDecided_ = INITIAL_FLAG;
+    blackAlpha_ = INITIAL_ALPHA;
     operationHandle_ = -1;
     movieHandle_ = -1;
-	showBlackBackground_ = false;
-	playHandle_ = -1;
-	playHandle2_ = -1;
-	isPlay_ = false;
-    exitRequested_ = false;
-    howToPlayPage_ = 0;
+    showBlackBackground_ = INITIAL_FLAG;
+    playHandle_ = -1;
+    playHandle2_ = -1;
+    isPlay_ = INITIAL_FLAG;
+    exitRequested_ = INITIAL_FLAG;
+    howToPlayPage_ = INITIAL_PAGE;
+    atelierHandle_ = -1;
+    guildHandle_ = -1;
+    gardenHandle_ = -1;
+    pauseUiCount_ = INITIAL_COUNT;
 }
 
 void SceneTitle::Init(void)
 {
-    
+    const int INITIAL_CURSOR_INDEX = 0;                     // 初期カーソル位置インデックス
+    const int BGM_VOLUME = 40;                              // BGMの音量
+    const int SE_PUSH_VOLUME = 20;                          // 決定SEの音量
+    const int SE_SELECT_VOLUME = 30;                        // 選択SEの音量
+    const int MOVIE_VOLUME = 255;                           // 動画の音量
+    const bool MOVIE_LOOP_FLAG = true;                      // 動画のループ再生フラグ
+    const bool INITIAL_FLAG = true;                         // 初期フラグ状態
+    const bool INITIAL_FLAG_FALSE = false;                  // 初期フラグ状態（偽）
+
     auto camera = SceneManager::GetInstance().GetCamera();
     camera->ChangeMode(Camera::MODE::FREE);
-
 
     grid_ = new Grid();
     grid_->Init();
 
     uiMain_ = std::make_unique<SceneUi>();
-    uiMain_->AddCharctor("開始");
-    uiMain_->AddCharctor("遊び方");
-    uiMain_->AddCharctor("操作説明");
-    uiMain_->AddCharctor("クレジット");
-    uiMain_->AddCharctor("ゲーム終了");
+    uiMain_->AddCharacter("開始");
+    uiMain_->AddCharacter("遊び方");
+    uiMain_->AddCharacter("操作説明");
+    uiMain_->AddCharacter("クレジット");
+    uiMain_->AddCharacter("ゲーム終了");
 
     uiHowToPlay_ = std::make_unique<SceneUi>();
-    uiHowToPlay_->AddCharctor("目標について");
-    uiHowToPlay_->AddCharctor("錬金について");
-    uiHowToPlay_->AddCharctor("アトリエについて");  
-    uiHowToPlay_->AddCharctor("ギルドについて");   
-    uiHowToPlay_->AddCharctor("ガーデンについて");  
-    uiHowToPlay_->AddCharctor("戻る");
+    uiHowToPlay_->AddCharacter("目標について");
+    uiHowToPlay_->AddCharacter("錬金について");
+    uiHowToPlay_->AddCharacter("アトリエについて");
+    uiHowToPlay_->AddCharacter("ギルドについて");
+    uiHowToPlay_->AddCharacter("ガーデンについて");
+    uiHowToPlay_->AddCharacter("戻る");
 
-    inHowToPlayMenu_ = false;
-    howToPlayPage_ = 0;
+    inHowToPlayMenu_ = INITIAL_FLAG_FALSE;
+    howToPlayPage_ = INITIAL_CURSOR_INDEX;
 
-    auto& sound = SoundManager::GetInstance();
-    auto& res = ResourceManager::GetInstance();
+    auto& soundManager = SoundManager::GetInstance();
+    auto& resourceManager = ResourceManager::GetInstance();
 
-    sound.Add(SoundManager::TYPE::BGM, SoundManager::SOUND::BGM_TITLE, res.Load(ResourceManager::SRC::BGM_TITLE).handleId_);
-    sound.Add(SoundManager::TYPE::SE, SoundManager::SOUND::SE_PUSH, res.Load(ResourceManager::SRC::SE_PUSH).handleId_);
-    sound.Add(SoundManager::TYPE::SE, SoundManager::SOUND::SE_SELECT, res.Load(ResourceManager::SRC::SE_SELECT).handleId_);
-    sound.AdjustVolume(SoundManager::SOUND::BGM_TITLE, 40);
-    sound.AdjustVolume(SoundManager::SOUND::SE_PUSH, 20);
-    sound.AdjustVolume(SoundManager::SOUND::SE_SELECT, 30);
+    soundManager.Add(
+        SoundManager::TYPE::BGM,
+        SoundManager::SOUND::BGM_TITLE,
+        resourceManager.Load(ResourceManager::SRC::BGM_TITLE).handleId_
+    );
+    soundManager.Add(
+        SoundManager::TYPE::SE,
+        SoundManager::SOUND::SE_PUSH,
+        resourceManager.Load(ResourceManager::SRC::SE_PUSH).handleId_
+    );
+    soundManager.Add(
+        SoundManager::TYPE::SE,
+        SoundManager::SOUND::SE_SELECT,
+        resourceManager.Load(ResourceManager::SRC::SE_SELECT).handleId_
+    );
 
-    sound.Play(SoundManager::SOUND::BGM_TITLE);
+    soundManager.AdjustVolume(SoundManager::SOUND::BGM_TITLE, BGM_VOLUME);
+    soundManager.AdjustVolume(SoundManager::SOUND::SE_PUSH, SE_PUSH_VOLUME);
+    soundManager.AdjustVolume(SoundManager::SOUND::SE_SELECT, SE_SELECT_VOLUME);
+
+    soundManager.Play(SoundManager::SOUND::BGM_TITLE);
 
     movieHandle_ = LoadGraph((Application::PATH_MOVIE + "TitleMovie.mp4").c_str());
-    PlayMovieToGraph(movieHandle_, TRUE);
-    SetMovieVolumeToGraph(movieHandle_, 255);
+    PlayMovieToGraph(movieHandle_, MOVIE_LOOP_FLAG);
+    SetMovieVolumeToGraph(movieHandle_, MOVIE_VOLUME);
 
+    logoHandle_ = resourceManager.Load(ResourceManager::SRC::TITLE_LOGO).handleId_;
+    operationHandle_ = resourceManager.Load(ResourceManager::SRC::OPERATION).handleId_;
+    playHandle_ = resourceManager.Load(ResourceManager::SRC::PLAY_GUIDE).handleId_;
+    playHandle2_ = resourceManager.Load(ResourceManager::SRC::PLAY_GUIDE2).handleId_;
 
-    logo_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::TYTLE_LOGO).handleId_;
-    operationHandle_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::OPERATION).handleId_;
-	playHandle_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::PLAY_GUIDE).handleId_;
-	playHandle2_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::PLAY_GUIDE2).handleId_;
+    atelierHandle_ = resourceManager.Load(ResourceManager::SRC::ATELIER).handleId_;
+    guildHandle_ = resourceManager.Load(ResourceManager::SRC::GUILD).handleId_;
+    gardenHandle_ = resourceManager.Load(ResourceManager::SRC::GARDEN).handleId_;
 
-    atelierHandle_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::ATREA).handleId_;
-    guildHandle_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::GUILD).handleId_;
-    gardenHandle_ = ResourceManager::GetInstance().Load(ResourceManager::SRC::GARDEN).handleId_;
-
-	// 初期カーソル位置
-	uiMain_->SetCurrentIndex(0);
-	// 黒背景表示フラグ初期化
-	showBlackBackground_ = false;
-    isPlay_ = true;
+    uiMain_->SetCurrentIndex(INITIAL_CURSOR_INDEX);
+    showBlackBackground_ = INITIAL_FLAG_FALSE;
+    isPlay_ = INITIAL_FLAG;
 
     pauseUiCount_ = PAUSE_UI_COUNT;
 }
 
 void SceneTitle::Update(void)
 {
-    auto& sound = SoundManager::GetInstance();
-    auto& input = InputManager::GetInstance();
+    const int INITIAL_PAGE_INDEX = 0;                       // ページなしの状態を表す値
+    const int MENU_INDEX_START = 0;                         // 「開始」メニューのインデックス
+    const int MENU_INDEX_HOW_TO_PLAY = 1;                   // 「遊び方」メニューのインデックス
+    const int MENU_INDEX_OPERATION = 2;                     // 「操作説明」メニューのインデックス
+    const int MENU_INDEX_CREDIT = 3;                        // 「クレジット」メニューのインデックス
 
-    // ESCキーで黒背景を閉じる 
+    const int SUB_INDEX_TARGET = 1;                         // 遊び方サブメニュー：目標
+    const int SUB_INDEX_ALCHEMY = 2;                        // 遊び方サブメニュー：錬金
+    const int SUB_INDEX_ATELIER = 3;                        // 遊び方サブメニュー：アトリエ
+    const int SUB_INDEX_GUILD = 4;                          // 遊び方サブメニュー：ギルド
+    const int SUB_INDEX_GARDEN = 5;                         // 遊び方サブメニュー：ガーデン
+
+    const int SUB_MENU_CHOICE_TARGET = 0;                   // 選択肢インデックス：目標
+    const int SUB_MENU_CHOICE_ALCHEMY = 1;                  // 選択肢インデックス：錬金
+    const int SUB_MENU_CHOICE_ATELIER = 2;                  // 選択肢インデックス：アトリエ
+    const int SUB_MENU_CHOICE_GUILD = 3;                    // 選択肢インデックス：ギルド
+    const int SUB_MENU_CHOICE_GARDEN = 4;                   // 選択肢インデックス：ガーデン
+    const int SUB_MENU_CHOICE_BACK = 5;                     // 選択肢インデックス：戻る
+
+    const int INDEX_STEP = 1;                               // インデックス増減ステップ値
+    const bool FLAG_TRUE = true;                            // 有効フラグ
+    const bool FLAG_FALSE = false;                          // 無効フラグ
+
+    auto& soundManager = SoundManager::GetInstance();
+    auto& inputManager = InputManager::GetInstance();
+
     if (showBlackBackground_)
     {
-        if (input.IsTrgDown(KEY_INPUT_ESCAPE))
+        if (inputManager.IsTriggerDown(KEY_INPUT_ESCAPE))
         {
-            sound.Play(SoundManager::SOUND::SE_CANCEL);
-            showBlackBackground_ = false;
-            uiMain_->SetCurrentIndex(0); // 最初の項目「開始」に戻す
-        }
-        return; // 背景表示中は他の処理をしない
-    }
-
-    // 遊び方説明ページ表示中
-    if (howToPlayPage_ > 0)
-    {
-        if (input.IsTrgDown(KEY_INPUT_ESCAPE))
-        {
-            sound.Play(SoundManager::SOUND::SE_CANCEL);
-            howToPlayPage_ = 0; // 説明を閉じる
-            uiMain_->SetCurrentIndex(0); // 最初の項目に戻す
+            soundManager.Play(SoundManager::SOUND::SE_CANCEL);
+            showBlackBackground_ = FLAG_FALSE;
+            uiMain_->SetCurrentIndex(MENU_INDEX_START);
         }
         return;
     }
 
-    // メインメニュー操作
+    if (howToPlayPage_ > INITIAL_PAGE_INDEX)
+    {
+        if (inputManager.IsTriggerDown(KEY_INPUT_ESCAPE))
+        {
+            soundManager.Play(SoundManager::SOUND::SE_CANCEL);
+            howToPlayPage_ = INITIAL_PAGE_INDEX;
+            uiMain_->SetCurrentIndex(MENU_INDEX_START);
+        }
+        return;
+    }
+
     if (!inHowToPlayMenu_)
     {
-        auto ui = uiMain_.get();
-        int currentIndex = ui->GetCurrentIndex();
-        int maxIndex = ui->GetMaxIndex() - 1;
+        auto sceneUi = uiMain_.get();
+        int currentIndex = sceneUi->GetCurrentIndex();
+        int maxIndex = sceneUi->GetMaxIndex() - INDEX_STEP;
+        int totalItemCount = maxIndex + INDEX_STEP;
 
-        if (input.IsTrgDown(KEY_INPUT_UP)) 
+        if (inputManager.IsTriggerDown(KEY_INPUT_UP))
         {
-            sound.Play(SoundManager::SOUND::SE_SELECT);
-            currentIndex = (currentIndex - 1 + maxIndex + 1) % (maxIndex + 1);
-            ui->SetCurrentIndex(currentIndex);
+            soundManager.Play(SoundManager::SOUND::SE_SELECT);
+            currentIndex = (currentIndex - INDEX_STEP + totalItemCount) % totalItemCount;
+            sceneUi->SetCurrentIndex(currentIndex);
         }
-        else if (input.IsTrgDown(KEY_INPUT_DOWN))
+        else if (inputManager.IsTriggerDown(KEY_INPUT_DOWN))
         {
-            sound.Play(SoundManager::SOUND::SE_SELECT);
-            currentIndex = (currentIndex + 1) % (maxIndex + 1);
-            ui->SetCurrentIndex(currentIndex);
+            soundManager.Play(SoundManager::SOUND::SE_SELECT);
+            currentIndex = (currentIndex + INDEX_STEP) % totalItemCount;
+            sceneUi->SetCurrentIndex(currentIndex);
         }
 
-        if (input.IsTrgDown(KEY_INPUT_RETURN)) 
+        if (inputManager.IsTriggerDown(KEY_INPUT_RETURN))
         {
-            Application::GetInstance().SetActiveUI(true);
-            int selected = ui->GetCurrentIndex();
-            if (selected == 0) 
+            Application::GetInstance().SetActiveUI(FLAG_TRUE);
+            int selected = sceneUi->GetCurrentIndex();
+
+            if (selected == MENU_INDEX_START)
             {
-                sound.Play(SoundManager::SOUND::SE_PUSH);
-                sound.Stop(SoundManager::SOUND::BGM_TITLE);
+                soundManager.Play(SoundManager::SOUND::SE_PUSH);
+                soundManager.Stop(SoundManager::SOUND::BGM_TITLE);
                 SceneManager::GetInstance().ChangeScene(SceneManager::SCENE_ID::GAME);
                 return;
             }
-            else if (selected == 1) 
-            { // 遊び方
-                sound.Play(SoundManager::SOUND::SE_PUSH);
-                inHowToPlayMenu_ = true;
-                uiHowToPlay_->SetCurrentIndex(0);
+            else if (selected == MENU_INDEX_HOW_TO_PLAY)
+            {
+                soundManager.Play(SoundManager::SOUND::SE_PUSH);
+                inHowToPlayMenu_ = FLAG_TRUE;
+                uiHowToPlay_->SetCurrentIndex(INITIAL_PAGE_INDEX);
             }
-            else if (selected == maxIndex) 
-            { // ゲーム終了
-                sound.Play(SoundManager::SOUND::SE_PUSH);
-                exitRequested_ = true;
+            else if (selected == maxIndex)
+            {
+                soundManager.Play(SoundManager::SOUND::SE_PUSH);
+                exitRequested_ = FLAG_TRUE;
                 return;
             }
             else
             {
-                showBlackBackground_ = true; 
+                showBlackBackground_ = FLAG_TRUE;
             }
         }
     }
-    // サブメニュー操作 
     else
     {
-        auto ui = uiHowToPlay_.get();
-        int currentIndex = ui->GetCurrentIndex();
-        int maxIndex = ui->GetMaxIndex() - 1;
+        auto sceneUi = uiHowToPlay_.get();
+        int currentIndex = sceneUi->GetCurrentIndex();
+        int maxIndex = sceneUi->GetMaxIndex() - INDEX_STEP;
+        int totalItemCount = maxIndex + INDEX_STEP;
 
-        if (input.IsTrgDown(KEY_INPUT_UP)) 
+        if (inputManager.IsTriggerDown(KEY_INPUT_UP))
         {
-            sound.Play(SoundManager::SOUND::SE_SELECT);
-            currentIndex = (currentIndex - 1 + maxIndex + 1) % (maxIndex + 1);
-            ui->SetCurrentIndex(currentIndex);
+            soundManager.Play(SoundManager::SOUND::SE_SELECT);
+            currentIndex = (currentIndex - INDEX_STEP + totalItemCount) % totalItemCount;
+            sceneUi->SetCurrentIndex(currentIndex);
         }
-        else if (input.IsTrgDown(KEY_INPUT_DOWN))
+        else if (inputManager.IsTriggerDown(KEY_INPUT_DOWN))
         {
-            sound.Play(SoundManager::SOUND::SE_SELECT);
-            currentIndex = (currentIndex + 1) % (maxIndex + 1);
-            ui->SetCurrentIndex(currentIndex);
+            soundManager.Play(SoundManager::SOUND::SE_SELECT);
+            currentIndex = (currentIndex + INDEX_STEP) % totalItemCount;
+            sceneUi->SetCurrentIndex(currentIndex);
         }
 
-        if (input.IsTrgDown(KEY_INPUT_RETURN))
+        if (inputManager.IsTriggerDown(KEY_INPUT_RETURN))
         {
-            int selected = ui->GetCurrentIndex();
-            if (selected == 0) 
-            { // 目標について
-                howToPlayPage_ = 1;
+            int selected = sceneUi->GetCurrentIndex();
+
+            if (selected == SUB_MENU_CHOICE_TARGET)
+            {
+                howToPlayPage_ = SUB_INDEX_TARGET;
             }
-            else if (selected == 1) 
-            { // 錬金について
-                howToPlayPage_ = 2;
+            else if (selected == SUB_MENU_CHOICE_ALCHEMY)
+            {
+                howToPlayPage_ = SUB_INDEX_ALCHEMY;
             }
-            else if (selected == 2)
-            { // アトリエについて
-                howToPlayPage_ = 3;
+            else if (selected == SUB_MENU_CHOICE_ATELIER)
+            {
+                howToPlayPage_ = SUB_INDEX_ATELIER;
             }
-            else if (selected == 3) 
-            { // ギルドについて
-                howToPlayPage_ = 4;
+            else if (selected == SUB_MENU_CHOICE_GUILD)
+            {
+                howToPlayPage_ = SUB_INDEX_GUILD;
             }
-            else if (selected == 4) 
-            { // ガーデンについて
-                howToPlayPage_ = 5;
+            else if (selected == SUB_MENU_CHOICE_GARDEN)
+            {
+                howToPlayPage_ = SUB_INDEX_GARDEN;
             }
-            else if (selected == 5)
-            { // 戻る
-                inHowToPlayMenu_ = false;
+            else if (selected == SUB_MENU_CHOICE_BACK)
+            {
+                inHowToPlayMenu_ = FLAG_FALSE;
             }
         }
     }
@@ -222,75 +271,166 @@ void SceneTitle::Update(void)
 
 void SceneTitle::Draw(void)
 {
-    // 背景動画
-    DrawRotaGraph3(0, 0, 0, 0, 1.0f, 1.0f, 0, movieHandle_, FALSE);
+    const int BG_POS_X = 0;                                 // 背景描画位置X
+    const int BG_POS_Y = 0;                                 // 背景描画位置Y
+    const float BG_SCALE_X = 1.0f;                          // 背景スケールX
+    const float BG_SCALE_Y = 1.0f;                          // 背景スケールY
+    const double BG_ROTATION = 0.0;                         // 背景回転角
+    const bool BG_TRANSPARENT_FALSE = false;                // 背景透過フラグ（無効）
+    const bool BG_TRANSPARENT_TRUE = true;                  // 背景透過フラグ（有効）
+    const int INITIAL_PAGE = 0;                             // ページなし
+    const int PAGE_TARGET = 1;                              // ページ：目標
+    const int PAGE_ALCHEMY = 2;                             // ページ：錬金
+    const int PAGE_ATELIER = 3;                             // ページ：アトリエ
+    const int PAGE_GUILD = 4;                               // ページ：ギルド
+    const int PAGE_GARDEN = 5;                              // ページ：ガーデン
+    const int COLOR_BLACK = GetColor(0, 0, 0);              // 黒色
+    const int COLOR_WHITE = GetColor(255, 255, 255);        // 白色
+    const int COLOR_GRAY = GetColor(200, 200, 200);         // 灰色テキスト
+    const int SCREEN_HALF_DIVISOR = 2;                      // 画面半分除数
+    const int LOGO_OFFSET_X = 55;                           // ロゴ描画Xオフセット
+    const int OP_BG_OFFSET_X = 50;                          // 操作説明背景Xオフセット
+    const int OP_BG_OFFSET_Y = 50;                          // 操作説明背景Yオフセット
+    const int HELP_TEXT_POS_X = 50;                         // ヘルプテキストX座標
+    const int HELP_TEXT_POS_Y_OFFSET = 30;                  // ヘルプテキストYオフセット
 
-    // 遊び方説明ページ表示中
-    if (howToPlayPage_ > 0)
+    const double SCALE_NORMAL = 1.0;                        // 標準スケール
+    const double ROTATION_ZERO = 0.0;                       // 回転ゼロ
+
+    DrawRotaGraph3(
+        BG_POS_X,
+        BG_POS_Y,
+        BG_POS_X,
+        BG_POS_Y,
+        BG_SCALE_X,
+        BG_SCALE_Y,
+        BG_ROTATION,
+        movieHandle_,
+        BG_TRANSPARENT_FALSE
+    );
+
+    if (howToPlayPage_ > INITIAL_PAGE)
     {
-        DrawBox(0, 0, Application::DEFA_SCREEN_SIZE_X, Application::DEFA_SCREEN_SZIE_Y, GetColor(0, 0, 0), TRUE);
+        DrawBox(
+            BG_POS_X,
+            BG_POS_Y,
+            Application::FULL_SCREEN_SIZE_X,
+            Application::FULL_SCREEN_SIZE_Y,
+            COLOR_BLACK,
+            BG_TRANSPARENT_TRUE
+        );
 
-        if (howToPlayPage_ == 1) 
+        if (howToPlayPage_ == PAGE_TARGET)
         {
-            DrawRotaGraph(Application::SCREEN_SIZE_X / 2,
-                Application::SCREEN_SIZE_Y / 2,
-                1.0, 0.0, playHandle_, true);
+            DrawRotaGraph(
+                Application::SCREEN_SIZE_X / SCREEN_HALF_DIVISOR,
+                Application::SCREEN_SIZE_Y / SCREEN_HALF_DIVISOR,
+                SCALE_NORMAL,
+                ROTATION_ZERO,
+                playHandle_,
+                BG_TRANSPARENT_TRUE
+            );
         }
-        else if (howToPlayPage_ == 2) 
+        else if (howToPlayPage_ == PAGE_ALCHEMY)
         {
-            DrawRotaGraph(Application::SCREEN_SIZE_X / 2,
-                Application::SCREEN_SIZE_Y / 2,
-                1.0, 0.0, playHandle2_, true);
+            DrawRotaGraph(
+                Application::SCREEN_SIZE_X / SCREEN_HALF_DIVISOR,
+                Application::SCREEN_SIZE_Y / SCREEN_HALF_DIVISOR,
+                SCALE_NORMAL,
+                ROTATION_ZERO,
+                playHandle2_,
+                BG_TRANSPARENT_TRUE
+            );
         }
-        else if (howToPlayPage_ == 3)
-        { // アトリエ
-            DrawRotaGraph(Application::SCREEN_SIZE_X / 2,
-                Application::SCREEN_SIZE_Y / 2,
-                1.0, 0.0, atelierHandle_, true);
+        else if (howToPlayPage_ == PAGE_ATELIER)
+        {
+            DrawRotaGraph(
+                Application::SCREEN_SIZE_X / SCREEN_HALF_DIVISOR,
+                Application::SCREEN_SIZE_Y / SCREEN_HALF_DIVISOR,
+                SCALE_NORMAL,
+                ROTATION_ZERO,
+                atelierHandle_,
+                BG_TRANSPARENT_TRUE
+            );
         }
-        else if (howToPlayPage_ == 4)
-        { // ギルド
-            DrawRotaGraph(Application::SCREEN_SIZE_X / 2,
-                Application::SCREEN_SIZE_Y / 2,
-                1.0, 0.0, guildHandle_, true);
+        else if (howToPlayPage_ == PAGE_GUILD)
+        {
+            DrawRotaGraph(
+                Application::SCREEN_SIZE_X / SCREEN_HALF_DIVISOR,
+                Application::SCREEN_SIZE_Y / SCREEN_HALF_DIVISOR,
+                SCALE_NORMAL,
+                ROTATION_ZERO,
+                guildHandle_,
+                BG_TRANSPARENT_TRUE
+            );
         }
-        else if (howToPlayPage_ == 5) 
-        { // ガーデン
-            DrawRotaGraph(Application::SCREEN_SIZE_X / 2,
-                Application::SCREEN_SIZE_Y / 2,
-                1.0, 0.0, gardenHandle_, true);
+        else if (howToPlayPage_ == PAGE_GARDEN)
+        {
+            DrawRotaGraph(
+                Application::SCREEN_SIZE_X / SCREEN_HALF_DIVISOR,
+                Application::SCREEN_SIZE_Y / SCREEN_HALF_DIVISOR,
+                SCALE_NORMAL,
+                ROTATION_ZERO,
+                gardenHandle_,
+                BG_TRANSPARENT_TRUE
+            );
         }
 
-        DrawString(50, Application::DEFA_SCREEN_SZIE_Y - 30, "ESCキーで戻る", GetColor(200, 200, 200));
+        DrawString(
+            HELP_TEXT_POS_X,
+            Application::FULL_SCREEN_SIZE_Y - HELP_TEXT_POS_Y_OFFSET,
+            "ESCキーで戻る",
+            COLOR_GRAY
+        );
+
         return;
     }
 
-    // メインメニュー 
     if (!inHowToPlayMenu_)
     {
-        DrawRotaGraph(Application::SCREEN_SIZE_X / 2 + 55,
-            Application::SCREEN_SIZE_Y / 2,
-            1.0, 0.0, logo_, true);
-        uiMain_->Draw(Application::DEFA_SCREEN_SZIE_Y / 2);
+        DrawRotaGraph(
+            Application::SCREEN_SIZE_X / SCREEN_HALF_DIVISOR + LOGO_OFFSET_X,
+            Application::SCREEN_SIZE_Y / SCREEN_HALF_DIVISOR,
+            SCALE_NORMAL,
+            ROTATION_ZERO,
+            logoHandle_,
+            BG_TRANSPARENT_TRUE
+        );
+        uiMain_->Draw(Application::FULL_SCREEN_SIZE_Y / SCREEN_HALF_DIVISOR);
 
-        // 操作説明やクレジットを選んだとき
         if (showBlackBackground_)
         {
-            // 黒背景
-            DrawBox(0, 0,
-                Application::DEFA_SCREEN_SIZE_X,
-                Application::DEFA_SCREEN_SZIE_Y,
-                GetColor(0, 0, 0), TRUE);
+            DrawBox(
+                BG_POS_X,
+                BG_POS_Y,
+                Application::FULL_SCREEN_SIZE_X,
+                Application::FULL_SCREEN_SIZE_Y,
+                COLOR_BLACK,
+                BG_TRANSPARENT_TRUE
+            );
 
             int selected = uiMain_->GetCurrentIndex();
-            if (selected == 2) // 操作説明
+            const int MENU_INDEX_OPERATION = 2;             // 操作説明インデックス
+            const int MENU_INDEX_CREDIT = 3;                // クレジットインデックス
+
+            if (selected == MENU_INDEX_OPERATION)
             {
-                DrawRotaGraph3(50, 50, 0, 0, 1.0f, 1.0f, 0, operationHandle_, true);
+                DrawRotaGraph3(
+                    OP_BG_OFFSET_X,
+                    OP_BG_OFFSET_Y,
+                    BG_POS_X,
+                    BG_POS_Y,
+                    1.0f,
+                    1.0f,
+                    0,
+                    operationHandle_,
+                    BG_TRANSPARENT_TRUE
+                );
             }
-            else if (selected == 3) // クレジット
+            else if (selected == MENU_INDEX_CREDIT)
             {
                 auto& font = Font::GetInstance();
-                std::vector<std::string> lines = 
+                std::vector<std::string> lines =
                 {
                     "クレジット",
                     "効果音ラボ: カーソル移動音2, キラッ2",
@@ -302,41 +442,43 @@ void SceneTitle::Draw(void)
                     "H/MIX GALLERY: ホシノキセキ"
                 };
 
-                int color = GetColor(255, 255, 255);
-                int fontSize = 28;
-                int fontType = DX_FONTTYPE_ANTIALIASING;
+                const int FONT_SIZE = 28;                       // フォントサイズ
+                const int FONT_TYPE = DX_FONTTYPE_ANTIALIASING; // フォントタイプ
+                const int LINE_SPACING_OFFSET = 24;             // 行間追加オフセット
+                const int LOOP_START_INDEX = 0;                 // ループ開始インデックス
 
-                int centerX = Application::SCREEN_SIZE_X / 2;
-                int centerY = Application::SCREEN_SIZE_Y / 2;
-
-                int lineSpacing = fontSize + 24; 
+                int centerX = Application::SCREEN_SIZE_X / SCREEN_HALF_DIVISOR;
+                int centerY = Application::SCREEN_SIZE_Y / SCREEN_HALF_DIVISOR;
+                int lineSpacing = FONT_SIZE + LINE_SPACING_OFFSET;
 
                 int totalHeight = static_cast<int>(lines.size()) * lineSpacing;
-                int startY = centerY - totalHeight / 2;
+                int startY = centerY - totalHeight / SCREEN_HALF_DIVISOR;
 
-                for (size_t i = 0; i < lines.size(); i++)
+                for (size_t i = LOOP_START_INDEX; i < lines.size(); i++)
                 {
                     int textWidth = font.GetDefaultTextWidth(lines[i]);
-                    int drawX = centerX - textWidth / 2;
+                    int drawX = centerX - textWidth / SCREEN_HALF_DIVISOR;
                     int drawY = startY + static_cast<int>(i) * lineSpacing;
 
-                    font.DrawDefaultText(drawX, drawY, lines[i].c_str(), color, fontSize, fontType);
+                    font.DrawDefaultText(drawX, drawY, lines[i].c_str(), COLOR_WHITE, FONT_SIZE, FONT_TYPE);
                 }
             }
-
         }
-
     }
-    // 遊び方サブメニュー
     else
     {
-        DrawBox(0, 0,
-            Application::DEFA_SCREEN_SIZE_X,
-            Application::DEFA_SCREEN_SZIE_Y,
-            GetColor(0, 0, 0), TRUE);
+        DrawBox(
+            BG_POS_X,
+            BG_POS_Y,
+            Application::FULL_SCREEN_SIZE_X,
+            Application::FULL_SCREEN_SIZE_Y,
+            COLOR_BLACK,
+            BG_TRANSPARENT_TRUE
+        );
 
-        int centerY = Application::DEFA_SCREEN_SZIE_Y / 2;
-        int offsetY = centerY - 100;  // 上にずらす
+        const int SUB_MENU_OFFSET_Y = 100;                
+        int centerY = Application::FULL_SCREEN_SIZE_Y / SCREEN_HALF_DIVISOR;
+        int offsetY = centerY - SUB_MENU_OFFSET_Y;
 
         uiHowToPlay_->Draw(offsetY);
     }
@@ -357,5 +499,4 @@ bool SceneTitle::IsExitRequested(void) const
 
 void SceneTitle::DrawDebug(void)
 {
-    // 必要に応じて
 }

@@ -8,157 +8,215 @@
 #include "../../Application.h"
 #include "../player.h"
 
-ItemBox::ItemBox()
-	: isShowUI_(false), isInventoryOpen_(false), inventoryUI_(new InventoryUI())
+ItemBox::ItemBox(void)
+    : isShowUI_(false),
+    isInventoryOpen_(false),
+    inventoryUI_(new InventoryUI())
 {
 }
 
-ItemBox::~ItemBox()
+ItemBox::~ItemBox(void)
 {
-	delete inventoryUI_;
-	inventoryUI_ = nullptr;
+    delete inventoryUI_;
+    inventoryUI_ = nullptr;
 }
 
 void ItemBox::SetPlayer(std::shared_ptr<Player> player)
 {
-	player_ = player;
+    player_ = player;
 }
 
 void ItemBox::Init(void)
 {
-	auto& res = ResourceManager::GetInstance();
-	trans_.SetModel(res.LoadModelDuplicate(ResourceManager::SRC::BOX));
-	trans_.pos = MODEL_POS;
-	trans_.scl = SCALE;
-	trans_.rot = VGet(0.0f, 0.0f, 0.0f);
-	radius_ = RADIUS;
+    const float INITIAL_ROTATION_ANGLE = 0.0f;          
+    auto& resourceManager = ResourceManager::GetInstance();
+    transform_.SetModel(resourceManager.LoadModelDuplicate(ResourceManager::SRC::BOX));
+    transform_.position = MODEL_POSITION;
+    transform_.scale = SCALE;
+    transform_.rotation = VGet(
+        INITIAL_ROTATION_ANGLE,
+        INITIAL_ROTATION_ANGLE,
+        INITIAL_ROTATION_ANGLE
+    );
+    radius_ = RADIUS;
 
-	inventoryUI_->Init();
+    if (inventoryUI_ != nullptr)
+    {
+        inventoryUI_->Init();
+    }
 }
 
 void ItemBox::Update(void)
 {
-	auto& input = InputManager::GetInstance();
+    auto& inputManager = InputManager::GetInstance();
 
-	if (isShowUI_ && !isInventoryOpen_)
-	{
-		if (input.IsTrgDown(KEY_INPUT_RETURN))
-		{
-			Application::GetInstance().SetActiveUI(true);
-			SoundManager::GetInstance().Play(SoundManager::SOUND::SE_PUSH);
-			isInventoryOpen_ = true;
-			if (inventoryUI_) inventoryUI_->Show(); // ← Zキー制御なしで表示
-		}
-	}
+    if (isShowUI_ && !isInventoryOpen_)
+    {
+        if (inputManager.IsTriggerDown(KEY_INPUT_RETURN))
+        {
+            Application::GetInstance().SetActiveUI(true);
+            SoundManager::GetInstance().Play(SoundManager::SOUND::SE_PUSH);
+            isInventoryOpen_ = true;
 
-	if (isInventoryOpen_ && inventoryUI_)
-	{
-		inventoryUI_->Update();
-		if (input.IsTrgDown(KEY_INPUT_ESCAPE))
-		{
-			Application::GetInstance().SetActiveUI(true);
-			SoundManager::GetInstance().Play(SoundManager::SOUND::SE_CANCEL);
-			isInventoryOpen_ = false;
-			inventoryUI_->Hide();
-		}
-	}
+            if (inventoryUI_ != nullptr)
+            {
+                inventoryUI_->Show();
+            }
+        }
+    }
+
+    if (isInventoryOpen_ && inventoryUI_ != nullptr)
+    {
+        inventoryUI_->Update();
+
+        if (inputManager.IsTriggerDown(KEY_INPUT_ESCAPE))
+        {
+            Application::GetInstance().SetActiveUI(true);
+            SoundManager::GetInstance().Play(SoundManager::SOUND::SE_CANCEL);
+            isInventoryOpen_ = false;
+            inventoryUI_->Hide();
+        }
+    }
 }
+
 void ItemBox::Draw(void)
 {
-	// モデル描画
-	if (trans_.modelId >= 0)
-	{
-		MV1SetScale(trans_.modelId, trans_.scl);
-		MV1SetPosition(trans_.modelId, trans_.pos);
-		MV1SetRotationXYZ(trans_.modelId, trans_.rot);
-		MV1DrawModel(trans_.modelId);
-	}
+    const int INVALID_MODEL_ID = 0;                     
+
+    if (transform_.modelId >= INVALID_MODEL_ID)
+    {
+        MV1SetScale(transform_.modelId, transform_.scale);
+        MV1SetPosition(transform_.modelId, transform_.position);
+        MV1SetRotationXYZ(transform_.modelId, transform_.rotation);
+        MV1DrawModel(transform_.modelId);
+    }
 }
 
 void ItemBox::DrawUI(void)
 {
+    const int screenWidth = Application::FULL_SCREEN_SIZE_X;
+    const int screenHeight = Application::FULL_SCREEN_SIZE_Y;
 
-	const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
-	const int screenHeight = Application::DEFA_SCREEN_SZIE_Y;
+    const int FONT_SIZE = 24;                           // フォントサイズ
+    const int BOX_WIDTH_PADDING = 30;                   // 背景ボックス横パディング
+    const int BOX_HEIGHT = 30;                          // 背景ボックス縦幅
+    const int SCREEN_HALF_DIVISOR = 2;                  // 画面中央除数
+    const int BOX_CENTER_OFFSET_Y = 180;                // メッセージボックスYオフセット
+    const int FRAME_OFFSET_LEFT = 20;                   // 枠描画の左オフセット
+    const int FRAME_OFFSET_TOP = 10;                    // 枠描画の上オフセット
+    const int FRAME_EXPAND_RIGHT = 60;                  // 枠描画の右拡張幅
+    const int FRAME_EXPAND_BOTTOM = 10;                 // 枠描画の下拡張幅
+    const int TEXT_PADDING_X = 5;                       // テキスト表示Xパディング
+    const int TEXT_PADDING_Y = 5;                       // テキスト表示Yパディング
 
-	// UIメッセージ表示（インベントリが未表示のとき）
-	if (isShowUI_ && !isInventoryOpen_)
-	{
-		const char* text = "アイテムボックス";
-		int fontSize = 24;
-		int textWidth = GetDrawStringWidth(text, strlen(text), fontSize);
-		int boxWidth = textWidth + 30;
-		int boxHeight = 30;
-		int boxX = (screenWidth - boxWidth) / 2;
-		int boxY = screenHeight / 2 + 180;
+    if (isShowUI_ && !isInventoryOpen_)
+    {
+        const char* text = "アイテムボックス";
+        int textWidth = GetDrawStringWidth(text, static_cast<int>(strlen(text)), FONT_SIZE);
+        int boxWidth = textWidth + BOX_WIDTH_PADDING;
+        int boxX = (screenWidth - boxWidth) / SCREEN_HALF_DIVISOR;
+        int boxY = (screenHeight / SCREEN_HALF_DIVISOR) + BOX_CENTER_OFFSET_Y;
 
-		DrawBox(boxX - 20, boxY - 10, boxX + boxWidth + 60, boxY + boxHeight + 10, GetColor(0, 0, 0), TRUE);
-		DrawBox(boxX - 20, boxY - 10, boxX + boxWidth + 60, boxY + boxHeight + 10, GetColor(255, 255, 255), FALSE);
-		Font::GetInstance().DrawDefaultText(boxX + 5, boxY + 5, text, GetColor(255, 255, 255), fontSize);
-	}
+        DrawBox(
+            boxX - FRAME_OFFSET_LEFT,
+            boxY - FRAME_OFFSET_TOP,
+            boxX + boxWidth + FRAME_EXPAND_RIGHT,
+            boxY + BOX_HEIGHT + FRAME_EXPAND_BOTTOM,
+            GetColor(0, 0, 0),
+            true
+        );
 
-	// インベントリ表示中
-	if (isInventoryOpen_)
-	{
-		inventoryUI_->Draw();
-	}
+        DrawBox(
+            boxX - FRAME_OFFSET_LEFT,
+            boxY - FRAME_OFFSET_TOP,
+            boxX + boxWidth + FRAME_EXPAND_RIGHT,
+            boxY + BOX_HEIGHT + FRAME_EXPAND_BOTTOM,
+            GetColor(255, 255, 255),
+            false
+        );
+
+        Font::GetInstance().DrawDefaultText(
+            boxX + TEXT_PADDING_X,
+            boxY + TEXT_PADDING_Y,
+            text,
+            GetColor(255, 255, 255),
+            FONT_SIZE
+        );
+    }
+
+    if (isInventoryOpen_ && inventoryUI_ != nullptr)
+    {
+        inventoryUI_->Draw();
+    }
 }
 
 void ItemBox::Release(void)
 {
-	if (trans_.modelId >= 0)
-	{
-		MV1DeleteModel(trans_.modelId);
-		trans_.modelId = -1;
-	}
+    const int INVALID_MODEL_ID = 0;                     // 有効モデルIDの下限
+    const int MODEL_UNLOAD_ID = -1;                     // モデル破棄後のID
 
-	delete inventoryUI_;
-	inventoryUI_ = nullptr;
+    if (transform_.modelId >= INVALID_MODEL_ID)
+    {
+        MV1DeleteModel(transform_.modelId);
+        transform_.modelId = MODEL_UNLOAD_ID;
+    }
+
+    delete inventoryUI_;
+    inventoryUI_ = nullptr;
 }
 
 HitObject::HIT_TYPE ItemBox::GetHitType(void) const
 {
-	return HIT_TYPE::SPHERE;
+    return HIT_TYPE::SPHERE;
 }
 
 VECTOR ItemBox::GetHitPosition(void) const
 {
-	return trans_.pos;
+    return transform_.position;
 }
 
 float ItemBox::GetHitRadius(void) const
 {
-	return radius_;
+    return radius_;
 }
 
 void ItemBox::ShowUI(void)
 {
-	isShowUI_ = true;
+    isShowUI_ = true;
 }
 
 void ItemBox::HideUI(void)
 {
-	isShowUI_ = false;
-	isInventoryOpen_ = false;
-	if (inventoryUI_) inventoryUI_->Hide();
+    isShowUI_ = false;
+    isInventoryOpen_ = false;
+
+    if (inventoryUI_ != nullptr)
+    {
+        inventoryUI_->Hide();
+    }
 }
 
 bool ItemBox::IsValid(void) const
 {
-	return true;
+    return true;
 }
 
 void ItemBox::OnPlayerHit(void)
 {
-	ShowUI();
+    ShowUI();
 }
 
 void ItemBox::OnPlayerExit(void)
 {
-	HideUI();
+    HideUI();
 }
 
 bool ItemBox::IsVisible(void) const
 {
-	return inventoryUI_->IsVisible();
+    if (inventoryUI_ == nullptr)
+    {
+        return false;
+    }
+
+    return inventoryUI_->IsVisible();
 }

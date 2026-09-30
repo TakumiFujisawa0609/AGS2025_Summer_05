@@ -2,9 +2,14 @@
 
 #include "ProductItem.h"
 
+/// @brief アイスワンドのクラス
 class IceWand : public ProductItem
 {
 public:
-	IceWand(void);
-};
 
+    /// @brief コンストラクタ
+    IceWand(void);
+
+    /// @brief デストラクタ
+    ~IceWand(void) override = default;
+};

@@ -11,31 +11,40 @@
 #include "../../DrawUI/Font.h"
 #include "../../Application.h"
 
-// コンストラクタ
 PlantObject::PlantObject(void)
 {
+    const float INITIAL_TIME = 0.0f;                    // 初期時刻
+    const int INVALID_MODEL_ID = -1;                    // 無効なモデルID
+
     growthStage_ = GROW_STAGE::Sprout;
-    isActive_ = false;   // 初期は成長していない
+    isActive_ = false;
     isUIVisible_ = false;
-    hasPlant_ = false;   // 植えていない
-    growthStartTime_ = 0.0f;
+    hasPlant_ = false;
+    growthStartTime_ = INITIAL_TIME;
 
-    sproutModelId_ = -1;
-    midGrowthModelId_ = -1;
-    matureModelId_ = -1;
+    sproutModelId_ = INVALID_MODEL_ID;
+    midGrowthModelId_ = INVALID_MODEL_ID;
+    matureModelId_ = INVALID_MODEL_ID;
 
-    trans_.modelId = -1;
+    transform_.modelId = INVALID_MODEL_ID;
 }
 
-// デストラクタ
 PlantObject::~PlantObject(void)
 {
     Release();
 }
 
-// 初期化
 void PlantObject::Init(void)
 {
+    const int INVALID_MODEL_ID = -1;                    // 無効なモデルID
+    const float INITIAL_TIME = 0.0f;                    // 初期時刻
+    const float POSITION_ZERO = 0.0f;                   // 座標ゼロ値
+    const float SCALE_X = 0.04f;                        // スケールX
+    const float SCALE_Y = 0.03f;                        // スケールY
+    const float SCALE_Z = 0.04f;                        // スケールZ
+    const float ROTATION_ZERO = 0.0f;                   // 回転ゼロ値
+    const float ACTUAL_RADIUS = 0.1f;                   // 当たり判定半径
+
     if (sproutModelId_ < 0)
     {
         sproutModelId_ = ResourceManager::GetInstance().LoadModelDuplicate(ResourceManager::SRC::SEED_MODEL);
@@ -47,64 +56,57 @@ void PlantObject::Init(void)
     isActive_ = false;
     isUIVisible_ = false;
     growthStage_ = GROW_STAGE::Sprout;
-    growthStartTime_ = 0.0f;
+    growthStartTime_ = INITIAL_TIME;
 
-    trans_.modelId = -1;
-    trans_.pos = VGet(0, 0, 0);
-    trans_.scl = VGet(0.04, 0.03, 0.04);
-    trans_.rot = VGet(0, 0, 0);
+    transform_.modelId = INVALID_MODEL_ID;
+    transform_.position = VGet(POSITION_ZERO, POSITION_ZERO, POSITION_ZERO);
+    transform_.scale = VGet(SCALE_X, SCALE_Y, SCALE_Z);
+    transform_.rotation = VGet(ROTATION_ZERO, ROTATION_ZERO, ROTATION_ZERO);
 
-    radius_ = 0.1;
+    radius_ = ACTUAL_RADIUS;
 }
 
-// 解放
 void PlantObject::Release(void)
 {
-    //if (sproutModelId_ >= 0) MV1DeleteModel(sproutModelId_);
-    //if (midGrowthModelId_ >= 0) MV1DeleteModel(midGrowthModelId_);
-    //if (matureModelId_ >= 0) MV1DeleteModel(matureModelId_);
+    const int INVALID_MODEL_ID = -1;                    // 無効なモデルID
 
-    sproutModelId_ = -1;
-    midGrowthModelId_ = -1;
-    matureModelId_ = -1;
+    sproutModelId_ = INVALID_MODEL_ID;
+    midGrowthModelId_ = INVALID_MODEL_ID;
+    matureModelId_ = INVALID_MODEL_ID;
 
-    trans_.modelId = -1;
+    transform_.modelId = INVALID_MODEL_ID;
 }
 
-// 更新処理
 void PlantObject::Update(void)
 {
-    auto& input = InputManager::GetInstance();
+    auto& inputManager = InputManager::GetInstance();
 
-    float now = TimeManager::GetInstance().GetGameTime();
+    float currentTime = TimeManager::GetInstance().GetGameTime();
 
-    if (isUIVisible_ && (input.IsTrgDown(KEY_INPUT_RETURN) || input.IsTrgDown(KEY_INPUT_NUMPADENTER)))
+    if (isUIVisible_ && (inputManager.IsTriggerDown(KEY_INPUT_RETURN) ||
+        inputManager.IsTriggerDown(KEY_INPUT_NUMPADENTER)))
     {
         SoundManager::GetInstance().Play(SoundManager::SOUND::SE_PUSH);
+
         if (!hasPlant_)
         {
-            // 植えていないなら植える処理
             TryPlant();
         }
         else if (CanHarvest())
         {
-            // 成長完了なら収穫処理
             TryHarvest();
         }
     }
 
     if (!isActive_)
     {
-        // 成長中でなければ成長処理不要
         return;
     }
 
-    float elapsed = now - growthStartTime_;
-    UpdateGrowthStage(elapsed);
+    float elapsedTime = currentTime - growthStartTime_;
+    UpdateGrowthStage(elapsedTime);
 }
 
-
-// 成長段階に応じてモデルを切り替える
 void PlantObject::UpdateGrowthStage(float elapsedTime)
 {
     GROW_STAGE newStage = growthStage_;
@@ -129,73 +131,113 @@ void PlantObject::UpdateGrowthStage(float elapsedTime)
     }
 }
 
-// モデルをステージに応じて切り替える
 void PlantObject::ChangeModelForStage(GROW_STAGE stage)
 {
+    const int INVALID_MODEL_ID = 0;                     
+
     switch (stage)
     {
     case GROW_STAGE::Sprout:
-        trans_.modelId = sproutModelId_;
+        transform_.modelId = sproutModelId_;
         break;
     case GROW_STAGE::MidGrowth:
-        trans_.modelId = midGrowthModelId_;
+        transform_.modelId = midGrowthModelId_;
         break;
     case GROW_STAGE::Mature:
-        trans_.modelId = matureModelId_;
+        transform_.modelId = matureModelId_;
         break;
     }
 
-    if (trans_.modelId >= 0)
+    if (transform_.modelId >= INVALID_MODEL_ID)
     {
-        MV1SetPosition(trans_.modelId, trans_.pos);
-        MV1SetScale(trans_.modelId, trans_.scl);
-        MV1SetRotationXYZ(trans_.modelId, trans_.rot);
+        MV1SetPosition(transform_.modelId, transform_.position);
+        MV1SetScale(transform_.modelId, transform_.scale);
+        MV1SetRotationXYZ(transform_.modelId, transform_.rotation);
     }
 }
 
-// 描画
 void PlantObject::Draw(void)
 {
     if (isActive_)
     {
-        MV1DrawModel(trans_.modelId);
+        MV1DrawModel(transform_.modelId);
     }
 
     if (isUIVisible_)
     {
         const char* text = nullptr;
 
-        if (!hasPlant_) {
+        if (!hasPlant_)
+        {
             text = "植える";
         }
-        else if (CanHarvest()) {
+        else if (CanHarvest())
+        {
             text = "収穫";
         }
 
-        if (text)
+        if (text != nullptr)
         {
+            const int FONT_SIZE = 24;                       // フォントサイズ
+            const int TEXT_PADDING_WIDTH = 30;              // テキスト背景枠の余白幅
+            const int BOX_HEIGHT = 30;                      // 背景ボックスの高さ
+            const int SCREEN_HALF_DIVISOR = 2;              // 画面半分除数
+            const int BOX_OFFSET_Y = 100;                   // ボックス表示位置Yオフセット
+            const int BG_OFFSET_LEFT = 20;                  // 背景左側オフセット
+            const int BG_OFFSET_TOP = 10;                   // 背景上部オフセット
+            const int BG_EXPAND_RIGHT = 20;                 // 背景右側拡張幅
+            const int BG_EXPAND_BOTTOM = 10;                // 背景下部拡張幅
+            const int TEXT_OFFSET_INNER = 5;                // ボックス内テキスト余白
+            const int COLOR_BLACK = GetColor(0, 0, 0);      // 黒色
+            const int COLOR_WHITE = GetColor(255, 255, 255); // 白色
+
             const int screenWidth = Application::SCREEN_SIZE_X;
             const int screenHeight = Application::SCREEN_SIZE_Y;
 
-            int fontSize = 24;
-            int textWidth = GetDrawStringWidth(text, strlen(text), fontSize);
-            int boxWidth = textWidth + 30;
-            int boxHeight = 30;
+            int textWidth = GetDrawStringWidth(text, static_cast<int>(strlen(text)), FONT_SIZE);
+            int boxWidth = textWidth + TEXT_PADDING_WIDTH;
+            int boxPositionX = screenWidth / SCREEN_HALF_DIVISOR - boxWidth / SCREEN_HALF_DIVISOR;
+            int boxPositionY = screenHeight / SCREEN_HALF_DIVISOR + BOX_OFFSET_Y;
 
-            int boxX = screenWidth / 2 - boxWidth / 2;
-            int boxY = screenHeight / 2 + 100;
+            DrawBox(
+                boxPositionX - BG_OFFSET_LEFT,
+                boxPositionY - BG_OFFSET_TOP,
+                boxPositionX + boxWidth + BG_EXPAND_RIGHT,
+                boxPositionY + BOX_HEIGHT + BG_EXPAND_BOTTOM,
+                COLOR_BLACK,
+                true
+            );
+            DrawBox(
+                boxPositionX - BG_OFFSET_LEFT,
+                boxPositionY - BG_OFFSET_TOP,
+                boxPositionX + boxWidth + BG_EXPAND_RIGHT,
+                boxPositionY + BOX_HEIGHT + BG_EXPAND_BOTTOM,
+                COLOR_WHITE,
+                false
+            );
 
-            DrawBox(boxX - 20, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(0, 0, 0), TRUE);
-            DrawBox(boxX - 20, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(255, 255, 255), FALSE);
-
-            Font::GetInstance().DrawDefaultText(boxX + 5, boxY + 5, text, GetColor(255, 255, 255), fontSize);
+            Font::GetInstance().DrawDefaultText(
+                boxPositionX + TEXT_OFFSET_INNER,
+                boxPositionY + TEXT_OFFSET_INNER,
+                text,
+                COLOR_WHITE,
+                FONT_SIZE
+            );
         }
     }
 
-
-    // デバッグ用の当たり判定表示はそのまま
 #ifdef _DEBUG
-    DrawSphere3D(trans_.pos, radius_, 8, GetColor(255, 0, 0), GetColor(255, 0, 0), FALSE);
+    const int SPHERE_DIVISIONS = 8;                     // 球体の分割数
+    const int COLOR_RED = GetColor(255, 0, 0);          // 赤色
+
+    DrawSphere3D(
+        transform_.position,
+        radius_,
+        SPHERE_DIVISIONS,
+        COLOR_RED,
+        COLOR_RED,
+        false
+    );
 #endif
 }
 
@@ -206,17 +248,21 @@ PlantObject::HIT_TYPE PlantObject::GetHitType(void) const
 
 VECTOR PlantObject::GetHitPosition(void) const
 {
-    return trans_.pos;
+    return transform_.position;
 }
 
 float PlantObject::GetHitRadius(void) const
 {
-    // 判定は植えているときだけ有効
-    if (!hasPlant_) return 0.0f;
+    const float ZERO_RADIUS = 0.0f;                    
+
+    if (!hasPlant_)
+    {
+        return ZERO_RADIUS;
+    }
+
     return radius_;
 }
 
-// UI表示制御
 void PlantObject::ShowUI(void)
 {
     isUIVisible_ = true;
@@ -254,15 +300,24 @@ PlantObject::GROW_STAGE PlantObject::GetGrowthStage(void) const
 
 void PlantObject::TryPlant(void)
 {
-    if (hasPlant_) return;
+    if (hasPlant_)
+    {
+        return;
+    }
+
+    const int MINIMUM_QUANTITY = 0;                     // 最低必要数チェック値
+    const int SUBTRACT_AMOUNT = 1;                      // 減少数
 
     auto seedItem = std::dynamic_pointer_cast<SeedItem>(
         ItemManager::GetInstance().FindItemById("RandomSeed")
     );
 
-    if (!seedItem || seedItem->GetQuantity() <= 0) return;
+    if (seedItem == nullptr || seedItem->GetQuantity() <= MINIMUM_QUANTITY)
+    {
+        return;
+    }
 
-    ItemManager::GetInstance().SubtractQuantity(seedItem, 1);
+    ItemManager::GetInstance().SubtractQuantity(seedItem, SUBTRACT_AMOUNT);
 
     hasPlant_ = true;
     isActive_ = true;
@@ -273,54 +328,69 @@ void PlantObject::TryPlant(void)
     HideUI();
 }
 
-void PlantObject::TryHarvest()
+void PlantObject::TryHarvest(void)
 {
-    if (!hasPlant_ || growthStage_ != GROW_STAGE::Mature) return;
-
-    // 確定アイテム：薬草(Herb)
-    auto herbItem = std::dynamic_pointer_cast<MaterialItem>(
-        ItemManager::GetInstance().FindItemById("Herb"));
-    if (herbItem) {
-        ItemManager::GetInstance().AddQuantity(herbItem, 1);
+    if (!hasPlant_ || growthStage_ != GROW_STAGE::Mature)
+    {
+        return;
     }
 
-    // ランダムで与えるアイテムIDリスト（薬草以外）
+    const int ADD_AMOUNT = 1;                           // 収穫ごとの追加数
+
+    auto herbItem = std::dynamic_pointer_cast<MaterialItem>(
+        ItemManager::GetInstance().FindItemById("Herb")
+    );
+
+    if (herbItem != nullptr)
+    {
+        ItemManager::GetInstance().AddQuantity(herbItem, ADD_AMOUNT);
+    }
+
     std::vector<std::string> possibleItems = {
         "AntidoteHerb",
         "MagicFlower",
         "ParalysisHerb",
         "GaleHerb",
         "DemonPowerHerb",
-        "HardbodyHerb",
-        // ほかにランダムで与えたい素材を追加
+        "HardbodyHerb"
     };
 
     if (!possibleItems.empty())
     {
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<> dist(0, static_cast<int>(possibleItems.size()) - 1);
+        const int MIN_INDEX = 0;                        // ランダムインデックス最小値
+        const int RANDOM_ITEM_COUNT = 2;                // 取得するランダムアイテムの数
 
-        for (int i = 0; i < 2; ++i)
+        std::random_device randomDevice;
+        std::mt19937 generator(randomDevice());
+        std::uniform_int_distribution<> distribution(
+            MIN_INDEX,
+            static_cast<int>(possibleItems.size()) - 1
+        );
+
+        for (int i = 0; i < RANDOM_ITEM_COUNT; ++i)
         {
-            int index = dist(gen);
+            int index = distribution(generator);
 
             auto randomItem = std::dynamic_pointer_cast<MaterialItem>(
-                ItemManager::GetInstance().FindItemById(possibleItems[index]));
-            if (randomItem) {
-                ItemManager::GetInstance().AddQuantity(randomItem, 1);
+                ItemManager::GetInstance().FindItemById(possibleItems[index])
+            );
+
+            if (randomItem != nullptr)
+            {
+                ItemManager::GetInstance().AddQuantity(randomItem, ADD_AMOUNT);
             }
         }
     }
 
-    // 植物状態をリセット
+    const float INITIAL_TIME = 0.0f;                    // リセット時刻
+    const int INVALID_MODEL_ID = -1;                    // 無効なモデルID
+
     hasPlant_ = false;
     isActive_ = false;
     growthStage_ = GROW_STAGE::Sprout;
-    growthStartTime_ = 0.0f;
+    growthStartTime_ = INITIAL_TIME;
 
-    // モデル非表示
-    trans_.modelId = -1;
+    transform_.modelId = INVALID_MODEL_ID;
 
     HideUI();
 }
@@ -328,10 +398,14 @@ void PlantObject::TryHarvest()
 void PlantObject::SetActive(bool active)
 {
     isActive_ = active;
-    if (!active) HideUI();
+
+    if (!active)
+    {
+        HideUI();
+    }
 }
 
-Transform& PlantObject::GetTransforms(void)
+Transform& PlantObject::GetTransform(void)
 {
-    return trans_;
+    return transform_;
 }

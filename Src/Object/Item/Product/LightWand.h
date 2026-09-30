@@ -2,9 +2,14 @@
 
 #include "ProductItem.h"
 
+/// @brief ライトワンドのクラス
 class LightWand : public ProductItem
 {
 public:
-	LightWand(void);
-};
 
+    /// @brief コンストラクタ
+    LightWand(void);
+
+    /// @brief デストラクタ
+    ~LightWand(void) override = default;
+};

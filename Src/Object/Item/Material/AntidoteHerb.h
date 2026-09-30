@@ -2,8 +2,14 @@
 
 #include "MaterialItem.h"
 
+/// @brief 解毒草のクラス
 class AntidoteHerb : public MaterialItem
 {
 public:
-    AntidoteHerb();
+
+    /// @brief コンストラクタ
+    AntidoteHerb(void);
+
+    /// @brief デストラクタ
+    ~AntidoteHerb(void) override = default;
 };

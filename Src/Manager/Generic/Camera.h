@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Dxlib.h>
+#include <DxLib.h>
 #include <functional>
 #include <map>
 #include <cmath>
@@ -10,173 +10,150 @@
 
 class Transform;
 
+/// @brief カメラの管理・制御を行うクラス
 class Camera
 {
 public:
-	//カメラの描画域(Near.Far)関連の定数
 
-	static constexpr float SPEED = 10.0f;			//カメラスピード : NEAR
+    /// @brief カメラのモードを定義する列挙型
+    enum class MODE
+    {
+        NONE,               // 指定なし
+        FIXED_POINT,        // 定点カメラ
+        FREE,               // フリーモード
+        FOLLOW,             // 追従モード
+        FOLLOW_SPRING,      // ばね付き追従モード
+        FOLLOW_PERSPECTIVE, // 追従対象視点モード
+        SHAKE               // カメラ揺らし
+    };
 
-	static constexpr float CAMERA_NEAR = 40.0f;		//カメラクリップ : NEAR
+    // カメラの描画域関連の定数
+    static constexpr float CAMERA_SPEED = 10.0f;       // カメラスピード
+    static constexpr float CAMERA_NEAR = 40.0f;        // カメラクリップ : NEAR
+    static constexpr float CAMERA_FAR = 15000.0f;      // カメラクリップ : FAR
 
-	static constexpr float CAMERA_FAR = 15000.0f;	//カメラクリップ : NEAR
+    // カメラの座標・ベクトル関連の定数
+    static constexpr VECTOR DEFAULT_CAMERA_POSITION = { 0.0f, 400.0f, -500.0f };
+    static constexpr VECTOR RELATIVE_CAMERA_TO_TARGET_POSITION = { 0.0f, -400.0f, 500.0f };
+    static constexpr VECTOR RELATIVE_CAMERA_TO_TARGET_POSITION_PERSPECTIVE = { 0.0f, 0.0f, 200.0f };
+    static constexpr VECTOR RELATIVE_FOLLOW_TO_CAMERA_POSITION = { 0.0f, 300.0f, -300.0f };
 
-	//カメラの座標関数関連の定数
-	
-	static constexpr VECTOR DEFAULT_CAMERA_POS = { 0.0f, 400.0f, -500.0f };						//カメラの初期座標
+    // カメラの移動関連の定数
+    static constexpr float MAX_MOVE_SPEED = 5.0f;      // 移動速度の最大値
+    static constexpr float MOVE_ACCELERATION = 0.5f;   // 加速
+    static constexpr float MOVE_DECELERATION = 0.5f;   // 減速
 
-	static constexpr VECTOR RELATIVE_C2T_POS = { 0.0f, -400.0f, 500.0f };						//カメラ位置から注視点までの相対座標
-	
-	static constexpr VECTOR RELATIVE_C2T_POS_FOLLOW_PERSPECTIVE = { 0.0f, 0.0f, 200.0f };		//カメラの位置から注視点までの相対座標(追従対象視点)
+    // カメラ揺らし関連の定数
+    static constexpr float SHAKE_TIME = 0.5f;          // 時間
+    static constexpr float SHAKE_WIDTH = 5.0f;         // 幅
+    static constexpr float SHAKE_SPEED = 40.0f;        // スピード
 
-	static constexpr VECTOR RELATIVE_F2C_POS_FOLLOW = { 0.0f, 300.0f, -300.0f };				//追従対象からカメラの位置までの相対座標(完全追従)
+    /// @brief コンストラクタ
+    Camera(void);
 
-	//static constexpr VECTOR RELATIVE_F2C_POS_SPRING = { 0.0f, 40.0f, 150.0f };					//追従対象からカメラ位置までの相対座標(ばね付き)
+    /// @brief デストラクタ
+    ~Camera(void);
 
-	//カメラの移動関連の定数
+    /// @brief 初期化処理
+    void Init(void);
 
-	static constexpr float MAX_MOVE_SPEED = 5.0f;	//移動速度の最大値
+    /// @brief 更新処理
+    void Update(void);
 
-	static constexpr float MOVE_ACC = 0.5f;			//加速
+    /// @brief カメラの描画前設定
+    void SetBeforeDraw(void);
 
-	static constexpr float MOVE_DEC = 0.5;			//減速
+    /// @brief 描画処理
+    void Draw(void);
 
-	//カメラ揺らし関連の定数
+    /// @brief 解放処理
+    void Release(void);
 
-	static constexpr float TIME_SHAKE = 0.5f;		//時間
+    /// @brief カメラの座標を取得する
+    /// @return 現在のカメラ座標
+    VECTOR GetPosition(void) const;
 
-	static constexpr float WIDTH_SHAKE = 5.0f;		//幅
+    /// @brief カメラモードを変更する
+    /// @param mode 変更するモード
+    void ChangeMode(MODE mode);
 
-	static constexpr float SPEED_SHAKE = 40.0f;		//スピード
+    /// @brief 追従対象を設定する
+    /// @param follow 追従するTransform
+    void SetFollow(const Transform* follow);
 
-	//カメラモード
-	enum class MODE
-	{
-		NONE,			
-		FIXED_POINT,		//定点カメラ
-		FREE,				//フリーモード
-		FOLLOW,				//追従モード
-		FOLLOW_SPRING,		//ばね付き追従モード
-		FOLLOW_PERSPECTIVE,	//追従対象視点モード
-		SHAKE				//カメラ揺らし
-	};
+    /// @brief カメラの座標と注視点を設定する
+    /// @param position カメラ座標
+    /// @param targetPosition 注視点座標
+    void SetPosition(const VECTOR& position, const VECTOR& targetPosition);
 
-	//コンストラクタ
-	Camera(void);
-
-	//デストラクタ
-	~Camera(void);
-
-	//初期化処理
-	void Init(void);
-
-	//更新処理
-	void Update(void);
-
-	//カメラの描画モード関連
-	void SetBeforeDraw(void);
-
-	//描画処理
-	void Draw(void);
-
-	//解放処理
-	void Release(void);
-
-	//座標取得
-	VECTOR GetPos(void) const;
-
-	//カメラモードの変更
-	void ChangeMode(MODE mode);
-
-	//追従対象の設定
-	const void SetFollow(const Transform* follow);
-
-	//座標の設定
-	void SetPos(const VECTOR& pos, const VECTOR& target);
-
-	VECTOR GetFrontVec(void) const;
+    /// @brief カメラの正面方向のベクトルを取得する
+    /// @return 正規化された正面方向ベクトル
+    VECTOR GetFrontVector(void) const;
 
 private:
 
-	//追従対象
-	const Transform* followTransform_;
+    // 追従対象のTransformポインタ
+    const Transform* followTransform_; 
 
-	//カメラモード
-	MODE mode_;
+    // モード管理関連
+    MODE mode_;                                                   // 現在のカメラモード
+    MODE currentMode_;                                            // カメラ揺らし時の復帰用モード保存
+    std::map<MODE, std::function<void(void)>> setBeforeDrawMode_; // 描画前処理のマップ
 
-	//カメラ揺らしする際に現在のモード保存
-	MODE currentMode_;
+    // 座標・姿勢関連
+    VECTOR position_;                  // カメラの位置
+    VECTOR targetPosition_;            // カメラの注視点
+    VECTOR cameraUp_;                  // カメラの上方向
+    Quaternion rotation_;              // カメラの回転
+    VECTOR defaultPosition_;           // カメラの基本座標（揺らし時などに使用）
 
-	//カメラの描画モード
-	std::map<MODE, std::function<void(void)>> setBeforeDrawMode_;
+    // 移動制御関連
+    VECTOR velocity_;                  // カメラの速度（移動量）
+    float moveSpeed_;                  // 現在の移動スピード
+    VECTOR moveDirection_;             // 移動する向き
 
-	//カメラの位置
-	VECTOR pos_;
+    // カメラ揺らし関連
+    float shakeTimer_;                 // 画面揺らし用のタイマー
+    VECTOR shakeDirection_;            // 揺らす方向
 
-	//カメラの注視点
-	VECTOR targetPos_;
+    // スポットライトのハンドル
+    int spotLightHandle_;             
 
-	//カメラの上方向
-	VECTOR cameraUp_;
+    /// @brief カメラを初期状態に戻す
+    void SetDefault(void);
 
-	//カメラの回転
-	Quaternion rot_;
+    /// @brief ライト設定を行う
+    void SetLighting(void);
 
-	//カメラの速度(移動量)
-	VECTOR velocity_;
+    /// @brief 定点カメラの描画前処理
+    void SetBeforeDrawFixedPoint(void);
 
-	//移動量
-	float moveSpeed_;
+    /// @brief フリーカメラの描画前処理
+    void SetBeforeDrawFree(void);
 
-	//向き
-	VECTOR moveDIr_;
+    /// @brief 追従カメラの描画前処理
+    void SetBeforeDrawFollow(void);
 
-	//画面揺らし用
-	float stepShake_;
+    /// @brief ばね追従カメラの描画前処理
+    void SetBeforeDrawFollowSpring(void);
 
-	VECTOR defaultPos_;
+    /// @brief 追従対象視点カメラの描画前処理
+    void SetBeforeDrawFollowPerspective(void);
 
-	VECTOR shakeDir_;
+    /// @brief カメラ揺らし中の描画前処理
+    void SetBeforeDrawShake(void);
 
-	//ライト
-	int spotLight_;
+    /// @brief 移動操作の入力処理
+    void ProcessMove(void);
 
-	//カメラを初期位置に戻す
-	void SetDefault(void);
+    /// @brief 移動処理
+    void Move(void);
 
-	//ライト設定
-	void SetLighting(void);
+    /// @brief 加速処理
+    /// @param speed 加算するスピード
+    void Acceleration(float speed);
 
-	//カメラの描画モード関連
-
-	void SetBeforeDrawFixedPoint(void);				//定点カメラ
-	
-	void SetBeforeDrawFree(void);					//フリーカメラ
-	
-	void SetBeforeDrawFollow(void);					//追従カメラ
-	
-	void SetBeforeDrawFollowSpring(void);			//ばね追従カメラ
-
-	void SetBeforeDrawFollowPerspective(void);		//追従対象視点カメラ
-
-	void SetBeforeDrawShake(void);					//カメラ揺らし
-
-	//カメラ揺らし
-	void Shake(void);
-
-	//カメラ揺らしさせるための準備
-	void SetShake(float intensity, float duretion);
-
-	//移動操作
-	void ProcessMove(void);
-
-	//移動
-	void Move(void);
-
-	//加速
-	void Acceleration(float speed);
-
-	//減速
-	void Decelerate(float speed);
-
+    /// @brief 減速処理
+    /// @param speed 減算するスピード
+    void Decelerate(float speed);
 };

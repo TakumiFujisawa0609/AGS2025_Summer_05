@@ -2,11 +2,14 @@
 
 #include "ProductItem.h"
 
-// 魔力ポーション (完成品アイテム) のクラス
+/// @brief 魔力ポーションのクラス
 class MagicPotion : public ProductItem
 {
 public:
-	//コンストラクタ
-	MagicPotion(void);
-};
 
+    /// @brief コンストラクタ
+    MagicPotion(void);
+
+    /// @brief デストラクタ
+    ~MagicPotion(void) override = default;
+};

@@ -1,93 +1,103 @@
 #include "BookshelfManager.h"
 
-BookshelfManager::BookshelfManager()
+BookshelfManager::BookshelfManager(void)
 {
 }
 
-BookshelfManager::~BookshelfManager()
+BookshelfManager::~BookshelfManager(void)
 {
     Release();
 }
 
-void BookshelfManager::Init()
+void BookshelfManager::Init(void)
 {
     bookshelves_.clear();
 
+    const float POS_X_FIRST = 275.0f;
+    const float POS_X_SECOND = 90.5f;
+    const float POS_X_THIRD = -90.5f;
+    const float POS_X_FOURTH = -275.0f;
+    const float POS_Y_DEFAULT = 0.0f;
+    const float POS_Z_DEFAULT = 350.0f;
+
     // 設置座標（負の位置含む）
     std::vector<VECTOR> positions = {
-        { 275.0f, 0.0f, 350.0f },
-        { 90.5f, 0.0f, 350.0f },
-        { -90.5f, 0.0f, 350.0f },
-        { -275.0f, 0.0f, 350.0f }
+        { POS_X_FIRST, POS_Y_DEFAULT, POS_Z_DEFAULT },
+        { POS_X_SECOND, POS_Y_DEFAULT, POS_Z_DEFAULT },
+        { POS_X_THIRD, POS_Y_DEFAULT, POS_Z_DEFAULT },
+        { POS_X_FOURTH, POS_Y_DEFAULT, POS_Z_DEFAULT }
     };
 
-    for (const auto& pos : positions)
+    for (const auto& position : positions)
     {
-        auto shelf = std::make_shared<Bookshelf>();
-        shelf->Init();
-        shelf->GetTransform().pos = pos;
+        auto bookshelf = std::make_shared<Bookshelf>();
+        bookshelf->Init();
+        bookshelf->GetTransform().position = position;
 
-        bookshelves_.emplace_back(shelf);
-
+        bookshelves_.emplace_back(bookshelf);
     }
 }
 
-void BookshelfManager::Update()
+void BookshelfManager::Update(void)
 {
-    for (auto& shelf : bookshelves_)
+    for (auto& bookshelf : bookshelves_)
     {
-        if (shelf && shelf->IsValid())
+        if (bookshelf != nullptr && bookshelf->IsValid())
         {
-            shelf->Update();
+            bookshelf->Update();
         }
     }
 }
 
-void BookshelfManager::Draw()
+void BookshelfManager::Draw(void)
 {
-    for (auto& shelf : bookshelves_)
+    for (auto& bookshelf : bookshelves_)
     {
-        if (shelf && shelf->IsValid())
+        if (bookshelf != nullptr && bookshelf->IsValid())
         {
-            shelf->Draw();
+            bookshelf->Draw();
         }
     }
 }
 
 void BookshelfManager::DrawUI(void)
 {
-    for (auto& shelf : bookshelves_)
+    for (auto& bookshelf : bookshelves_)
     {
-        if (shelf && shelf->IsValid())
+        if (bookshelf != nullptr && bookshelf->IsValid())
         {
-            shelf->DrawUI();
+            bookshelf->DrawUI();
         }
     }
 }
 
-void BookshelfManager::Release()
+void BookshelfManager::Release(void)
 {
-    for (auto& shelf : bookshelves_)
+    for (auto& bookshelf : bookshelves_)
     {
-        if (shelf)
+        if (bookshelf != nullptr)
         {
-            shelf->Release();
+            bookshelf->Release();
         }
     }
+
     bookshelves_.clear();
 }
 
 bool BookshelfManager::IsValid(void) const
 {
-    for (auto& shelf : bookshelves_)
+    for (auto& bookshelf : bookshelves_)
     {
-        return shelf->isVisible();
+        if (bookshelf != nullptr)
+        {
+            return bookshelf->IsVisible();
+        }
     }
+
     return false;
 }
 
-const std::vector<std::shared_ptr<Bookshelf>>& BookshelfManager::GetGetBookSets(void) const
+const std::vector<std::shared_ptr<Bookshelf>>& BookshelfManager::GetBookshelves(void) const
 {
     return bookshelves_;
 }
-

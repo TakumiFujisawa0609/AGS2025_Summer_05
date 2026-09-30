@@ -2,9 +2,14 @@
 
 #include "ProductItem.h"
 
+/// @brief ウィンドワンドのクラス
 class WindWand : public ProductItem
 {
 public:
-	WindWand(void);
-};
 
+    /// @brief コンストラクタ
+    WindWand(void);
+
+    /// @brief デストラクタ
+    ~WindWand(void) override = default;
+};

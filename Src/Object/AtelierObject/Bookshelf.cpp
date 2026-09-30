@@ -7,130 +7,196 @@
 #include "../../DrawUI/Font.h"
 #include "../../Application.h"
 
-
 Bookshelf::Bookshelf(void)
     : isValid_(false)
 {
-    isShowUI_ = false;
+    isShowUserInterface_ = false;
     isLibraryOpen_ = false;
-    libraryUI_ = new LibraryUI();
-    
-    radius_ = 50.0f;
-    speed_ = 0.0f;
-    movePow_ = { 0.0f, 0.0f, 0.0f };
+    libraryUserInterface_ = new LibraryUI();
+
+    const float INITIAL_RADIUS = 50.0f;
+    const float INITIAL_SPEED = 0.0f;
+
+    radius_ = INITIAL_RADIUS;
+    speed_ = INITIAL_SPEED;
+    movementVector_ = { INITIAL_SPEED, INITIAL_SPEED, INITIAL_SPEED };
 }
 
 Bookshelf::~Bookshelf(void)
 {
     Release();
-    delete libraryUI_;
-    libraryUI_ = nullptr;
+    delete libraryUserInterface_;
+    libraryUserInterface_ = nullptr;
 }
 
 void Bookshelf::Init(void)
 {
-    auto& res = ResourceManager::GetInstance();
-    trans_.SetModel(res.LoadModelDuplicate(ResourceManager::SRC::BOOKS_HELF));
+    auto& resourceManager = ResourceManager::GetInstance();
+    transform_.SetModel(resourceManager.LoadModelDuplicate(ResourceManager::SRC::BOOK_SHELF));
 
-    // フェンスの位置を地面に固定（例）
-    trans_.pos = { 0.0f, 0.0f, 0.0f };
-    trans_.scl = { 5.0f, 5.0f, 5.0f };
-    trans_.rot = { 0.0f, 0.0f, 0.0f };
+    const float POSITION_ZERO = 0.0f;
+    const float SCALE_VALUE = 5.0f;
 
-    // 当たり判定の範囲
-    hitMin_ = { trans_.pos.x - WIDTH / 2, trans_.pos.y - HEIGHT / 2, trans_.pos.z - DEPTH / 2 };
-    hitMax_ = { trans_.pos.x + WIDTH / 2, trans_.pos.y + HEIGHT / 2, trans_.pos.z + DEPTH / 2 };
+    transform_.position = { POSITION_ZERO, POSITION_ZERO, POSITION_ZERO };
+    transform_.scale = { SCALE_VALUE, SCALE_VALUE, SCALE_VALUE };
+    transform_.rotation = { POSITION_ZERO, POSITION_ZERO, POSITION_ZERO };
+
+    const float HALF_DIVISOR = 2.0f;
+
+    hitMin_ = {
+        transform_.position.x - WIDTH / HALF_DIVISOR,
+        transform_.position.y - HEIGHT / HALF_DIVISOR,
+        transform_.position.z - DEPTH / HALF_DIVISOR
+    };
+
+    hitMax_ = {
+        transform_.position.x + WIDTH / HALF_DIVISOR,
+        transform_.position.y + HEIGHT / HALF_DIVISOR,
+        transform_.position.z + DEPTH / HALF_DIVISOR
+    };
 
     isValid_ = true;
 
-    libraryUI_->Init();
+    libraryUserInterface_->Init();
 }
 
 void Bookshelf::Update(void)
 {
-    // 現在の位置に合わせて当たり判定範囲を毎フレーム更新
-    hitMin_ = { trans_.pos.x - WIDTH / 2, trans_.pos.y - HEIGHT / 2, trans_.pos.z - DEPTH / 2 };
-    hitMax_ = { trans_.pos.x + WIDTH / 2, trans_.pos.y + HEIGHT / 2, trans_.pos.z + DEPTH / 2 };
+    const float HALF_DIVISOR = 2.0f;
 
-    auto& input = InputManager::GetInstance();
+    hitMin_ = {
+        transform_.position.x - WIDTH / HALF_DIVISOR,
+        transform_.position.y - HEIGHT / HALF_DIVISOR,
+        transform_.position.z - DEPTH / HALF_DIVISOR
+    };
 
-    if (isShowUI_ && !isLibraryOpen_)
+    hitMax_ = {
+        transform_.position.x + WIDTH / HALF_DIVISOR,
+        transform_.position.y + HEIGHT / HALF_DIVISOR,
+        transform_.position.z + DEPTH / HALF_DIVISOR
+    };
+
+    auto& inputManager = InputManager::GetInstance();
+    const int INPUT_PRESSED = 1;
+
+    if (isShowUserInterface_ && !isLibraryOpen_)
     {
-        if (input.IsTrgDown(KEY_INPUT_RETURN))
+        if (inputManager.IsTriggerDown(KEY_INPUT_RETURN) == INPUT_PRESSED)
         {
             Application::GetInstance().SetActiveUI(true);
             SoundManager::GetInstance().Play(SoundManager::SOUND::SE_PUSH);
             isLibraryOpen_ = true;
-            if (libraryUI_) libraryUI_->Show(); // ← Zキー制御なしで表示
+
+            if (libraryUserInterface_ != nullptr)
+            {
+                libraryUserInterface_->Show();
+            }
         }
     }
 
-    if (isLibraryOpen_ && libraryUI_)
+    if (isLibraryOpen_ && libraryUserInterface_ != nullptr)
     {
-        libraryUI_->Update();
-        if (input.IsTrgDown(KEY_INPUT_ESCAPE))
+        libraryUserInterface_->Update();
+
+        if (inputManager.IsTriggerDown(KEY_INPUT_ESCAPE) == INPUT_PRESSED)
         {
             Application::GetInstance().SetActiveUI(true);
             SoundManager::GetInstance().Play(SoundManager::SOUND::SE_CANCEL);
             isLibraryOpen_ = false;
-            libraryUI_->Hide();
+            libraryUserInterface_->Hide();
         }
     }
 }
 
 void Bookshelf::Draw(void)
 {
-    if (trans_.modelId >= 0)
+    const int INVALID_MODEL_ID = -1;
+
+    if (transform_.modelId > INVALID_MODEL_ID)
     {
-        MV1SetScale(trans_.modelId, trans_.scl);
-        MV1SetPosition(trans_.modelId, trans_.pos);
-        MV1SetRotationXYZ(trans_.modelId, trans_.rot);
-        MV1DrawModel(trans_.modelId);
+        MV1SetScale(transform_.modelId, transform_.scale);
+        MV1SetPosition(transform_.modelId, transform_.position);
+        MV1SetRotationXYZ(transform_.modelId, transform_.rotation);
+        MV1DrawModel(transform_.modelId);
     }
 }
 
 void Bookshelf::DrawUI(void)
 {
-    const int screenWidth = Application::DEFA_SCREEN_SIZE_X;
-    const int screenHeight = Application::DEFA_SCREEN_SZIE_Y;
+    const int SCREEN_WIDTH = Application::FULL_SCREEN_SIZE_X;
+    const int SCREEN_HEIGHT = Application::FULL_SCREEN_SIZE_Y;
 
-    // UIメッセージ表示（インベントリが未表示のとき）
-    if (isShowUI_ && !isLibraryOpen_)
+    if (isShowUserInterface_ && !isLibraryOpen_)
     {
-        // テキスト内容
-        const char* text = "書庫";
-        int fontSize = 24;
-        int textWidth = GetDrawStringWidth(text, strlen(text), fontSize);
-        int boxWidth = textWidth + 30;
-        int boxHeight = 30;
+        const char* TEXT = "書庫";
+        const int FONT_SIZE = 24;
+        const int TEXT_MARGIN = 30;
+        const int BOX_HEIGHT = 30;
 
-        int boxX = (screenWidth - boxWidth) / 2;
-        int boxY = screenHeight / 2 + 100;
+        int textWidth = GetDrawStringWidth(TEXT, static_cast<int>(strlen(TEXT)), FONT_SIZE);
+        int boxWidth = textWidth + TEXT_MARGIN;
 
-        // UI表示（中央）
-        DrawBox(boxX - 20, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(0, 0, 0), TRUE);
-        DrawBox(boxX - 20, boxY - 10, boxX + boxWidth + 20, boxY + boxHeight + 10, GetColor(255, 255, 255), FALSE);
-        Font::GetInstance().DrawDefaultText(boxX + 5, boxY + 5, text, GetColor(255, 255, 255), fontSize);
+        const int HALF_DIVISOR = 2;
+        const int Y_OFFSET = 100;
+
+        int boxX = (SCREEN_WIDTH - boxWidth) / HALF_DIVISOR;
+        int boxY = SCREEN_HEIGHT / HALF_DIVISOR + Y_OFFSET;
+
+        const int BOX_MARGIN_X = 20;
+        const int BOX_MARGIN_Y = 10;
+
+        const int COLOR_BLACK = GetColor(0, 0, 0);
+        const int COLOR_WHITE = GetColor(255, 255, 255);
+
+        DrawBox(
+            boxX - BOX_MARGIN_X,
+            boxY - BOX_MARGIN_Y,
+            boxX + boxWidth + BOX_MARGIN_X,
+            boxY + BOX_HEIGHT + BOX_MARGIN_Y,
+            COLOR_BLACK,
+            true
+        );
+
+        DrawBox(
+            boxX - BOX_MARGIN_X,
+            boxY - BOX_MARGIN_Y,
+            boxX + boxWidth + BOX_MARGIN_X,
+            boxY + BOX_HEIGHT + BOX_MARGIN_Y,
+            COLOR_WHITE,
+            false
+        );
+
+        const int TEXT_OFFSET = 5;
+
+        Font::GetInstance().DrawDefaultText(
+            boxX + TEXT_OFFSET,
+            boxY + TEXT_OFFSET,
+            TEXT,
+            COLOR_WHITE,
+            FONT_SIZE
+        );
     }
 
-    // インベントリ表示中
     if (isLibraryOpen_)
     {
-        libraryUI_->Draw();
+        libraryUserInterface_->Draw();
     }
 }
 
 void Bookshelf::Release(void)
 {
-    if (trans_.modelId >= 0)
+    const int INVALID_MODEL_ID = -1;
+
+    if (transform_.modelId > INVALID_MODEL_ID)
     {
-        MV1DeleteModel(trans_.modelId);
-        trans_.modelId = -1;
+        MV1DeleteModel(transform_.modelId);
+        transform_.modelId = INVALID_MODEL_ID;
     }
+
     isValid_ = false;
 
-    delete libraryUI_;
-    libraryUI_ = nullptr;
+    delete libraryUserInterface_;
+    libraryUserInterface_ = nullptr;
 }
 
 VECTOR Bookshelf::GetHitMin(void) const
@@ -143,19 +209,19 @@ VECTOR Bookshelf::GetHitMax(void) const
     return hitMax_;
 }
 
-HitObject::HIT_TYPE Bookshelf::GetHitType() const
+HitObject::HIT_TYPE Bookshelf::GetHitType(void) const
 {
     return HIT_TYPE::AABB;
 }
 
 VECTOR Bookshelf::GetHitPosition(void) const
 {
-    return trans_.pos;
+    return transform_.position;
 }
 
 float Bookshelf::GetHitRadius(void) const
 {
-    return radius_;  // フェンスはAABBなので半径は不要
+    return radius_;
 }
 
 bool Bookshelf::IsValid(void) const
@@ -165,14 +231,18 @@ bool Bookshelf::IsValid(void) const
 
 void Bookshelf::ShowUI(void)
 {
-    isShowUI_ = true;
+    isShowUserInterface_ = true;
 }
 
 void Bookshelf::HideUI(void)
 {
-    isShowUI_ = false;
+    isShowUserInterface_ = false;
     isLibraryOpen_ = false;
-    if (libraryUI_) libraryUI_->Hide();
+
+    if (libraryUserInterface_ != nullptr)
+    {
+        libraryUserInterface_->Hide();
+    }
 }
 
 void Bookshelf::OnPlayerHit(void)
@@ -185,12 +255,12 @@ void Bookshelf::OnPlayerExit(void)
     HideUI();
 }
 
-bool Bookshelf::isVisible(void) const
+bool Bookshelf::IsVisible(void) const
 {
-    return libraryUI_->IsVisible();
+    return libraryUserInterface_->IsVisible();
 }
 
 Transform& Bookshelf::GetTransform(void)
 {
-    return trans_;
+    return transform_;
 }

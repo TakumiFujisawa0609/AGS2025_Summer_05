@@ -4,28 +4,77 @@
 #include <cmath>
 #include <algorithm>
 #include "../../Application.h"
-#include "../player.h"
+#include "../Player.h"
 
-void HitObject::OnPlayerHitSphere(VECTOR& playerPos, float playerRadius)
+HitObject::HitObject(void)
 {
-    // ヒット位置（中心）とプレイヤーの距離ベクトル
-    VECTOR toPlayer = VSub(playerPos, GetHitPosition());
+    const int INVALID_STAGE_ID = -1;
+    const int INITIAL_DELAY_FRAMES = 0;
 
-    float distSq = VDot(toPlayer, toPlayer);
-    float radiusSum = playerRadius + GetHitRadius();
-    float radiusSumSq = radiusSum * radiusSum;
+    stageId_ = INVALID_STAGE_ID;
+    uiVisible_ = false;
+    uiHideDelayFrames_ = INITIAL_DELAY_FRAMES;
+}
 
-    if (distSq < radiusSumSq && distSq > 0.0001f)
+VECTOR HitObject::GetHitPosition(void) const
+{
+    const float ZERO_COORDINATE = 0.0f;
+    return VGet(ZERO_COORDINATE, ZERO_COORDINATE, ZERO_COORDINATE);
+}
+
+float HitObject::GetHitRadius(void) const
+{
+    const float ZERO_RADIUS = 0.0f;
+    return ZERO_RADIUS;
+}
+
+VECTOR HitObject::GetHitMin(void) const
+{
+    const float ZERO_COORDINATE = 0.0f;
+    return VGet(ZERO_COORDINATE, ZERO_COORDINATE, ZERO_COORDINATE);
+}
+
+VECTOR HitObject::GetHitMax(void) const
+{
+    const float ZERO_COORDINATE = 0.0f;
+    return VGet(ZERO_COORDINATE, ZERO_COORDINATE, ZERO_COORDINATE);
+}
+
+bool HitObject::IsValid(void) const
+{
+    return true;
+}
+
+void HitObject::OnPlayerHitSphere(VECTOR& playerPosition, float playerRadius)
+{
+    VECTOR vectorToPlayer = VSub(playerPosition, GetHitPosition());
+
+    float squaredDistance = VDot(vectorToPlayer, vectorToPlayer);
+    float sumOfRadii = playerRadius + GetHitRadius();
+    float squaredSumOfRadii = sumOfRadii * sumOfRadii;
+
+    const float EPSILON = 0.0001f;
+
+    if (squaredDistance < squaredSumOfRadii && squaredDistance > EPSILON)
     {
-        float dist = sqrtf(distSq);
-        VECTOR normal = VScale(toPlayer, 1.0f / dist); // 単位ベクトル
+        float distance = sqrtf(squaredDistance);
 
-        float pushBack = radiusSum - dist;
-        VECTOR pushVec = VScale(normal, pushBack * 1.5f);
+        const float NUMERATOR = 1.0f;
+        VECTOR normalVector = VScale(vectorToPlayer, NUMERATOR / distance);
 
-        if (pushVec.y > 0) pushVec.y = 0; // 上方向には押し返さない（任意）
+        float pushBackDistance = sumOfRadii - distance;
 
-        playerPos = VAdd(playerPos, pushVec); // プレイヤーを押し戻す
+        const float PUSH_MULTIPLIER = 1.5f;
+        VECTOR pushBackVector = VScale(normalVector, pushBackDistance * PUSH_MULTIPLIER);
+
+        const float UPWARD_LIMIT = 0.0f;
+
+        if (pushBackVector.y > UPWARD_LIMIT)
+        {
+            pushBackVector.y = UPWARD_LIMIT;
+        }
+
+        playerPosition = VAdd(playerPosition, pushBackVector);
     }
 }
 
@@ -34,12 +83,14 @@ void HitObject::UpdateUIVisibility(bool isHit)
     if (isHit)
     {
         uiVisible_ = true;
-        uiHideDelayFrames_ = UI_HIDE_DELAY_MAX;
+        uiHideDelayFrames_ = MAXIMUM_UI_HIDE_DELAY_FRAMES;
         ShowUI();
     }
     else
     {
-        if (uiHideDelayFrames_ > 0)
+        const int ZERO_FRAMES = 0;
+
+        if (uiHideDelayFrames_ > ZERO_FRAMES)
         {
             uiHideDelayFrames_--;
             ShowUI();
@@ -53,38 +104,60 @@ void HitObject::UpdateUIVisibility(bool isHit)
     }
 }
 
-void HitObject::OnPlayerHitAABB(Player* player, VECTOR& playerPos, const VECTOR& playerMin, const VECTOR& playerMax)
+void HitObject::OnPlayerHitAABB(
+    Player* player,
+    VECTOR& playerPosition,
+    const VECTOR& playerMinimum,
+    const VECTOR& playerMaximum)
 {
-    VECTOR objMin = GetHitMin();
-    VECTOR objMax = GetHitMax();
+    VECTOR objectMinimum = GetHitMin();
+    VECTOR objectMaximum = GetHitMax();
 
-    float dx = std::min(playerMax.x, objMax.x) - std::max(playerMin.x, objMin.x);
-    float dz = std::min(playerMax.z, objMax.z) - std::max(playerMin.z, objMin.z);
+    float overlapX = std::min(playerMaximum.x, objectMaximum.x) -
+        std::max(playerMinimum.x, objectMinimum.x);
 
-    if (dx > 0.0f && dz > 0.0f)
+    float overlapZ = std::min(playerMaximum.z, objectMaximum.z) -
+        std::max(playerMinimum.z, objectMinimum.z);
+
+    const float ZERO_OVERLAP = 0.0f;
+
+    if (overlapX > ZERO_OVERLAP && overlapZ > ZERO_OVERLAP)
     {
-        float playerCenterX = (playerMin.x + playerMax.x) * 0.5f;
-        float objCenterX = (objMin.x + objMax.x) * 0.5f;
-        float playerCenterZ = (playerMin.z + playerMax.z) * 0.5f;
-        float objCenterZ = (objMin.z + objMax.z) * 0.5f;
+        const float HALF_MULTIPLIER = 0.5f;
 
-        if (dx < dz)
+        float playerCenterX = (playerMinimum.x + playerMaximum.x) * HALF_MULTIPLIER;
+        float objectCenterX = (objectMinimum.x + objectMaximum.x) * HALF_MULTIPLIER;
+        float playerCenterZ = (playerMinimum.z + playerMaximum.z) * HALF_MULTIPLIER;
+        float objectCenterZ = (objectMinimum.z + objectMaximum.z) * HALF_MULTIPLIER;
+
+        const int BLOCK_DIRECTION_POSITIVE = 1;
+        const int BLOCK_DIRECTION_NEGATIVE = -1;
+        const float ZERO_PUSH = 0.0f;
+
+        if (overlapX < overlapZ)
         {
-            float push = (playerCenterX > objCenterX) ? dx : -dx;
-            playerPos.x += push;
+            float pushAmount = (playerCenterX > objectCenterX) ? overlapX : -overlapX;
+            playerPosition.x += pushAmount;
 
-            // ロック方向設定
-            if (player) {
-                player->SetBlockedDirX((push > 0) ? -1 : 1);
+            if (player != nullptr)
+            {
+                player->SetBlockedDirectionX(
+                    (pushAmount > ZERO_PUSH) ?
+                    BLOCK_DIRECTION_NEGATIVE : BLOCK_DIRECTION_POSITIVE
+                );
             }
         }
         else
         {
-            float push = (playerCenterZ > objCenterZ) ? dz : -dz;
-            playerPos.z += push;
+            float pushAmount = (playerCenterZ > objectCenterZ) ? overlapZ : -overlapZ;
+            playerPosition.z += pushAmount;
 
-            if (player) {
-                player->SetBlockedDirZ((push > 0) ? -1 : 1);
+            if (player != nullptr)
+            {
+                player->SetBlockedDirectionZ(
+                    (pushAmount > ZERO_PUSH) ?
+                    BLOCK_DIRECTION_NEGATIVE : BLOCK_DIRECTION_POSITIVE
+                );
             }
         }
     }

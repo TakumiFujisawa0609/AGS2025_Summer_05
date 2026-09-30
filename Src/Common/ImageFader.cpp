@@ -1,37 +1,29 @@
 #include "ImageFader.h"
+#include <DxLib.h>
+#include "../Application.h"
 
-#include<DxLib.h>
-
-#include"../Application.h"
-
-
-// 画像をフェード状態に応じて描画する関数
-void ImageFader::Draw(int img, Vector2 pos, float scl, float angle, bool trans, bool reverse)
+void ImageFader::Draw(int imageHandle, Vector2 position, float scale,
+    float angle, bool isTransparent, bool isReversed)
 {
-	// フェードの状態に応じて処理を分岐
-	switch (state_)
-	{
-	case Fader::STATE::NONE:
-		// フェード処理がない場合は何も描画しない
-		return;
-	case Fader::STATE::FADE_OUT:
-	case Fader::STATE::FADE_IN:
+    switch (state_)
+    {
+    case Fader::STATE::NONE:
+        return;
+    case Fader::STATE::FADE_OUT:
+    case Fader::STATE::FADE_IN:
+        SetDrawBlendMode(DX_BLENDMODE_ALPHA, static_cast<int>(alpha_));
 
-		// アルファブレンドを設定（alpha_の値で透明度を調整）
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, (int)alpha_);
-		
-		// 指定された位置・スケール・角度で画像を回転描画
-		DrawRotaGraph(
-			pos.x, pos.y,		 // 描画位置（中心座標）
-			scl,				 // 拡大率
-			angle,				 // 回転角度（ラジアン）
-			img,				 // 画像ハンドル
-			trans,				 // 透過色を有効にするか
-			reverse				 // 左右反転するか
-		);
+        DrawRotaGraph(
+            static_cast<int>(position.x),
+            static_cast<int>(position.y),
+            scale,
+            angle,
+            imageHandle,
+            isTransparent,
+            isReversed
+        );
 
-		// ブレンドモードを元に戻す（通常描画）
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-		break;
-	}
+        SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+        break;
+    }
 }

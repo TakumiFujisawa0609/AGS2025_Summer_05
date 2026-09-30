@@ -13,57 +13,62 @@ void TableSetGuildManager::Init(void)
 {
     tableSets_.clear();
 
-    // 配置する座標（例：負数の位置を含む）
-    std::vector<VECTOR> positions = {
-        { 240.0f, 0.0f, -280.0f },
-        { 240.0f, 0.0f, -50.0f },
-        { -240.0f, 0.0f,  -50.0f },
-        { -240.0f, 0.0f,  -280.0f }
+    const float POSITION_X_RIGHT = 240.0f;
+    const float POSITION_X_LEFT = -240.0f;
+    const float POSITION_Y_GROUND = 0.0f;
+    const float POSITION_Z_FRONT = -50.0f;
+    const float POSITION_Z_BACK = -280.0f;
+
+    std::vector<VECTOR> initialPositions = {
+        { POSITION_X_RIGHT, POSITION_Y_GROUND, POSITION_Z_BACK },
+        { POSITION_X_RIGHT, POSITION_Y_GROUND, POSITION_Z_FRONT },
+        { POSITION_X_LEFT,  POSITION_Y_GROUND, POSITION_Z_FRONT },
+        { POSITION_X_LEFT,  POSITION_Y_GROUND, POSITION_Z_BACK }
     };
 
-    for (const auto& pos : positions)
+    for (const auto& position : initialPositions)
     {
-        auto table = std::make_shared<TableSetGuild>();
-        table->Init();
+        auto tableSet = std::make_shared<TableSetGuild>();
+        tableSet->Init();
 
-        // 位置を変更
-        table->GetTransform().pos = pos;
+        tableSet->GetTransform().position = position;
 
-        tableSets_.emplace_back(table);
+        tableSets_.emplace_back(tableSet);
     }
 }
 
 void TableSetGuildManager::Update(void)
 {
-    for (auto& table : tableSets_)
+    for (auto& tableSet : tableSets_)
     {
-        if (table && table->IsValid())
+        if (tableSet != nullptr && tableSet->IsValid())
         {
-            table->Update();
+            tableSet->Update();
         }
     }
 }
 
 void TableSetGuildManager::Draw(void)
 {
-    for (auto& table : tableSets_)
+    for (auto& tableSet : tableSets_)
     {
-        if (table && table->IsValid())
+        if (tableSet != nullptr && tableSet->IsValid())
         {
-            table->Draw();
+            tableSet->Draw();
         }
     }
 }
 
 void TableSetGuildManager::Release(void)
 {
-    for (auto& table : tableSets_)
+    for (auto& tableSet : tableSets_)
     {
-        if (table)
+        if (tableSet != nullptr)
         {
-            table->Release();
+            tableSet->Release();
         }
     }
+
     tableSets_.clear();
 }
 

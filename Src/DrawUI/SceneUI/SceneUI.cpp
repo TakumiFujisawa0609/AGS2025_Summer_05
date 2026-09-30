@@ -12,39 +12,58 @@ SceneUi::~SceneUi(void)
 {
 }
 
-void SceneUi::Draw(int baseYOverride)
+void SceneUi::Draw(int basePositionYOverride)
 {
-    DrawFont(baseYOverride); // 上のオーバーロード呼ぶ
+    DrawFont(basePositionYOverride);
 }
-
 
 void SceneUi::FontBlinking(void)
 {
     frameCount_++;
-    isBlinking_ = (frameCount_ / blinkInterval_) % 2 ? true : false;
-}
 
-void SceneUi::DrawFont(int baseYOverride)
-{
-    int baseY = baseYOverride;   // 呼び出し側から指定されたY座標
-    int spacing = 80;
-
-    for (size_t i = 0; i < fontList_.size(); ++i)
+    if ((frameCount_ / BLINK_INTERVAL) % 2 != 0)
     {
-        const auto& font = fontList_[i];
-        int textWidth = GetDrawStringWidth(font.message.c_str(), (int)font.message.length());
-
-        int xPos = (Application::DEFA_SCREEN_SIZE_X / 2) - textWidth;
-        int yPos = baseY + (int)i * spacing;
-
-        int color = ((int)i == currentIndex_) ? GetColor(255, 255, 0) : GetColor(170, 170, 170);
-        Font::GetInstance().DrawDefaultText(xPos, yPos, font.message.c_str(), color, 42, Font::FONT_TYPE_ANTIALIASING_EDGE);
+        isBlinking_ = true;
+    }
+    else
+    {
+        isBlinking_ = false;
     }
 }
 
-void SceneUi::AddCharctor(const char* _char)
+void SceneUi::DrawFont(int basePositionYOverride)
 {
-    fontList_.push_back(FontData{ _char });
+    int basePositionY = basePositionYOverride;
+
+    for (size_t index = 0; index < fontList_.size(); ++index)
+    {
+        const auto& fontData = fontList_[index];
+
+        int textWidth = GetDrawStringWidth(
+            fontData.message.c_str(),
+            static_cast<int>(fontData.message.length())
+        );
+
+        int drawPositionX = (Application::FULL_SCREEN_SIZE_X / 2) - textWidth;
+        int drawPositionY = basePositionY + static_cast<int>(index) * DRAW_LINE_SPACING;
+
+        unsigned int color = (static_cast<int>(index) == currentIndex_)
+            ? COLOR_YELLOW : COLOR_GRAY;
+
+        Font::GetInstance().DrawDefaultText(
+            drawPositionX,
+            drawPositionY,
+            fontData.message.c_str(),
+            color,
+            FONT_SIZE,
+            Font::FONT_TYPE_ANTIALIASING_EDGE
+        );
+    }
+}
+
+void SceneUi::AddCharacter(const char* text)
+{
+    fontList_.push_back(FontData{ text });
 }
 
 void SceneUi::SetCurrentIndex(int index)
@@ -55,12 +74,12 @@ void SceneUi::SetCurrentIndex(int index)
     }
 }
 
-int SceneUi::GetCurrentIndex() const
+int SceneUi::GetCurrentIndex(void) const
 {
     return currentIndex_;
 }
 
-int SceneUi::GetMaxIndex() const
+int SceneUi::GetMaxIndex(void) const
 {
     return static_cast<int>(fontList_.size());
 }

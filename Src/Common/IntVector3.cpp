@@ -1,69 +1,54 @@
 #include "IntVector3.h"
-#include<tuple>
-#include"../Utility/Utility.h"
+#include <tuple>
+#include "../Utility/Utility.h"
 
-// デフォルトコンストラクタ
-// 全ての座標を0に初期化する
-IntVector3::IntVector3()
+IntVector3::IntVector3(void)
 {
-	x = 0;
-	y = 0;
-	z = 0;
+    x = 0;
+    y = 0;
+    z = 0;
 }
 
-// パラメータ付きコンストラクタ
-// 指定された値でベクトルを初期化する
-IntVector3::IntVector3(int vX, int vY, int vZ)
+IntVector3::IntVector3(int valueX, int valueY, int valueZ)
 {
-	x = vX;
-	y = vY;
-	z = vZ;
+    x = valueX;
+    y = valueY;
+    z = valueZ;
 }
 
-// VECTORからの変換コンストラクタ
-// 浮動小数点ベクトルを整数ベクトルに変換する
-// Utilityクラスのround関数を使用して四捨五入する
-IntVector3::IntVector3(VECTOR v)
+IntVector3::IntVector3(VECTOR vector)
 {
-	x = Utility::Round(v.x);
-	y = Utility::Round(v.y);
-	z = Utility::Round(v.z);
+    x = Utility::Round(vector.x);
+    y = Utility::Round(vector.y);
+    z = Utility::Round(vector.z);
 }
 
-// デストラクタ
-// 特に処理は行わない
 IntVector3::~IntVector3(void)
 {
 }
 
-// 比較演算子のオーバーロード
-// std::tieを使用して辞書式順序で比較する
-// x値を最初に比較し、同じ場合はy値、さらに同じ場合はz値を比較する
 bool IntVector3::operator<(const IntVector3& value) const
 {
-	return std::tie(x, y, z) < std::tie(value.x, value.y, value.z);
+    return std::tie(x, y, z) < std::tie(value.x, value.y, value.z);
 }
 
-// ベクトルの各成分に値を加算するメソッド
-void IntVector3::Add(int v)
+void IntVector3::Add(int value)
 {
-	x += v;
-	y += v;
-	z += v;
+    x += value;
+    y += value;
+    z += value;
 }
 
-// ベクトルの各成分から値を減算するメソッド
-void IntVector3::Sub(int v)
+void IntVector3::Sub(int value)
 {
-	x -= v;
-	y -= v;
-	z -= v;
+    x -= value;
+    y -= value;
+    z -= value;
 }
 
-// ベクトルの各成分を指定された値でスケーリング（乗算）するメソッド
-void IntVector3::Scale(int v)
+void IntVector3::Scale(int value)
 {
-	x *= v;
-	y *= v;
-	z *= v;
+    x *= value;
+    y *= value;
+    z *= value;
 }

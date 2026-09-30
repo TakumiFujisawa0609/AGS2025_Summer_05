@@ -1,393 +1,413 @@
 #include "Easing.h"
+#include <cmath>
 
-#include<cmath>
-#include<DxLib.h>
-
-//time			= 進行度
-//totalTime		= 目標時間
-//start			= 開始値
-//end			= 目標値
-
-//↓BackIn BackOut BackInOutのみ
-//s				= 助走量
-
-// 加速しながら値を変化させる（二次関数）
 float QuadIn(float time, float totalTime, float start, float end)
 {
-	end -= start;
-	time /= totalTime;
+    float difference = end - start;  // 変化量
+    float ratio = time / totalTime;  // 割合
 
-	return -end * time * time + start;
+    return -difference * ratio * ratio + start;
 }
 
-// 減速しながら値を変化させる（二次関数）
-float QuadQut(float time, float totalTime, float start, float end)
+float QuadOut(float time, float totalTime, float start, float end)
 {
-	end -= start;
-	time /= totalTime;
+    float difference = end - start;  // 変化量
+    float ratio = time / totalTime;  // 割合
 
-	return -end * time * (time - 2) + start;
+    return -difference * ratio * (ratio - HALF_DIVISOR) + start;
 }
 
-// 加速してから減速する（二次関数）
 float QuadInOut(float time, float totalTime, float start, float end)
 {
-	end -= start;
-	time /= totalTime / 2;
-	if (time < 1) return end / 2 * time * time + start;
+    float difference = end - start;                  // 変化量
+    float ratio = time / (totalTime / HALF_DIVISOR); // 割合
 
-	time = time - 1;
+    if (ratio < 1.0f)
+    {
+        return difference / HALF_DIVISOR * ratio * ratio + start;
+    }
 
-	return -end / 2 * (time * (time - 2) - 1) + start;
+    ratio = ratio - 1.0f;
+
+    return -difference / HALF_DIVISOR * (ratio * (ratio - HALF_DIVISOR) - 1.0f) + start;
 }
 
-// 非常にゆっくり加速（三次関数）
 float CubicIn(float time, float totalTime, float start, float end)
 {
-	end -= start;
-	time /= totalTime;
+    float difference = end - start;  // 変化量
+    float ratio = time / totalTime;  // 割合
 
-	return end * time * time * time * time * time + start;
+    return difference * ratio * ratio * ratio * ratio * ratio + start;
 }
 
-// 減速しながら終わる（三次関数）
 float CubicOut(float time, float totalTime, float start, float end)
 {
-	end -= start;
-	time = time / totalTime - 1;
+    float difference = end - start;         // 変化量
+    float ratio = time / totalTime - 1.0f;  // 割合
 
-	return end * (time * time * time + 1) + start;
+    return difference * (ratio * ratio * ratio + 1.0f) + start;
 }
 
-// 加速してから減速する（三次関数）
 float CubicInOut(float time, float totalTime, float start, float end)
 {
-	end -= start;
-	time /= totalTime / 2;
-	if (time < 1) return end / 2 * time * time * time + start;
+    float difference = end - start;                  // 変化量
+    float ratio = time / (totalTime / HALF_DIVISOR); // 割合
 
-	time = time - 2;
+    if (ratio < 1.0f)
+    {
+        return difference / HALF_DIVISOR * ratio * ratio * ratio + start;
+    }
 
-	return end / 2 * (time * time * time + 2) + start;
+    ratio = ratio - HALF_DIVISOR;
+
+    return difference / HALF_DIVISOR * (ratio * ratio * ratio + HALF_DIVISOR) + start;
 }
 
-// 非常にゆっくり加速（四次関数）
 float QuartIn(float time, float totalTime, float start, float end)
 {
-	end -= start;
-	time /= totalTime;
+    float difference = end - start;  // 変化量
+    float ratio = time / totalTime;  // 割合
 
-	return end * time * time * time * time + start;
+    return difference * ratio * ratio * ratio * ratio + start;
 }
 
-// 急激に減速（四次関数）
 float QuartOut(float time, float totalTime, float start, float end)
 {
-	end -= start;
-	time = time / totalTime - 1;
+    float difference = end - start;         // 変化量
+    float ratio = time / totalTime - 1.0f;  // 割合
 
-	return -end * (time * time * time * time - 1) + start;
+    return -difference * (ratio * ratio * ratio * ratio - 1.0f) + start;
 }
 
-// 加速してから減速する（四次関数）
 float QuartInOut(float time, float totalTime, float start, float end)
 {
-	end -= start;
-	time /= totalTime / 2;
-	if (time < 1) return end / 2 * time * time * time * time + start;
+    float difference = end - start;                  // 変化量
+    float ratio = time / (totalTime / HALF_DIVISOR); // 割合
 
-	time = time - 2;
+    if (ratio < 1.0f)
+    {
+        return difference / HALF_DIVISOR * ratio * ratio * ratio * ratio + start;
+    }
 
-	return -end / 2 * (time * time * time * time - 2) + start;
+    ratio = ratio - HALF_DIVISOR;
+
+    return -difference / HALF_DIVISOR * (ratio * ratio * ratio * ratio - HALF_DIVISOR) + start;
 }
 
-// 非常にゆっくり加速（五次関数）
 float QuintIn(float time, float totalTime, float start, float end)
 {
-	end -= start;
-	time /= totalTime;
+    float difference = end - start;  // 変化量
+    float ratio = time / totalTime;  // 割合
 
-	return end * time * time * time * time * time + start;
+    return difference * ratio * ratio * ratio * ratio * ratio + start;
 }
 
-// 急激に減速（五次関数）
 float QuintOut(float time, float totalTime, float start, float end)
 {
-	end -= start;
-	time = time / totalTime - 1;
+    float difference = end - start;         // 変化量
+    float ratio = time / totalTime - 1.0f;  // 割合
 
-	return end * (time * time * time * time * time + 1) + start;
+    return difference * (ratio * ratio * ratio * ratio * ratio + 1.0f) + start;
 }
 
-// 加速してから減速する（五次関数）
 float QuintInOut(float time, float totalTime, float start, float end)
 {
-	end -= start;
-	time /= totalTime / 2;
-	if (time < 1) return end / 2 * time * time * time * time * time + start;
+    float difference = end - start;                  // 変化量
+    float ratio = time / (totalTime / HALF_DIVISOR); // 割合
 
-	time = time - 2;
+    if (ratio < 1.0f)
+    {
+        return difference / HALF_DIVISOR * ratio * ratio * ratio * ratio * ratio + start;
+    }
 
-	return end / 2 * (time * time * time * time * time + 2) + start;
+    ratio = ratio - HALF_DIVISOR;
+
+    return difference / HALF_DIVISOR * (ratio * ratio * ratio * ratio * ratio + HALF_DIVISOR) + start;
 }
 
-// ゆっくり始まり滑らかに加速（サイン関数）
 float SineIn(float time, float totalTime, float start, float end)
 {
-	end -= start;
+    float difference = end - start;  // 変化量
 
-	return -end * cos(time * (DX_PI_F * 90 / 180) / totalTime) + end + start;
+    return -difference * cos(time * HALF_PI_RADIANS / totalTime) + difference + start;
 }
 
-// 最初速く、緩やかに停止（サイン関数）
 float SineOut(float time, float totalTime, float start, float end)
 {
-	end -= start;
+    float difference = end - start;  // 変化量
 
-	return end * sin(time * (DX_PI_F * 90 / 180) / totalTime) + start;
+    return difference * sin(time * HALF_PI_RADIANS / totalTime) + start;
 }
 
-// 加速・減速を滑らかに（サイン関数）
 float SineInOut(float time, float totalTime, float start, float end)
 {
-	end -= start;
+    float difference = end - start;  // 変化量
 
-	return -end / 2 * (cos(time * DX_PI_F / totalTime) - 1) + start;
+    return -difference / HALF_DIVISOR * (cos(time * DX_PI_F / totalTime) - 1.0f) + start;
 }
 
-// 急激に加速（指数関数）
 float ExpIn(float time, float totalTime, float start, float end)
 {
-    end -= start;
- 
-	return time == 0.0f ? start : end * powf(2, 10 * (time / totalTime - 1)) + start;
+    float difference = end - start;  // 変化量
+
+    if (time == 0.0f)
+    {
+        return start;
+    }
+
+    return difference * powf(EXPONENTIAL_BASE, EXPONENTIAL_POWER * (time / totalTime - 1.0f)) + start;
 }
 
-// 急激に減速（指数関数）
 float ExpOut(float time, float totalTime, float start, float end)
 {
-    end -= start;
-  
-	return time == totalTime ? end + start : end * (-powf(2, -10 * time / totalTime) + 1) + start;
+    float difference = end - start;  // 変化量
+
+    if (time == totalTime)
+    {
+        return end + start;
+    }
+
+    return difference * (-powf(EXPONENTIAL_BASE, -EXPONENTIAL_POWER * time / totalTime) + 1.0f) + start;
 }
 
-// 加速・減速が非常に急（指数関数）
 float ExpInOut(float time, float totalTime, float start, float end)
 {
-    if (time == 0.0f) return start;
-    if (time == totalTime) return end;
-    end -= start;
-    time /= totalTime / 2;
+    if (time == 0.0f)
+    {
+        return start;
+    }
+    if (time == totalTime)
+    {
+        return end;
+    }
 
-    if (time < 1) return end / 2 * powf(2, 10 * (time - 1)) + start;
+    float difference = end - start;                  // 変化量
+    float ratio = time / (totalTime / HALF_DIVISOR); // 割合
 
-    time = time - 1;
+    if (ratio < 1.0f)
+    {
+        return difference / HALF_DIVISOR * powf(EXPONENTIAL_BASE, EXPONENTIAL_POWER * (ratio - 1.0f)) + start;
+    }
 
-    return end / 2 * (-powf(2, -10 * time) + 2) + start;
+    ratio = ratio - 1.0f;
 
+    return difference / HALF_DIVISOR * (-powf(EXPONENTIAL_BASE, -EXPONENTIAL_POWER * ratio) + HALF_DIVISOR) + start;
 }
 
-// 徐々に加速（円関数）
 float CircIn(float time, float totalTime, float start, float end)
 {
-	end -= start;
-	time /= totalTime;
+    float difference = end - start;  // 変化量
+    float ratio = time / totalTime;  // 割合
 
-	return -end * (sqrt(1 - time * time) - 1) + start;
+    return -difference * (sqrt(1.0f - ratio * ratio) - 1.0f) + start;
 }
 
-// 徐々に減速（円関数）
 float CircOut(float time, float totalTime, float start, float end)
 {
-	end -= start;
-	time = time / totalTime - 1;
+    float difference = end - start;         // 変化量
+    float ratio = time / totalTime - 1.0f;  // 割合
 
-	return end * sqrt(1 - time * time) + start;
+    return difference * sqrt(1.0f - ratio * ratio) + start;
 }
 
-// 加速してから減速（円関数）
 float CircInOut(float time, float totalTime, float start, float end)
 {
-	end -= start;
-	time /= totalTime / 2;
-	if (time < 1) return -end / 2 * (sqrt(1 - time * time) - 1) + start;
+    float difference = end - start;                  // 変化量
+    float ratio = time / (totalTime / HALF_DIVISOR); // 割合
 
-	time = time - 2;
+    if (ratio < 1.0f)
+    {
+        return -difference / HALF_DIVISOR * (sqrt(1.0f - ratio * ratio) - 1.0f) + start;
+    }
 
-	return end / 2 * (sqrt(1 - time * time) + 1) + start;
+    ratio = ratio - HALF_DIVISOR;
+
+    return difference / HALF_DIVISOR * (sqrt(1.0f - ratio * ratio) + 1.0f) + start;
 }
 
-// 弾むように加速（弾性関数）
 float ElasticIn(float time, float totalTime, float start, float end)
 {
-    end -= start;
-    time /= totalTime;
+    float difference = end - start;  // 変化量
+    float ratio = time / totalTime;  // 割合
 
-    float s = 1.70158f;
-    float p = totalTime * 0.3f;
-    float a = end;
+    float overshoot = ELASTIC_DEFAULT_OVERSHOOT;                  // 助走量
+    float period = totalTime * ELASTIC_DEFAULT_PERIOD_MULTIPLIER; // 周期
+    float amplitude = difference;                                 // 振幅
 
-    if (time == 0) return start;
-    if (time == 1) return start + end;
-
-    if (a < abs(end))
+    if (ratio == 0.0f)
     {
-        a = end;
-        s = p / 4;
+        return start;
+    }
+    if (ratio == 1.0f)
+    {
+        return start + difference;
+    }
+
+    if (amplitude < abs(difference))
+    {
+        amplitude = difference;
+        overshoot = period / QUARTER_DIVISOR;
     }
     else
     {
-        s = p / (2 * DX_PI_F) * asin(end / a);
+        overshoot = period / CIRCLE_RADIANS * asin(difference / amplitude);
     }
 
-    time = time - 1;
-    return -(a * powf(2, 10 * time) * sin((time * totalTime - s) * (2 * DX_PI_F) / p)) + start;
+    ratio = ratio - 1.0f;
+    return -(amplitude * powf(EXPONENTIAL_BASE, EXPONENTIAL_POWER * ratio) * sin((ratio * totalTime - overshoot) * CIRCLE_RADIANS / period)) + start;
 }
 
-// 弾むように減速（弾性関数）
 float ElasticOut(float time, float totalTime, float start, float end)
 {
-    end -= start;
-    time /= totalTime;
+    float difference = end - start;  // 変化量
+    float ratio = time / totalTime;  // 割合
 
-    float s = 1.70158f;
-    float p = totalTime * 0.3f; ;
-    float a = end;
+    float overshoot = ELASTIC_DEFAULT_OVERSHOOT;                  // 助走量
+    float period = totalTime * ELASTIC_DEFAULT_PERIOD_MULTIPLIER; // 周期
+    float amplitude = difference;                                 // 振幅
 
-    if (time == 0) return start;
-    if (time == 1) return start + end;
-
-    if (a < abs(end))
+    if (ratio == 0.0f)
     {
-        a = end;
-        s = p / 4;
+        return start;
+    }
+    if (ratio == 1.0f)
+    {
+        return start + difference;
+    }
+
+    if (amplitude < abs(difference))
+    {
+        amplitude = difference;
+        overshoot = period / QUARTER_DIVISOR;
     }
     else
     {
-        s = p / (2 * DX_PI_F) * asin(end / a);
+        overshoot = period / CIRCLE_RADIANS * asin(difference / amplitude);
     }
 
-    return a * powf(2, -10 * time) * sin((time * totalTime - s) * (2 * DX_PI_F) / p) + end + start;
+    return amplitude * powf(EXPONENTIAL_BASE, -EXPONENTIAL_POWER * ratio) * sin((ratio * totalTime - overshoot) * CIRCLE_RADIANS / period) + difference + start;
 }
 
-// 弾むように加速して減速（弾性関数）
 float ElasticInOut(float time, float totalTime, float start, float end)
 {
-    end -= start;
-    time /= totalTime / 2;
+    float difference = end - start;                  // 変化量
+    float ratio = time / (totalTime / HALF_DIVISOR); // 割合
 
-    float s = 1.70158f;
-    float p = totalTime * (0.3f * 1.5f);
-    float a = end;
+    float overshoot = ELASTIC_DEFAULT_OVERSHOOT;                  // 助走量
+    float period = totalTime * ELASTIC_INOUT_PERIOD_MULTIPLIER;   // 周期
+    float amplitude = difference;                                 // 振幅
 
-    if (time == 0) return start;
-    if (time == 2) return start + end;
-
-    if (a < abs(end))
+    if (ratio == 0.0f)
     {
-        a = end;
-        s = p / 4;
+        return start;
+    }
+    if (ratio == HALF_DIVISOR)
+    {
+        return start + difference;
+    }
+
+    if (amplitude < abs(difference))
+    {
+        amplitude = difference;
+        overshoot = period / QUARTER_DIVISOR;
     }
     else
     {
-        s = p / (2 * DX_PI_F) * asin(end / a);
+        overshoot = period / CIRCLE_RADIANS * asin(difference / amplitude);
     }
 
-    if (time < 1)
+    if (ratio < 1.0f)
     {
-        return -0.5f * (a * powf(2, 10 * (time -= 1)) * sin((time * totalTime - s) * (2 * DX_PI_F) / p)) + start;
+        ratio -= 1.0f;
+        return -HALF_MULTIPLIER * (amplitude * powf(EXPONENTIAL_BASE, EXPONENTIAL_POWER * ratio) * sin((ratio * totalTime - overshoot) * CIRCLE_RADIANS / period)) + start;
     }
 
-    time = time - 1;
+    ratio = ratio - 1.0f;
 
-    return a * powf(2, -10 * time) * sin((time * totalTime - s) * (2 * DX_PI_F) / p) * 0.5f + end + start;
+    return amplitude * powf(EXPONENTIAL_BASE, -EXPONENTIAL_POWER * ratio) * sin((ratio * totalTime - overshoot) * CIRCLE_RADIANS / period) * HALF_MULTIPLIER + difference + start;
 }
 
-// 少し逆方向に動いてから加速（バック関数）
-float BackIn(float time, float totalTime, float start, float end, float s)
+float BackIn(float time, float totalTime, float start, float end, float overshootAmount)
 {
-    end -= start;
-    time /= totalTime;
+    float difference = end - start;  // 変化量
+    float ratio = time / totalTime;  // 割合
 
-    return end * time * time * ((s + 1) * time - s) + start;
+    return difference * ratio * ratio * ((overshootAmount + 1.0f) * ratio - overshootAmount) + start;
 }
 
-// 加速・減速しつつ逆方向にも動く（バック関数）
-float BackOut(float time, float totalTime, float start, float end, float s)
+float BackOut(float time, float totalTime, float start, float end, float overshootAmount)
 {
-    end -= start;
-    time = time / totalTime - 1;
+    float difference = end - start;         // 変化量
+    float ratio = time / totalTime - 1.0f;  // 割合
 
-    return end * (time * time * ((s + 1) * time + s) + 1) + start;
+    return difference * (ratio * ratio * ((overshootAmount + 1.0f) * ratio + overshootAmount) + 1.0f) + start;
 }
 
-// 跳ねるように加速（バウンド関数）
-float BackInOut(float time, float totalTime, float start, float end, float s)
+float BackInOut(float time, float totalTime, float start, float end, float overshootAmount)
 {
-    end -= start;
-    s *= 1.525f;
-    time /= totalTime / 2;
-    if (time < 1) return end / 2 * (time * time * ((s + 1) * time - s)) + start;
+    float difference = end - start;                                              // 変化量
+    float adjustedOvershoot = overshootAmount * BACK_INOUT_OVERSHOOT_MULTIPLIER; // 調整された助走量
+    float ratio = time / (totalTime / HALF_DIVISOR);                             // 割合
 
-    time = time - 2;
+    if (ratio < 1.0f)
+    {
+        return difference / HALF_DIVISOR * (ratio * ratio * ((adjustedOvershoot + 1.0f) * ratio - adjustedOvershoot)) + start;
+    }
 
-    return end / 2 * (time * time * ((s + 1) * time + s) + 2) + start;
+    ratio = ratio - HALF_DIVISOR;
+
+    return difference / HALF_DIVISOR * (ratio * ratio * ((adjustedOvershoot + 1.0f) * ratio + adjustedOvershoot) + HALF_DIVISOR) + start;
 }
 
-// 跳ねるように減速（バウンド関数）
 float BounceIn(float time, float totalTime, float start, float end)
 {
-    end -= start;
+    float difference = end - start;  // 変化量
 
-    return end - BounceOut(totalTime - time, totalTime, 0, end) + start;
+    return difference - BounceOut(totalTime - time, totalTime, 0.0f, difference) + start;
 }
 
-// 跳ねるように減速（バウンド関数）
 float BounceOut(float time, float totalTime, float start, float end)
 {
-    end -= start;
-    time /= totalTime;
+    float difference = end - start;  // 変化量
+    float ratio = time / totalTime;  // 割合
 
-    if (time < 1.0f / 2.75f)
+    if (ratio < BOUNCE_THRESHOLD_FIRST)
     {
-        return end * (7.5625f * time * time) + start;
+        return difference * (BOUNCE_COEFFICIENT * ratio * ratio) + start;
     }
-    else if (time < 2.0f / 2.75f)
+    else if (ratio < BOUNCE_THRESHOLD_SECOND)
     {
-        time -= 1.5f / 2.75f;
-        return end * (7.5625f * time * time + 0.75f) + start;
+        ratio -= BOUNCE_OFFSET_TIME_SECOND;
+        return difference * (BOUNCE_COEFFICIENT * ratio * ratio + BOUNCE_OFFSET_VALUE_SECOND) + start;
     }
-    else if (time < 2.5f / 2.75f)
+    else if (ratio < BOUNCE_THRESHOLD_THIRD)
     {
-        time -= 2.25f / 2.75f;
-        return end * (7.5625f * time * time + 0.9375f) + start;
+        ratio -= BOUNCE_OFFSET_TIME_THIRD;
+        return difference * (BOUNCE_COEFFICIENT * ratio * ratio + BOUNCE_OFFSET_VALUE_THIRD) + start;
     }
     else
     {
-        time -= 2.625f / 2.75f;
-        return end * (7.5625f * time * time + 0.984375f) + start;
+        ratio -= BOUNCE_OFFSET_TIME_FOURTH;
+        return difference * (BOUNCE_COEFFICIENT * ratio * ratio + BOUNCE_OFFSET_VALUE_FOURTH) + start;
     }
 }
 
-// 跳ねながら加速・減速（バウンド関数）
 float BounceInOut(float time, float totalTime, float start, float end)
 {
-    if (time < totalTime / 2)
+    float difference = end - start;  // 変化量
+
+    if (time < totalTime / HALF_DIVISOR)
     {
-        return BounceIn(time * 2, totalTime, 0, end - start) * 0.5f + start;
+        return BounceIn(time * HALF_DIVISOR, totalTime, 0.0f, difference) * HALF_MULTIPLIER + start;
     }
     else
     {
-        return BounceOut(time * 2 - totalTime, totalTime, 0, end - start) * 0.5f + start + (end - start) * 0.5f;
+        return BounceOut(time * HALF_DIVISOR - totalTime, totalTime, 0.0f, difference) * HALF_MULTIPLIER + start + difference * HALF_MULTIPLIER;
     }
 }
 
-// 一定速度で直線的に変化（線形補間）
 float Linear(float time, float totalTime, float start, float end)
 {
-    return (end - start) * time / totalTime + start;
+    float difference = end - start;  // 変化量
+    return difference * (time / totalTime) + start;
 }
-
-
-
-

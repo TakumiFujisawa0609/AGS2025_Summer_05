@@ -1,578 +1,758 @@
-#include"ResourceManager.h"
+#include "ResourceManager.h"
+#include <DxLib.h>
+#include "../../Application.h"
+#include "Resource.h"
 
-#include<DxLib.h>
-
-#include"../../Application.h"
-#include"Resource.h"
-
-// シングルトンのインスタンス初期化
 ResourceManager* ResourceManager::instance_ = nullptr;
 
-// インスタンス生成（初回のみ）＋初期化呼び出し
 void ResourceManager::CreateInstance(void)
 {
-	if (instance_ == nullptr)
-	{
-		instance_ = new ResourceManager();
-	}
-	instance_->Init();
+    if (instance_ == nullptr)
+    {
+        instance_ = new ResourceManager();
+    }
+    instance_->Init();
 }
 
-// インスタンス参照を返す
 ResourceManager& ResourceManager::GetInstance(void)
 {
-	return *instance_;
+    return *instance_;
 }
 
-// 共通初期化処理（今は空）
 void ResourceManager::Init(void)
 {
-	
 }
-// タイトルシーン用リソースの初期化
+
 void ResourceManager::InitTitle(void)
 {
-	Resource res;
-	// 操作説明画像を登録
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/sousa.png");
-	resourcesMap_.emplace(SRC::OPERATION, res);
+    Resource resource;
 
-	//遊び方画像1
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/mokuhyou.png");
-	resourcesMap_.emplace(SRC::PLAY_GUIDE, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "UI/sousa.png"
+    );
+    resourcesMap_.emplace(SRC::OPERATION, resource);
 
-	//遊び方画像2
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/renkint.png");
-	resourcesMap_.emplace(SRC::PLAY_GUIDE2, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "UI/mokuhyou.png"
+    );
+    resourcesMap_.emplace(SRC::PLAY_GUIDE, resource);
 
-	// タイトルロゴ画像を登録
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/titleRog.png");
-	resourcesMap_.emplace(SRC::TYTLE_LOGO, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "UI/renkint.png"
+    );
+    resourcesMap_.emplace(SRC::PLAY_GUIDE2, resource);
 
-	//遊び方画像(アトリエ)
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/atrieT.png");
-	resourcesMap_.emplace(SRC::ATREA, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "UI/titleRog.png"
+    );
+    resourcesMap_.emplace(SRC::TITLE_LOGO, resource);
 
-	//遊び方画像(ギルド)
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/girudo.png");
-	resourcesMap_.emplace(SRC::GUILD, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "UI/atrieT.png"
+    );
+    resourcesMap_.emplace(SRC::ATELIER, resource);
 
-	//遊び方画像(ガーデン)
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/gadenT.png");
-	resourcesMap_.emplace(SRC::GARDEN, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "UI/girudo.png"
+    );
+    resourcesMap_.emplace(SRC::GUILD, resource);
 
-	// タイトルBGMを登録
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_BGM + "nc49298.mp3");
-	resourcesMap_.emplace(SRC::BGM_TITLE, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "UI/gadenT.png"
+    );
+    resourcesMap_.emplace(SRC::GARDEN, resource);
 
-	// 決定音を登録
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "se_pikon19.mp3");
-	resourcesMap_.emplace(SRC::SE_PUSH, res);
+    resource = Resource(
+        Resource::TYPE::SOUND,
+        Application::PATH_BGM + "nc49298.mp3"
+    );
+    resourcesMap_.emplace(SRC::BGM_TITLE, resource);
 
-	// キャンセル音を登録
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "nc298207.mp3");
-	resourcesMap_.emplace(SRC::SE_CANCEL, res);
+    resource = Resource(
+        Resource::TYPE::SOUND,
+        Application::PATH_SE + "se_pikon19.mp3"
+    );
+    resourcesMap_.emplace(SRC::SE_PUSH, resource);
 
-	// カーソル移動音を登録
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "Cursormovementsound.mp3");
-	resourcesMap_.emplace(SRC::SE_SELECT, res);
+    resource = Resource(
+        Resource::TYPE::SOUND,
+        Application::PATH_SE + "nc298207.mp3"
+    );
+    resourcesMap_.emplace(SRC::SE_CANCEL, resource);
+
+    resource = Resource(
+        Resource::TYPE::SOUND,
+        Application::PATH_SE + "Cursormovementsound.mp3"
+    );
+    resourcesMap_.emplace(SRC::SE_SELECT, resource);
 }
 
-// ゲームシーン用リソースの初期化
 void ResourceManager::InitGame(void)
 {
-	Resource res;
-	
-	// ゲームBGMを登録
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_BGM + "");
-	resourcesMap_.emplace(SRC::BGM_GAME, res);
+    Resource resource;
 
-	// カーソル移動音を登録
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "Cursormovementsound.mp3");
-	resourcesMap_.emplace(SRC::SE_SELECT, res);
+    resource = Resource(
+        Resource::TYPE::SOUND,
+        Application::PATH_BGM + ""
+    );
+    resourcesMap_.emplace(SRC::BGM_GAME, resource);
 
-	// 決定音を登録
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "se_pikon1.mp3");
-	resourcesMap_.emplace(SRC::SE_PUSH, res);
+    resource = Resource(
+        Resource::TYPE::SOUND,
+        Application::PATH_SE + "Cursormovementsound.mp3"
+    );
+    resourcesMap_.emplace(SRC::SE_SELECT, resource);
 
-	// キャンセル音を登録
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "nc298207.mp3");
-	resourcesMap_.emplace(SRC::SE_CANCEL, res);
+    resource = Resource(
+        Resource::TYPE::SOUND,
+        Application::PATH_SE + "se_pikon1.mp3"
+    );
+    resourcesMap_.emplace(SRC::SE_PUSH, resource);
 
-	// ダメージ音を登録
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "");
-	resourcesMap_.emplace(SRC::SE_DAMAGE, res);
+    resource = Resource(
+        Resource::TYPE::SOUND,
+        Application::PATH_SE + "nc298207.mp3"
+    );
+    resourcesMap_.emplace(SRC::SE_CANCEL, resource);
 
-	// アイテム取得音を登録
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "");
-	resourcesMap_.emplace(SRC::SE_GET, res);
+    resource = Resource(
+        Resource::TYPE::SOUND,
+        Application::PATH_SE + ""
+    );
+    resourcesMap_.emplace(SRC::SE_DAMAGE, resource);
 
-	//フレーム
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/DHUI.png");
-	resourcesMap_.emplace(SRC::UI_FRAME, res);
+    resource = Resource(
+        Resource::TYPE::SOUND,
+        Application::PATH_SE + ""
+    );
+    resourcesMap_.emplace(SRC::SE_GET, resource);
 
-	//朝アイコン
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/moningUI.png");
-	resourcesMap_.emplace(SRC::MORNING, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "UI/DHUI.png"
+    );
+    resourcesMap_.emplace(SRC::UI_FRAME, resource);
 
-	//昼アイコン
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/HirumaUI.png");
-	resourcesMap_.emplace(SRC::DAY, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "UI/moningUI.png"
+    );
+    resourcesMap_.emplace(SRC::MORNING, resource);
 
-	//夕方アイコン
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/HiruUI.png");
-	resourcesMap_.emplace(SRC::EVENING, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "UI/HirumaUI.png"
+    );
+    resourcesMap_.emplace(SRC::DAY, resource);
 
-	//夜アイコン
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/nightUI.png");
-	resourcesMap_.emplace(SRC::NIGHT, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "UI/HiruUI.png"
+    );
+    resourcesMap_.emplace(SRC::EVENING, resource);
 
-	//夜アイコン
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/Maney.png");
-	resourcesMap_.emplace(SRC::MANEY, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "UI/nightUI.png"
+    );
+    resourcesMap_.emplace(SRC::NIGHT, resource);
 
-	//血袋
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/Bloodinaleatherbag.png");
-	resourcesMap_.emplace(SRC::BLOOD_BAG, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "UI/Maney.png"
+    );
+    resourcesMap_.emplace(SRC::MONEY, resource);
 
-	//辰砂
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/cinnabar.png");
-	resourcesMap_.emplace(SRC::CINNABAR, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "UI/Bloodinaleatherbag.png"
+    );
+    resourcesMap_.emplace(SRC::BLOOD_BAG, resource);
 
-	//賢者の石
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "UI/PhilosophersStone.png");
-	resourcesMap_.emplace(SRC::CINNABAR, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "UI/cinnabar.png"
+    );
+    resourcesMap_.emplace(SRC::CINNABAR, resource);
 
-	// プレイヤー関連リソースの初期化
-	ResourcePlayer();
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "UI/PhilosophersStone.png"
+    );
+    resourcesMap_.emplace(SRC::PHILOSOPHERS_STONE, resource);
 
-	// 敵関連リソースの初期化
-	ResourceEnemy();
-
-	//アトリエ関連リソースの初期化
-	ResourceAtelier();
-
-	//ギルドリソースの初期化
-	ResourceGuild();
-
-	//庭のリソースを初期化
-	ResourceGarden();
+    ResourcePlayer();
+    ResourceEnemy();
+    ResourceAtelier();
+    ResourceGuild();
+    ResourceGarden();
 }
 
-// ゲームオーバーシーン用リソースの初期化
 void ResourceManager::InitGameOver(void)
 {
-	Resource res;
+    Resource resource;
 
-	// ゲームオーバーロゴ画像を登録
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "");
-	resourcesMap_.emplace(SRC::GAMEOVER_LOGO, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + ""
+    );
+    resourcesMap_.emplace(SRC::GAMEOVER_LOGO, resource);
 
-	// ゲームオーバーBGMを登録
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_BGM + "");
-	resourcesMap_.emplace(SRC::BGM_GAMEOVER, res);
+    resource = Resource(
+        Resource::TYPE::SOUND,
+        Application::PATH_BGM + ""
+    );
+    resourcesMap_.emplace(SRC::BGM_GAMEOVER, resource);
 
-	// 決定音を登録
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "");
-	resourcesMap_.emplace(SRC::SE_PUSH, res);
+    resource = Resource(
+        Resource::TYPE::SOUND,
+        Application::PATH_SE + ""
+    );
+    resourcesMap_.emplace(SRC::SE_PUSH, resource);
 }
 
-// ゲームクリアシーン用リソースの初期化
 void ResourceManager::InitGameClear(void)
 {
-	Resource res;
+    Resource resource;
 
-	// ゲームクリアロゴ画像を登録
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "");
-	resourcesMap_.emplace(SRC::GAMECLERA_LOGO, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + ""
+    );
+    resourcesMap_.emplace(SRC::GAMECLEAR_LOGO, resource);
 
-	// ゲームクリアBGMを登録
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_BGM + "");
-	resourcesMap_.emplace(SRC::BGM_GAMECLEAR, res);
+    resource = Resource(
+        Resource::TYPE::SOUND,
+        Application::PATH_BGM + ""
+    );
+    resourcesMap_.emplace(SRC::BGM_GAMECLEAR, resource);
 
-	// 決定音を登録
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "");
-	resourcesMap_.emplace(SRC::SE_PUSH, res);
+    resource = Resource(
+        Resource::TYPE::SOUND,
+        Application::PATH_SE + ""
+    );
+    resourcesMap_.emplace(SRC::SE_PUSH, resource);
 }
 
 void ResourceManager::ResourceAtelier(void)
 {
-	Resource res;
-	//掲示板オブジェクトの登録
-	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "/Atelier/hondana.mv1");
-	resourcesMap_.emplace(SRC::BOOKS_HELF, res);
+    Resource resource;
 
-	//錬金釜
-	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "/Atelier/renkingama.mv1");
-	resourcesMap_.emplace(SRC::ALCHEMYPOT, res);
+    resource = Resource(
+        Resource::TYPE::MODEL,
+        Application::PATH_MODEL + "/Atelier/hondana.mv1"
+    );
+    resourcesMap_.emplace(SRC::BOOK_SHELF, resource);
 
-	//壁
-	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "/Atelier/AtelierStage.mv1");
-	resourcesMap_.emplace(SRC::STAGE_ATELIER, res);
+    resource = Resource(
+        Resource::TYPE::MODEL,
+        Application::PATH_MODEL + "/Atelier/renkingama.mv1"
+    );
+    resourcesMap_.emplace(SRC::ALCHEMYPOT, resource);
 
-	//アイテムインベントリ
-	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "/Atelier/Box.mv1");
-	resourcesMap_.emplace(SRC::BOX, res);
+    resource = Resource(
+        Resource::TYPE::MODEL,
+        Application::PATH_MODEL + "/Atelier/AtelierStage.mv1"
+    );
+    resourcesMap_.emplace(SRC::STAGE_ATELIER, resource);
 
-	//薬草
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Greenherb.png");
-	resourcesMap_.emplace(SRC::HERB, res);
-	
-	//解毒草
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Purpleherb.png");
-	resourcesMap_.emplace(SRC::ANTIDOTE_HERB, res);
+    resource = Resource(
+        Resource::TYPE::MODEL,
+        Application::PATH_MODEL + "/Atelier/Box.mv1"
+    );
+    resourcesMap_.emplace(SRC::BOX, resource);
 
-	//魔力草
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/BlueHerb.png");
-	resourcesMap_.emplace(SRC::MAGIC_FLOWER, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/Greenherb.png"
+    );
+    resourcesMap_.emplace(SRC::HERB, resource);
 
-	//麻痺草
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Yellowherb.png");
-	resourcesMap_.emplace(SRC::PARALYSIS_HERB, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/Purpleherb.png"
+    );
+    resourcesMap_.emplace(SRC::ANTIDOTE_HERB, resource);
 
-	//風走草
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Lightblueherb.png");
-	resourcesMap_.emplace(SRC::GALE_HERB, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/BlueHerb.png"
+    );
+    resourcesMap_.emplace(SRC::MAGIC_FLOWER, resource);
 
-	//鬼力草
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Redherb.png");
-	resourcesMap_.emplace(SRC::DEMON_POWER_HERB, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/Yellowherb.png"
+    );
+    resourcesMap_.emplace(SRC::PARALYSIS_HERB, resource);
 
-	//硬体草
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Orangeherb.png");
-	resourcesMap_.emplace(SRC::HARD_BODY_HERB, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/Lightblueherb.png"
+    );
+    resourcesMap_.emplace(SRC::GALE_HERB, resource);
 
-	//回復ポーション
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/GreenTriangularPotion.png");
-	resourcesMap_.emplace(SRC::RECOVERY_POTION, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/Redherb.png"
+    );
+    resourcesMap_.emplace(SRC::DEMON_POWER_HERB, resource);
 
-	//解毒ポーション
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/PurpleTriangularPotion.png");
-	resourcesMap_.emplace(SRC::ANTIDOTE_POTION, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/Orangeherb.png"
+    );
+    resourcesMap_.emplace(SRC::HARD_BODY_HERB, resource);
 
-	//解麻痺ポーション
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/YellowPotion.png");
-	resourcesMap_.emplace(SRC::ANTIPARALYSIS_POTION, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/GreenTriangularPotion.png"
+    );
+    resourcesMap_.emplace(SRC::RECOVERY_POTION, resource);
 
-	//魔力ポーション
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/BlueTriangularPotion.png");
-	resourcesMap_.emplace(SRC::MAGIC_POTION, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/PurpleTriangularPotion.png"
+    );
+    resourcesMap_.emplace(SRC::ANTIDOTE_POTION, resource);
 
-	//俊敏ポーション
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/LightbluePotion.png");
-	resourcesMap_.emplace(SRC::SPEED_POTION, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/YellowPotion.png"
+    );
+    resourcesMap_.emplace(SRC::ANTIPARALYSIS_POTION, resource);
 
-	//力のポーション
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/RedTriangularPotion.png");
-	resourcesMap_.emplace(SRC::POWER_POTION, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/BlueTriangularPotion.png"
+    );
+    resourcesMap_.emplace(SRC::MAGIC_POTION, resource);
 
-	//防御ポーション
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/OrangePotion.png");
-	resourcesMap_.emplace(SRC::DEFENSE_POTION, res);
-	
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/LightbluePotion.png"
+    );
+    resourcesMap_.emplace(SRC::SPEED_POTION, resource);
 
-	//水
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Water.png");
-	resourcesMap_.emplace(SRC::WATER, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/RedTriangularPotion.png"
+    );
+    resourcesMap_.emplace(SRC::POWER_POTION, resource);
 
-	//鉄鉱石
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Iron.png");
-	resourcesMap_.emplace(SRC::IRON_ORE, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/OrangePotion.png"
+    );
+    resourcesMap_.emplace(SRC::DEFENSE_POTION, resource);
 
-	//火の魔石
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/RedOre.png");
-	resourcesMap_.emplace(SRC::FIRE_MAGIC_STONE, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/Water.png"
+    );
+    resourcesMap_.emplace(SRC::WATER, resource);
 
-	//水の魔石
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/BlueOre.png");
-	resourcesMap_.emplace(SRC::WATER_MAGIC_STONE, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/Iron.png"
+    );
+    resourcesMap_.emplace(SRC::IRON_ORE, resource);
 
-	//風の魔石
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/GreenOre.png");
-	resourcesMap_.emplace(SRC::WIND_MAGIC_STONE, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/RedOre.png"
+    );
+    resourcesMap_.emplace(SRC::FIRE_MAGIC_STONE, resource);
 
-	//土の魔石
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/OrangeOre.png");
-	resourcesMap_.emplace(SRC::EARTH_MAGIC_STONE, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/BlueOre.png"
+    );
+    resourcesMap_.emplace(SRC::WATER_MAGIC_STONE, resource);
 
-	//氷の魔石
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/WaterOre.png");
-	resourcesMap_.emplace(SRC::ICE_MAGIC_STONE, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/GreenOre.png"
+    );
+    resourcesMap_.emplace(SRC::WIND_MAGIC_STONE, resource);
 
-	//光の魔石
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/YellowOre.png");
-	resourcesMap_.emplace(SRC::LIGHT_MAGIC_STONE, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/OrangeOre.png"
+    );
+    resourcesMap_.emplace(SRC::EARTH_MAGIC_STONE, resource);
 
-	//闇の魔石
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/PurpleOre.png");
-	resourcesMap_.emplace(SRC::DARK_MAGIC_STONE, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/WaterOre.png"
+    );
+    resourcesMap_.emplace(SRC::ICE_MAGIC_STONE, resource);
 
-	//剣
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Sword.png");
-	resourcesMap_.emplace(SRC::SWORD, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/YellowOre.png"
+    );
+    resourcesMap_.emplace(SRC::LIGHT_MAGIC_STONE, resource);
 
-	//火の剣
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/RedSword.png");
-	resourcesMap_.emplace(SRC::FIRE_SORD, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/PurpleOre.png"
+    );
+    resourcesMap_.emplace(SRC::DARK_MAGIC_STONE, resource);
 
-	//水の剣
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/BlueSword.png");
-	resourcesMap_.emplace(SRC::WATER_SWORD, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/Sword.png"
+    );
+    resourcesMap_.emplace(SRC::SWORD, resource);
 
-	//風の剣
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/GreenSword.png");
-	resourcesMap_.emplace(SRC::WIND_SWORD, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/RedSword.png"
+    );
+    resourcesMap_.emplace(SRC::FIRE_SWORD, resource);
 
-	//土の剣
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/OrangeSword.png");
-	resourcesMap_.emplace(SRC::EARTH_SWORD, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/BlueSword.png"
+    );
+    resourcesMap_.emplace(SRC::WATER_SWORD, resource);
 
-	//氷の剣
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/WaterSword.png");
-	resourcesMap_.emplace(SRC::ICE_SWORD, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/GreenSword.png"
+    );
+    resourcesMap_.emplace(SRC::WIND_SWORD, resource);
 
-	//光の剣
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/YellowSword.png");
-	resourcesMap_.emplace(SRC::LIGHT_SWORD, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/OrangeSword.png"
+    );
+    resourcesMap_.emplace(SRC::EARTH_SWORD, resource);
 
-	//闇の剣
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/PurpleSword.png");
-	resourcesMap_.emplace(SRC::DARK_SWORD, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/WaterSword.png"
+    );
+    resourcesMap_.emplace(SRC::ICE_SWORD, resource);
 
-	//杖
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Cane.png");
-	resourcesMap_.emplace(SRC::WAND, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/YellowSword.png"
+    );
+    resourcesMap_.emplace(SRC::LIGHT_SWORD, resource);
 
-	//火の杖
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/RedWand.png");
-	resourcesMap_.emplace(SRC::FIRE_WAND, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/PurpleSword.png"
+    );
+    resourcesMap_.emplace(SRC::DARK_SWORD, resource);
 
-	//水の杖
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/BlueWand.png");
-	resourcesMap_.emplace(SRC::WATER_WAND, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/Cane.png"
+    );
+    resourcesMap_.emplace(SRC::WAND, resource);
 
-	//風の杖
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/GreenWand.png");
-	resourcesMap_.emplace(SRC::WIND_WAND, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/RedWand.png"
+    );
+    resourcesMap_.emplace(SRC::FIRE_WAND, resource);
 
-	//土の杖
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/OrangeWand.png");
-	resourcesMap_.emplace(SRC::EARTH_WAND, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/BlueWand.png"
+    );
+    resourcesMap_.emplace(SRC::WATER_WAND, resource);
 
-	//氷の杖
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/WaterWand.png");
-	resourcesMap_.emplace(SRC::ICE_WAND, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/GreenWand.png"
+    );
+    resourcesMap_.emplace(SRC::WIND_WAND, resource);
 
-	//光の杖
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/YellowWand.png");
-	resourcesMap_.emplace(SRC::LIGHT_WAND, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/OrangeWand.png"
+    );
+    resourcesMap_.emplace(SRC::EARTH_WAND, resource);
 
-	//闇の杖
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/PurpleWand.png");
-	resourcesMap_.emplace(SRC::DARK_WAND, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/WaterWand.png"
+    );
+    resourcesMap_.emplace(SRC::ICE_WAND, resource);
 
-	//効果音
-	// 錬金音を登録
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "renkin.mp3");
-	resourcesMap_.emplace(SRC::SE_ALCHEMY, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/YellowWand.png"
+    );
+    resourcesMap_.emplace(SRC::LIGHT_WAND, resource);
 
-	// 錬金失敗音を登録
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "nc46976.mp3");
-	resourcesMap_.emplace(SRC::SE_ALCHEMY_FAIL, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/PurpleWand.png"
+    );
+    resourcesMap_.emplace(SRC::DARK_WAND, resource);
 
-	// 錬金成功音を登録
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_SE + "fanfare3.mp3");
-	resourcesMap_.emplace(SRC::SE_ALCHEMY_SUCCESS, res);
+    resource = Resource(
+        Resource::TYPE::SOUND,
+        Application::PATH_SE + "renkin.mp3"
+    );
+    resourcesMap_.emplace(SRC::SE_ALCHEMY, resource);
 
-	//BGM
-	// アトリエのBGMを登録
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_BGM + "m2.mp3");
-	resourcesMap_.emplace(SRC::BGM_ATELIER, res);
+    resource = Resource(
+        Resource::TYPE::SOUND,
+        Application::PATH_SE + "nc46976.mp3"
+    );
+    resourcesMap_.emplace(SRC::SE_ALCHEMY_FAIL, resource);
 
-	//エフェクト
-	//錬金成功エフェクトを登録
-	res = Resource(Resource::TYPE::EFFEKSEER, Application::PATH_EFFECT + "Simple_Sprite_FixedYAxis.efkefc");
-	resourcesMap_.emplace(SRC::EFFECT_ALCHEMY, res);
+    resource = Resource(
+        Resource::TYPE::SOUND,
+        Application::PATH_SE + "fanfare3.mp3"
+    );
+    resourcesMap_.emplace(SRC::SE_ALCHEMY_SUCCESS, resource);
 
-	//錬金失敗エフェクトを登録
-	res = Resource(Resource::TYPE::EFFEKSEER, Application::PATH_EFFECT + "BlastHit.efkefc");
-	resourcesMap_.emplace(SRC::EFFECT_BLAST, res);
-	
+    resource = Resource(
+        Resource::TYPE::SOUND,
+        Application::PATH_BGM + "m2.mp3"
+    );
+    resourcesMap_.emplace(SRC::BGM_ATELIER, resource);
+
+    resource = Resource(
+        Resource::TYPE::EFFEKSEER,
+        Application::PATH_EFFECT + "Simple_Sprite_FixedYAxis.efkefc"
+    );
+    resourcesMap_.emplace(SRC::EFFECT_ALCHEMY, resource);
+
+    resource = Resource(
+        Resource::TYPE::EFFEKSEER,
+        Application::PATH_EFFECT + "BlastHit.efkefc"
+    );
+    resourcesMap_.emplace(SRC::EFFECT_BLAST, resource);
 }
 
-//ギルドで使うリソース
 void ResourceManager::ResourceGuild(void)
 {
-	Resource res;
+    Resource resource;
 
-	
+    resource = Resource(
+        Resource::TYPE::MODEL,
+        Application::PATH_MODEL + "/GuildObject/BulletinBoard.mv1"
+    );
+    resourcesMap_.emplace(SRC::BULLETIN_BOARD, resource);
 
-	//掲示板オブジェクトの登録
-	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "/GuildObject/BulletinBoard.mv1");
-	resourcesMap_.emplace(SRC::BULLETIN_BOARD, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "/GuildStage/BulletinBoard.png"
+    );
+    resourcesMap_.emplace(SRC::IMAGE_BOARD, resource);
 
-	//掲示板の画像の登録
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "/GuildStage/BulletinBoard.png");
-	resourcesMap_.emplace(SRC::IMAGE_BOARD, res);
+    resource = Resource(
+        Resource::TYPE::MODEL,
+        Application::PATH_MODEL + "/GuildObject/counter.mv1"
+    );
+    resourcesMap_.emplace(SRC::COUNTER, resource);
 
-	//カウンタ-オブジェクトの登録
-	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "/GuildObject/counter.mv1");
-	resourcesMap_.emplace(SRC::COUNTER, res);
+    resource = Resource(
+        Resource::TYPE::MODEL,
+        Application::PATH_MODEL + "/GuildObject/TableSet.mv1"
+    );
+    resourcesMap_.emplace(SRC::TABLE_SET, resource);
 
-	//カウンタ-オブジェクトの登録
-	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "/GuildObject/TableSet.mv1");
-	resourcesMap_.emplace(SRC::TABLE_SET, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "/GuildStage/Request.png"
+    );
+    resourcesMap_.emplace(SRC::IMAGE_REQUEST, resource);
 
-	//依頼書の画像の登録
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "/GuildStage/Request.png");
-	resourcesMap_.emplace(SRC::IMAGE_REQUEST, res);
-	
-	//受付嬢のモデル
-	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GuildObject/uketuke.mv1");
-	resourcesMap_.emplace(SRC::RECEPTIONIST, res);
+    resource = Resource(
+        Resource::TYPE::MODEL,
+        Application::PATH_MODEL + "GuildObject/uketuke.mv1"
+    );
+    resourcesMap_.emplace(SRC::RECEPTIONIST, resource);
 
-	//種
-	res = Resource(Resource::TYPE::IMG, Application::PATH_IMAGE + "item/Seed.png");
-	resourcesMap_.emplace(SRC::SEED, res);
-	
-	//BGM
-	// ゲームBGMを登録
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_BGM + "maou_bgm_ethnic10.mp3");
-	resourcesMap_.emplace(SRC::BGM_GUILD, res);
+    resource = Resource(
+        Resource::TYPE::IMAGE,
+        Application::PATH_IMAGE + "item/Seed.png"
+    );
+    resourcesMap_.emplace(SRC::SEED, resource);
+
+    resource = Resource(
+        Resource::TYPE::SOUND,
+        Application::PATH_BGM + "maou_bgm_ethnic10.mp3"
+    );
+    resourcesMap_.emplace(SRC::BGM_GUILD, resource);
 }
 
 void ResourceManager::ResourceGarden(void)
 {
-	Resource res;
-	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GardenObject/Block_Dirt.mv1");
-	resourcesMap_.emplace(SRC::BLOCK_DIRT, res);
+    Resource resource;
 
-	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GardenObject/Block_Grass.mv1");
-	resourcesMap_.emplace(SRC::BLOCK_GFRASS, res);
+    resource = Resource(
+        Resource::TYPE::MODEL,
+        Application::PATH_MODEL + "GardenObject/Block_Dirt.mv1"
+    );
+    resourcesMap_.emplace(SRC::BLOCK_DIRT, resource);
 
-	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GardenObject/Block_Lood.mv1");
-	resourcesMap_.emplace(SRC::BLOCK_LOOD, res);
+    resource = Resource(
+        Resource::TYPE::MODEL,
+        Application::PATH_MODEL + "GardenObject/Block_Grass.mv1"
+    );
+    resourcesMap_.emplace(SRC::BLOCK_GRASS, resource);
 
-	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GardenObject/Growing.mv1");
-	resourcesMap_.emplace(SRC::GROWING_MODEL, res);
+    resource = Resource(
+        Resource::TYPE::MODEL,
+        Application::PATH_MODEL + "GardenObject/Block_Lood.mv1"
+    );
+    resourcesMap_.emplace(SRC::BLOCK_ROAD, resource);
 
-	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GardenObject/Seed.mv1");
-	resourcesMap_.emplace(SRC::SEED_MODEL , res);
+    resource = Resource(
+        Resource::TYPE::MODEL,
+        Application::PATH_MODEL + "GardenObject/Growing.mv1"
+    );
+    resourcesMap_.emplace(SRC::GROWING_MODEL, resource);
 
-	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GardenObject/mature.mv1");
-	resourcesMap_.emplace(SRC::MATURE_MODEL, res);
+    resource = Resource(
+        Resource::TYPE::MODEL,
+        Application::PATH_MODEL + "GardenObject/Seed.mv1"
+    );
+    resourcesMap_.emplace(SRC::SEED_MODEL, resource);
 
-	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GardenObject/ore.mv1");
-	resourcesMap_.emplace(SRC::ORE_MODEL, res);
+    resource = Resource(
+        Resource::TYPE::MODEL,
+        Application::PATH_MODEL + "GardenObject/mature.mv1"
+    );
+    resourcesMap_.emplace(SRC::MATURE_MODEL, resource);
 
-	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GardenObject/fence.mv1");
-	resourcesMap_.emplace(SRC::FENCE_MODEL, res);
+    resource = Resource(
+        Resource::TYPE::MODEL,
+        Application::PATH_MODEL + "GardenObject/ore.mv1"
+    );
+    resourcesMap_.emplace(SRC::ORE_MODEL, resource);
 
-	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GardenObject/well.mv1");
-	resourcesMap_.emplace(SRC::WELL_MODEL, res);
+    resource = Resource(
+        Resource::TYPE::MODEL,
+        Application::PATH_MODEL + "GardenObject/fence.mv1"
+    );
+    resourcesMap_.emplace(SRC::FENCE_MODEL, resource);
 
-	res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "GardenObject/Dowa.mv1");
-	resourcesMap_.emplace(SRC::DOWA_MODEL, res);
+    resource = Resource(
+        Resource::TYPE::MODEL,
+        Application::PATH_MODEL + "GardenObject/well.mv1"
+    );
+    resourcesMap_.emplace(SRC::WELL_MODEL, resource);
 
-	//BGM
-	// 庭の朝昼のBGMを登録
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_BGM + "nc86886.mp3");
-	resourcesMap_.emplace(SRC::BGM_GARDEN_DAY, res);
+    resource = Resource(
+        Resource::TYPE::MODEL,
+        Application::PATH_MODEL + "GardenObject/Dowa.mv1"
+    );
+    resourcesMap_.emplace(SRC::DOOR_MODEL, resource);
 
-	res = Resource(Resource::TYPE::SOUND, Application::PATH_BGM + "nc141198_plant_girl.wav");
-	resourcesMap_.emplace(SRC::BGM_GARDEN_NIGHT, res);
+    resource = Resource(
+        Resource::TYPE::SOUND,
+        Application::PATH_BGM + "nc86886.mp3"
+    );
+    resourcesMap_.emplace(SRC::BGM_GARDEN_DAY, resource);
+
+    resource = Resource(
+        Resource::TYPE::SOUND,
+        Application::PATH_BGM + "nc141198_plant_girl.wav"
+    );
+    resourcesMap_.emplace(SRC::BGM_GARDEN_NIGHT, resource);
 }
 
-// プレイヤー用リソース初期化（未実装）
 void ResourceManager::ResourcePlayer(void)
 {
-	Resource res;
-	res = res = Resource(Resource::TYPE::MODEL, Application::PATH_MODEL + "player/player.mv1");
-	resourcesMap_.emplace(SRC::MODEL_PLAYER, res);
+    Resource resource;
+
+    resource = Resource(
+        Resource::TYPE::MODEL,
+        Application::PATH_MODEL + "player/player.mv1"
+    );
+    resourcesMap_.emplace(SRC::MODEL_PLAYER, resource);
 }
 
-// 敵用リソース初期化
 void ResourceManager::ResourceEnemy(void)
 {
-	Resource res;
 }
 
-// 全リソースの解放処理
 void ResourceManager::Release(void)
 {
-	for (auto& p : loadedMap_)
-	{
-		p.second->Release(); // リソース解放
-		delete p.second;     // メモリ解放
-	}
+    for (auto& loadedResource : loadedMap_)
+    {
+        loadedResource.second->Release();
+        delete loadedResource.second;
+    }
 
-	loadedMap_.clear();     // ロード済みリソースマップをクリア
-	resourcesMap_.clear();  // 登録済みリソースマップをクリア
+    loadedMap_.clear();
+    resourcesMap_.clear();
 }
 
-// インスタンス破棄処理
 void ResourceManager::Destroy(void)
 {
-	Release();        // リソース解放
-	delete instance_; // インスタンス削除
+    Release();
+    delete instance_;
 }
 
-// リソースの読み込み（読み込み済みなら再利用）
-Resource ResourceManager::Load(SRC src)
+Resource ResourceManager::Load(SRC source)
 {
-	Resource* res = _Load(src);
-	if (res == nullptr)
-	{
-		return Resource(); // 空のリソースを返す
-	}
-	return *res; // コピーして返す
+    Resource* resource = LoadInternal(source);
+
+    if (resource == nullptr)
+    {
+        return Resource();
+    }
+
+    return *resource;
 }
 
-// モデルの複製を行い、複製IDを返す
-int ResourceManager::LoadModelDuplicate(SRC src)
+int ResourceManager::LoadModelDuplicate(SRC source)
 {
-	Resource* res = _Load(src);
-	if (res == nullptr)
-	{
-		return -1; // 読み込み失敗
-	}
+    Resource* resource = LoadInternal(source);
 
-	// モデル複製
-	int duId = MV1DuplicateModel(res->handleId_);
-	res->duplicateModelIds_.push_back(duId);
+    if (resource == nullptr)
+    {
+        const int LOAD_FAILED = -1;
+        return LOAD_FAILED;
+    }
 
-	return duId;
+    int duplicateId = MV1DuplicateModel(resource->handleId_);
+    resource->duplicateModelIds_.push_back(duplicateId);
+
+    return duplicateId;
 }
 
-// コンストラクタ
 ResourceManager::ResourceManager(void)
 {
 }
 
-// 内部リソース読み込み処理
-Resource* ResourceManager::_Load(SRC src)
+Resource* ResourceManager::LoadInternal(SRC source)
 {
-	// すでに読み込み済みか確認
-	const auto& lPair = loadedMap_.find(src);
-	if (lPair != loadedMap_.end())
-	{
-		return lPair->second;
-	}
+    auto loadedIterator = loadedMap_.find(source);
+    if (loadedIterator != loadedMap_.end())
+    {
+        return loadedIterator->second;
+    }
 
-	// 登録済みリソースか確認
-	const auto& rPair = resourcesMap_.find(src);
-	if (rPair == resourcesMap_.end())
-	{
-		// 登録されていない
-		return nullptr;
-	}
+    auto resourceIterator = resourcesMap_.find(source);
+    if (resourceIterator == resourcesMap_.end())
+    {
+        return nullptr;
+    }
 
-	// リソース読み込み実行
-	rPair->second.Load();
+    resourceIterator->second.Load();
 
-	// コピーを保持（読み込み済みマップに追加）
-	Resource* ret = new Resource(rPair->second);
-	loadedMap_.emplace(src, ret);
+    Resource* copiedResource = new Resource(resourceIterator->second);
+    loadedMap_.emplace(source, copiedResource);
 
-	return ret;
+    return copiedResource;
 }

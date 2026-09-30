@@ -2,36 +2,53 @@
 
 class Player;
 
+/// @brief プレイヤーの移動停止を管理するシングルトンクラス
 class PlayerStop
 {
 public:
-	static void CreateInstance(void);
 
-	static PlayerStop& GetInstance(void);
+    /// @brief インスタンスを生成する
+    static void CreateInstance(void);
 
-	static void Destroy(void);
+    /// @brief インスタンスを取得する
+    /// @return PlayerStopのインスタンス参照
+    static PlayerStop& GetInstance(void);
 
-	void SetPlayer(Player* player);
+    /// @brief インスタンスを破棄する
+    static void Destroy(void);
 
-	void StopMovement(void);
+    /// @brief 操作対象のプレイヤーを設定する
+    /// @param player プレイヤーのポインタ
+    void SetPlayer(Player* player);
 
-	void ResumeMovement(void);
+    /// @brief プレイヤーの移動を停止する
+    void StopMovement(void);
 
-	bool IsStopped(void) const;
+    /// @brief プレイヤーの移動を再開する
+    void ResumeMovement(void);
+
+    /// @brief プレイヤーが停止状態か判定する
+    /// @return 停止状態であればtrue
+    bool IsStopped(void) const;
 
 private:
-	PlayerStop(void);
 
-	~PlayerStop(void);
+    /// @brief コンストラクタ
+    PlayerStop(void);
 
-	PlayerStop(const PlayerStop&) = delete;
+    /// @brief デストラクタ
+    ~PlayerStop(void);
 
-	PlayerStop& operator=(const PlayerStop&) = delete;
+    /// @brief コピーコンストラクタ（使用禁止）
+    PlayerStop(const PlayerStop&) = delete;
 
-	bool stopped_;
+    /// @brief 代入演算子（使用禁止）
+    PlayerStop& operator=(const PlayerStop&) = delete;
 
-	Player* player_;
+    /// @brief 静的インスタンス
+    static PlayerStop* instance_;
 
-	static PlayerStop* instance_;
+    // 状態管理関連
+    bool isStopped_; // 停止状態フラグ
+    Player* player_; // 対象のプレイヤー
 };
-

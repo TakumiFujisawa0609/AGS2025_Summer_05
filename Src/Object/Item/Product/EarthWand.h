@@ -2,9 +2,14 @@
 
 #include "ProductItem.h"
 
+/// @brief アースワンドのクラス
 class EarthWand : public ProductItem
 {
 public:
-	EarthWand(void);
-};
 
+    /// @brief コンストラクタ
+    EarthWand(void);
+
+    /// @brief デストラクタ
+    ~EarthWand(void) override = default;
+};

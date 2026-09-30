@@ -1,6 +1,6 @@
-#include "guildStage.h"
+#include "GuildStage.h"
 
-#include<DxLib.h>
+#include <DxLib.h>
 
 #include "../Application.h"
 #include "../Manager/Generic/Resource.h"
@@ -10,10 +10,10 @@
 #include "../Manager/Decoration/SoundManager.h"
 #include "../Object/GuildObject/BulletinBoard.h"
 #include "../Object/Manager/CollisionManager.h"
-#include "../Object/GuildObject/ WallGuild.h"
-#include "../Object/GuildObject/ WallGuild2.h"
-#include "../Object/GuildObject/ WallGuildZ.h"
-#include "../Object/GuildObject/WallGuildZZ.h"
+#include "../Object/GuildObject/WallGuild.h"
+#include "../Object/GuildObject/WallGuild2.h"
+#include "../Object/GuildObject/WallGuild3.h"
+#include "../Object/GuildObject/WallGuild4.h"
 #include "../Object/GuildObject/TableSetGuild.h"
 #include "../Object/Manager/TableSetGuildManager.h"
 #include "../Manager/Generic/SceneManager.h"
@@ -21,125 +21,124 @@
 #include "../Object/player.h"
 #include "../DrawUI/SceneUI/QuestUI.h"
 
-
-//コンストラクタ
-GuildStage::GuildStage(StageManager* stageManager) : stageManager_(stageManager)
+GuildStage::GuildStage(StageManager* stageManager)
+    : stageManager_(stageManager),
+    modelId_(-1),
+    pauseUiCount_(0)
 {
-
 }
 
-//初期化処理
 void GuildStage::Init(void)
 {
-	auto& sound = SoundManager::GetInstance();
-	auto& res = ResourceManager::GetInstance();
+    auto& soundManager = SoundManager::GetInstance();
+    auto& resourceManager = ResourceManager::GetInstance();
+    auto& collisionManager = CollisionManager::GetInstance();
 
-	modelId_ = ResourceManager::GetInstance().LoadModelDuplicate(ResourceManager::SRC::STAGE_ATELIER);
+    modelId_ = resourceManager.LoadModelDuplicate(ResourceManager::SRC::STAGE_ATELIER);
 
-	modelIdPos_ = INIT_MODELID_POS;
+    modelIdPos_ = INIT_MODELID_POS;
+    pauseUiCount_ = PAUSE_UI_COUNT;
 
-	pauseUiCount_ = PAUSE_UI_COUNT;
+    const float ROTATION_ZERO = 0.0f;                   
 
-	// 座標をモデルに設定
-	MV1SetPosition(modelId_, modelIdPos_);
+    MV1SetPosition(modelId_, modelIdPos_);
+    MV1SetScale(modelId_, MODELID_SCALEA);
+    MV1SetRotationXYZ(modelId_, { ROTATION_ZERO, ROTATION_ZERO, ROTATION_ZERO });
 
-	// ステージの大きさ
-	MV1SetScale(modelId_, MODELID_SCALEA);
+    auto camera = SceneManager::GetInstance().GetCamera();
 
+    camera->ChangeMode(Camera::MODE::FIXED_POINT);
 
-	MV1SetRotationXYZ(modelId_, { 0, 0, 0 });
+    const float CAMERA_TARGET_OFFSET = 0.0f;            
+    auto player = stageManager_->GetPlayer();
+    camera->SetPosition(
+        Camera::DEFAULT_CAMERA_POSITION,
+        { CAMERA_TARGET_OFFSET, CAMERA_TARGET_OFFSET, CAMERA_TARGET_OFFSET }
+    );
 
-	//カメラ設定
-	auto camera = SceneManager::GetInstance().GetCamera();
+    const int BGM_VOLUME = 15;                         
 
-	camera->ChangeMode(Camera::MODE::FIXED_POINT);
+    soundManager.Add(
+        SoundManager::TYPE::BGM,
+        SoundManager::SOUND::BGM_GUILD,
+        resourceManager.Load(ResourceManager::SRC::BGM_GUILD).handleId_
+    );
 
-	auto player = stageManager_->GetPlayer();
-	camera->SetPos(Camera::DEFAULT_CAMERA_POS, { 0.0f,0.0f,0.0f });
+    soundManager.AdjustVolume(SoundManager::SOUND::BGM_GUILD, BGM_VOLUME);
+    soundManager.Play(SoundManager::SOUND::BGM_GUILD);
 
-	//BGMの追加
-	sound.Add(SoundManager::TYPE::BGM, SoundManager::SOUND::BGM_GUILD, res.Load(ResourceManager::SRC::BGM_GUILD).handleId_);
+    bulletinBoard_ = std::make_shared<BulletinBoard>();
+    bulletinBoard_->Init();
+    collisionManager.Register(bulletinBoard_);
 
-	//BGMの音量調整
-	sound.AdjustVolume(SoundManager::SOUND::BGM_GUILD, 15);
+    receptionist_ = std::make_shared<Receptionist>();
+    receptionist_->Init();
+    receptionist_->SetPlayer(stageManager_->GetPlayer());
+    collisionManager.Register(receptionist_);
 
-	sound.Play(SoundManager::SOUND::BGM_GUILD);
-	
-	//camera->SetFollow(&player->GetTransform());
+    teleportMovement_ = std::make_shared<TeleportMovement>(stageManager_);
+    teleportMovement_->Init();
+    collisionManager.Register(teleportMovement_);
 
-	// 1つのインスタンスを作成
-	bulletinBoard_ = std::make_shared<BulletinBoard>();
-	bulletinBoard_->Init();
-	CollisionManager::GetInstance().Register(bulletinBoard_);
+    counter_ = std::make_shared<Counter>();
+    counter_->Init();
+    collisionManager.Register(counter_);
 
-	receptionist_ = std::make_shared<Receptionist>();
-	receptionist_->Init();
-	receptionist_->SetPlayer(stageManager_->GetPlayer());
-	CollisionManager::GetInstance().Register(receptionist_);
+    wall_ = std::make_shared<WallGuild>();
+    wall_->Init();
+    collisionManager.Register(wall_);
 
-	teleportMovement_ = std::make_shared<TeleportMovement>(stageManager_);
-	teleportMovement_->Init();
-	CollisionManager::GetInstance().Register(teleportMovement_);
+    wall2_ = std::make_shared<WallGuild2>();
+    wall2_->Init();
+    collisionManager.Register(wall2_);
 
-	counter_ = std::make_shared<Counter>();
-	counter_->Init();
-	CollisionManager::GetInstance().Register(counter_);
+    wallZ_ = std::make_shared<WallGuild3>();
+    wallZ_->Init();
+    collisionManager.Register(wallZ_);
 
-	wall_ = std::make_shared<WallGuild>();
-	wall_->Init();
-	CollisionManager::GetInstance().Register(wall_);
+    wallZZ_ = std::make_shared<WallGuild4>();
+    wallZZ_->Init();
+    collisionManager.Register(wallZZ_);
 
-	wall2_ = std::make_shared<WallGuild2>();
-	wall2_->Init();
-	CollisionManager::GetInstance().Register(wall2_);
+    tableSetGuildManager_ = std::make_unique<TableSetGuildManager>();
+    tableSetGuildManager_->Init();
 
-	wallZ_ = std::make_shared<WallGuildZ>();
-	wallZ_->Init();
-	CollisionManager::GetInstance().Register(wallZ_);
-
-	wallZZ_ = std::make_shared<WallGuildZZ>();
-	wallZZ_->Init();
-	CollisionManager::GetInstance().Register(wallZZ_);
-
-	tableSetGuildManager_ = std::make_unique<TableSetGuildManager>();
-	tableSetGuildManager_->Init();
-
-	for (auto& table : tableSetGuildManager_->GetTableSets())
-	{
-		CollisionManager::GetInstance().Register(table);
-	}
+    for (auto& table : tableSetGuildManager_->GetTableSets())
+    {
+        collisionManager.Register(table);
+    }
 }
 
-// 更新処理
 void GuildStage::Update(void)
 {
-    auto& input = InputManager::GetInstance();
-    auto& app = Application::GetInstance();
+    auto& inputManager = InputManager::GetInstance();
+    auto& application = Application::GetInstance();
 
 #ifdef _DEBUG
-    if (input.IsTrgDown(KEY_INPUT_P) && stageManager_) {
+    if (inputManager.IsTriggerDown(KEY_INPUT_P) && stageManager_ != nullptr)
+    {
         stageManager_->ChangeStage(StageManager::STAGE_ID::ATELIER);
     }
 #endif
 
-    // UI優先度管理
-    switch (app.GetActiveUI()) {
-    case ActiveUI::NONE:
+    switch (application.GetActiveUIType())
+    {
+    case Application::ACTIVE_UI_TYPE::NONE:
         bulletinBoard_->Update();
         receptionist_->Update();
         teleportMovement_->Update();
         break;
 
-    case ActiveUI::QUEST:
+    case Application::ACTIVE_UI_TYPE::QUEST:
         bulletinBoard_->Update();
         break;
 
-    case ActiveUI::DELIVERY:
-    case ActiveUI::SHOP:
+    case Application::ACTIVE_UI_TYPE::DELIVERY:
+    case Application::ACTIVE_UI_TYPE::SHOP:
         receptionist_->Update();
         break;
 
-    case ActiveUI::TELEPORT:
+    case Application::ACTIVE_UI_TYPE::TELEPORT:
         teleportMovement_->Update();
         break;
     }
@@ -151,48 +150,50 @@ void GuildStage::Update(void)
     wallZZ_->Update();
     tableSetGuildManager_->Update();
 
-    // UI非表示時のカウント管理
     if (!bulletinBoard_->GetQuestList() &&
         !receptionist_->GetShopUiVisible() &&
         !receptionist_->GetDeliveryMenu())
-	{
+    {
         pauseUiCount_--;
     }
     else
-	{
+    {
         pauseUiCount_ = PAUSE_UI_COUNT;
     }
 
     if (pauseUiCount_ <= 0)
-	{
-        app.SetsActiveUI(ActiveUI::NONE);
+    {
+        application.SetActiveUIType(Application::ACTIVE_UI_TYPE ::NONE);
         pauseUiCount_ = PAUSE_UI_COUNT;
     }
 }
 
-//描画処理
 void GuildStage::Draw(void)
 {
-	//DrawFormatString(0, 20, 0xffffff, "ギルド");
+    if (modelId_ != -1)
+    {
+        MV1DrawModel(modelId_);
+    }
 
-	MV1DrawModel(modelId_);
-
-	bulletinBoard_->DrawModel();
-	receptionist_->DrawModel();
-	counter_->Draw();
-	wall_->Draw();
-	wall2_->Draw();
-	wallZ_->Draw();
-	wallZZ_->Draw();
-	tableSetGuildManager_->Draw();
-	bulletinBoard_->DrawUI();
-	QuestUI::GetInstance().Draw();
-	receptionist_->DrawUI();
-	teleportMovement_->Draw();
+    bulletinBoard_->DrawModel();
+    receptionist_->DrawModel();
+    counter_->Draw();
+    wall_->Draw();
+    wall2_->Draw();
+    wallZ_->Draw();
+    wallZZ_->Draw();
+    tableSetGuildManager_->Draw();
+    bulletinBoard_->DrawUI();
+    QuestUI::GetInstance().Draw();
+    receptionist_->DrawUI();
+    teleportMovement_->Draw();
 }
 
-//解放処理
 void GuildStage::Release(void)
 {
-
+    if (modelId_ != -1)
+    {
+        MV1DeleteModel(modelId_);
+        modelId_ = -1;
+    }
 }

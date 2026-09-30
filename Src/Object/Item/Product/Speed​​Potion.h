@@ -2,9 +2,14 @@
 
 #include "ProductItem.h"
 
-class Speed​​Potion : public ProductItem
+/// @brief 俊敏ポーションのクラス
+class SpeedPotion : public ProductItem
 {
 public:
-	Speed​​Potion(void);
-};
 
+    /// @brief コンストラクタ
+    SpeedPotion(void);
+
+    /// @brief デストラクタ
+    ~SpeedPotion(void) override = default;
+};

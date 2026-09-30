@@ -8,64 +8,71 @@
 #include "../UnitBase.h"
 
 class StageManager;
-
 class TeleportUI;
 
+/// @brief テレポートポイントを管理するクラス
 class Teleport : public HitObject, public UnitBase
 {
 public:
 
-	//半径
-	static constexpr float RADIUS = 50.0f;
+    // 配置・寸法定数関連
+    static constexpr float RADIUS = 50.0f;                                  // 当たり判定の球体半径
+    static constexpr VECTOR SCALE = { 0.05f, 0.05f, 0.05f };                // モデルの拡大縮小率
+    static constexpr VECTOR MODEL_POSITION = { 0.0f, 0.0f, -420.0f };       // 初期配置座標
 
-	//モデルの大きさ
-	static constexpr VECTOR SCALE = { 0.05f,0.05f,0.05f };
+    /// @brief コンストラクタ
+    /// @param stageManager ステージマネージャーのポインタ
+    Teleport(StageManager* stageManager);
 
-	//モデルのモデル座標用
-	static constexpr VECTOR MODEL_POS = { 0.0f,0.0f, -420.0f };
+    /// @brief デストラクタ
+    virtual ~Teleport(void) override;
 
-	//コンストラクタ
-	Teleport(StageManager* stageManager);
+    /// @brief 初期化処理
+    void Init(void) override;
 
-	//デストラクタ
-	~Teleport(void);
+    /// @brief 更新処理
+    void Update(void) override;
 
-	//初期化処理
-	void Init(void);
+    /// @brief 描画処理
+    void Draw(void) override;
 
-	//更新処理
-	void Update(void) override;
+    /// @brief 解放処理
+    void Release(void) override;
 
-	//描画処理
-	void Draw(void) override;
+    /// @brief 当たり判定種別を取得する
+    /// @return 当たり判定種別（球体）
+    HIT_TYPE GetHitType(void) const override;
 
-	//解放
-	void Release(void)override;
+    /// @brief 当たり判定の中心座標を取得する
+    /// @return 当たり判定の中心座標
+    VECTOR GetHitPosition(void) const override;
 
-	//HitObjectを継承
+    /// @brief 当たり判定の半径を取得する
+    /// @return 当たり判定の球体半径
+    float GetHitRadius(void) const override;
 
-	HIT_TYPE GetHitType(void) const override;
+    /// @brief UIを表示状態にする
+    void ShowUI(void) override;
 
-	VECTOR GetHitPosition(void) const override;
+    /// @brief UIを非表示状態にする
+    void HideUI(void) override;
 
-	float GetHitRadius(void) const override;
+    /// @brief オブジェクトが有効かどうかを取得する
+    /// @return 有効な場合はtrue
+    bool IsValid(void) const override;
 
-	//表示UI
-	void ShowUI(void) override;
+    /// @brief プレイヤーと接触した時の処理
+    void OnPlayerHit(void) override;
 
-	//非表示UI
-	void  HideUI(void) override;
-
-	bool IsValid(void) const override;
-
-	void OnPlayerHit(void) override;
-
-	void OnPlayerExit(void) override;
+    /// @brief プレイヤーが離れた時の処理
+    void OnPlayerExit(void) override;
 
 private:
-	bool isShowUI_;
-	StageManager* stageManager_;
 
-	std::unique_ptr<TeleportUI> teleportUI_;
+    // UI接近表示フラグ
+    bool isShowUI_;                     
 
+    // 参照・UI管理関連
+    StageManager* stageManager_;        // ステージマネージャーの参照
+    std::unique_ptr<TeleportUI> teleportUI_; // テレポートUIのインスタンス
 };

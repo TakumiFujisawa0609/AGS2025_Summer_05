@@ -10,7 +10,6 @@
 
 CollisionManager* CollisionManager::instance_ = nullptr;
 
-//インスタンスの生成
 void CollisionManager::CreateInstance(void)
 {
     if (instance_ == nullptr)
@@ -20,174 +19,166 @@ void CollisionManager::CreateInstance(void)
     }
 }
 
-//インスタンスの取得
 CollisionManager& CollisionManager::GetInstance(void)
 {
     return *instance_;
 }
 
-//初期化処理
 void CollisionManager::Init(void)
 {
     hitObjects_.clear();
 
-    objPos_ = Utility::VECTOR_ZERO;
+    objectPosition_ = Utility::VECTOR_ZERO;
 
-    objRadius_ = 0.0f;
+    const float INITIAL_RADIUS = 0.0f;
+    objectRadius_ = INITIAL_RADIUS;
 
-    objMin_ = Utility::VECTOR_ZERO;
+    objectMinimum_ = Utility::VECTOR_ZERO;
 
-    objMax_ = Utility::VECTOR_ZERO;
+    objectMaximum_ = Utility::VECTOR_ZERO;
 
-    objSizeX_ = 0.0f;
-    
-    objSizeZ_ = 0.0f;
+    const float INITIAL_SIZE = 0.0f;
+    objectSizeX_ = INITIAL_SIZE;
+    objectSizeZ_ = INITIAL_SIZE;
 
-    diff_ = Utility::VECTOR_ZERO;;
-
+    difference_ = Utility::VECTOR_ZERO;
 }
 
-//登録(ポインタ渡し)
-void CollisionManager::Register(const std::shared_ptr<HitObject>& obj)
+void CollisionManager::Register(const std::shared_ptr<HitObject>& object)
 {
-    if (obj) hitObjects_.push_back(obj);
+    if (object != nullptr)
+    {
+        hitObjects_.push_back(object);
+    }
 }
 
-//全てクリア
 void CollisionManager::Clear(void)
 {
     hitObjects_.clear();
 }
 
-//プレイヤーとの当たり判定チェック(UI表示)
-void CollisionManager::CheckHitWithPlayer(Player* player, VECTOR& playerPos, float playerRadius, const VECTOR& playerMin, const VECTOR& playerMax)
+void CollisionManager::CheckHitWithPlayer(
+    Player* player,
+    VECTOR& playerPosition,
+    float playerRadius,
+    const VECTOR& playerMin,
+    const VECTOR& playerMax)
 {
-    for (auto it = hitObjects_.begin(); it != hitObjects_.end(); )
+    for (auto iterator = hitObjects_.begin(); iterator != hitObjects_.end(); )
     {
-        std::shared_ptr<HitObject> obj = *it;
-        if (!obj || !obj->IsValid())
+        std::shared_ptr<HitObject> hitObject = *iterator;
+
+        if (hitObject == nullptr || !hitObject->IsValid())
         {
-            it = hitObjects_.erase(it);
+            iterator = hitObjects_.erase(iterator);
             continue;
         }
 
-        switch (obj->GetHitType())
+        switch (hitObject->GetHitType())
         {
         case HitObject::HIT_TYPE::SPHERE:
-            CheckHitSphere(obj, playerPos, playerRadius);
+            CheckHitSphere(hitObject, playerPosition, playerRadius);
             break;
 
         case HitObject::HIT_TYPE::AABB:
-            CheckHitAABB(obj, player, playerPos, playerMin, playerMax);
+            CheckHitAABB(hitObject, player, playerPosition, playerMin, playerMax);
             break;
         }
 
-        it++;
+        iterator++;
     }
 }
 
-//リソースの解放処理
 void CollisionManager::Destroy(void)
 {
     delete instance_;
     instance_ = nullptr;
 }
 
-HitObject* CollisionManager::SafeGet(HitObject* obj)
+HitObject* CollisionManager::SafeGet(HitObject* object)
 {
-    if (obj == nullptr || !obj->IsValid())
+    if (object == nullptr || !object->IsValid())
+    {
         return &nullObject_;
-    return obj;
+    }
+
+    return object;
 }
 
-void CollisionManager::CheckHitSphere(std::shared_ptr<HitObject> obj, VECTOR& playerPos, float playerRadius)
+void CollisionManager::CheckHitSphere(
+    std::shared_ptr<HitObject> object,
+    VECTOR& playerPosition,
+    float playerRadius)
 {
-    if (Collision::GetInstance().IsHitSpheres(playerPos, playerRadius, obj->GetHitPosition(), obj->GetHitRadius()))
+    if (Collision::GetInstance().IsHitSpheres(
+        playerPosition,
+        playerRadius,
+        object->GetHitPosition(),
+        object->GetHitRadius()))
     {
-    //    // 反発処理（既存のまま）
-    //    diff_ = VSub(playerPos, obj->GetHitPosition());
-    //    float lenSq = Utility::SqrMagnitude(diff_);
-    //    float len = sqrtf(lenSq);
-    //    if (len > 0.0001f)
-    //    {
-    //        VECTOR normal = VScale(diff_, 1.0f / len);
-    //        float pushBack = (playerRadius + obj->GetHitRadius()) - len;
-    //        VECTOR pushVec = VScale(normal, pushBack);
-    //        if (pushVec.y > 0) pushVec.y = 0;
-    //        playerPos = VAdd(playerPos, pushVec);
-    //    }
-
-    //    obj->ShowUI();
-    //}
-    //else
-    //{
-    //    // SHOW/HIDE 判定（UI距離）
-    //    float distance = VSize(VSub(playerPos, obj->GetHitPosition()));
-    //    
-    //    if (distance < SHOW_RADIUS + playerRadius)
-    //    {
-    //        obj->ShowUI();
-    //    }
-    //    else if (distance > HIDE_RADIUS + playerRadius)
-    //    {
-    //        obj->HideUI();
-    //    }
-        obj->OnPlayerHit();
-
-        obj->OnPlayerHitSphere(playerPos, playerRadius);
+        object->OnPlayerHit();
+        object->OnPlayerHitSphere(playerPosition, playerRadius);
     }
     else
     {
-         //SHOW/HIDE 判定（UI距離）
-         float distance = VSize(VSub(playerPos, obj->GetHitPosition()));
-         
-         if (distance < SHOW_RADIUS + playerRadius)
-         {
-             obj->OnPlayerHit();
-             obj->OnPlayerHitSphere(playerPos, playerRadius);
-         }
-         else if (distance > HIDE_RADIUS + playerRadius)
-         {
-             obj->OnPlayerExit();
-             //PlayerStop::GetInstance().ResumeMovement();
-         }
+        float distance = VSize(VSub(playerPosition, object->GetHitPosition()));
+
+        if (distance < SHOW_RADIUS + playerRadius)
+        {
+            object->OnPlayerHit();
+            object->OnPlayerHitSphere(playerPosition, playerRadius);
+        }
+        else if (distance > HIDE_RADIUS + playerRadius)
+        {
+            object->OnPlayerExit();
+        }
     }
-    
 }
 
-void CollisionManager::CheckHitAABB(std::shared_ptr<HitObject> obj, Player* player, VECTOR& playerPos, const VECTOR& playerMin, const VECTOR& playerMax)
+void CollisionManager::CheckHitAABB(
+    std::shared_ptr<HitObject> object,
+    Player* player,
+    VECTOR& playerPosition,
+    const VECTOR& playerMin,
+    const VECTOR& playerMax)
 {
-    objMin_ = obj->GetHitMin();
-    objMax_ = obj->GetHitMax();
+    objectMinimum_ = object->GetHitMin();
+    objectMaximum_ = object->GetHitMax();
+
+    const float CENTER_MULTIPLIER = 0.5f;
 
     Vector2F playerCenterXZ =
     {
-        (playerMin.x + playerMax.x) * 0.5f,
-        (playerMin.z + playerMax.z) * 0.5f
+        (playerMin.x + playerMax.x) * CENTER_MULTIPLIER,
+        (playerMin.z + playerMax.z) * CENTER_MULTIPLIER
     };
 
-    Vector2F objCenterXZ =
+    Vector2F objectCenterXZ =
     {
-        (objMin_.x + objMax_.x) * 0.5f,
-        (objMin_.z + objMax_.z) * 0.5f
+        (objectMinimum_.x + objectMaximum_.x) * CENTER_MULTIPLIER,
+        (objectMinimum_.z + objectMaximum_.z) * CENTER_MULTIPLIER
     };
 
     float playerSizeX = playerMax.x - playerMin.x;
     float playerSizeZ = playerMax.z - playerMin.z;
-    objSizeX_ = objMax_.x - objMin_.x;
-    objSizeZ_ = objMax_.z - objMin_.z;
+    objectSizeX_ = objectMaximum_.x - objectMinimum_.x;
+    objectSizeZ_ = objectMaximum_.z - objectMinimum_.z;
 
     float playerRange = std::max(playerSizeX, playerSizeZ);
-    float objRange = std::max(objSizeX_, objSizeZ_);
+    float objectRange = std::max(objectSizeX_, objectSizeZ_);
 
-    bool isHit = Collision::GetInstance().IsHitBoxes(playerCenterXZ, playerRange, objCenterXZ, objRange);
+    bool isHit = Collision::GetInstance().IsHitBoxes(
+        playerCenterXZ,
+        playerRange,
+        objectCenterXZ,
+        objectRange
+    );
 
-    obj->UpdateUIVisibility(isHit);  // ← UI更新に任せる！
+    object->UpdateUIVisibility(isHit);
 
     if (isHit)
     {
-        obj->OnPlayerHit();  // 衝突発生時だけ呼ぶ
-        obj->OnPlayerHitAABB(player, playerPos, playerMin, playerMax);
+        object->OnPlayerHit();
+        object->OnPlayerHitAABB(player, playerPosition, playerMin, playerMax);
     }
-    
 }

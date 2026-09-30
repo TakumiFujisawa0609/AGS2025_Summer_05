@@ -6,79 +6,89 @@
 #include "../../Common/Vector2.h"
 
 class Player;
-/// <summary>
-/// インタラクトUIの表示対象オブジェクト基底クラス
-/// </summary>
+
+/// @brief インタラクトUIの表示対象オブジェクト基底クラス
 class HitObject
 {
 public:
 
-    /// <summary>
-    /// 当たり判定の種類
-    /// </summary>
+    /// @brief 当たり判定の種類を定義する列挙型
     enum class HIT_TYPE
     {
-        SPHERE,
-        AABB
+        SPHERE, // 球体
+        AABB    // 軸並行境界箱
     };
 
-    HitObject() = default;
-    virtual ~HitObject() = default;
+    // UIを非表示にするまでの最大猶予フレーム数
+    static constexpr int MAXIMUM_UI_HIDE_DELAY_FRAMES = 30; 
 
-    /// <summary>
-    /// 当たり判定の種類(球 or AABB)
-    /// </summary>
+    /// @brief コンストラクタ
+    HitObject(void);
+
+    /// @brief デストラクタ
+    virtual ~HitObject(void) = default;
+
+    /// @brief 当たり判定の種類(球 or AABB)を取得する
+    /// @return 当たり判定の種類
     virtual HIT_TYPE GetHitType(void) const = 0;
 
-    /// <summary>
-    /// 判定用の座標を返す（中心点）
-    /// </summary>
-    virtual VECTOR GetHitPosition(void) const { return VGet(0, 0, 0); }
+    /// @brief 判定用の座標を取得する（中心点）
+    /// @return 中心点の座標ベクトル
+    virtual VECTOR GetHitPosition(void) const;
 
-    /// <summary>
-    /// 判定半径（球体）を返す
-    /// </summary>
-    virtual float GetHitRadius(void) const { return 0.0f; }
+    /// @brief 判定半径（球体）を取得する
+    /// @return 半径
+    virtual float GetHitRadius(void) const;
 
-    /// <summary>
-    /// AABBの最小点を返す
-    /// </summary>
-    virtual VECTOR GetHitMin(void) const { return VGet(0, 0, 0); }
+    /// @brief AABBの最小点を取得する
+    /// @return 最小点の座標ベクトル
+    virtual VECTOR GetHitMin(void) const;
 
-    /// <summary>
-    /// AABBの最大点を返す
-    /// </summary>
-    virtual VECTOR GetHitMax(void) const { return VGet(0, 0, 0); }
+    /// @brief AABBの最大点を取得する
+    /// @return 最大点の座標ベクトル
+    virtual VECTOR GetHitMax(void) const;
 
-    /// <summary>
-    /// UIを表示する処理
-    /// </summary>
+    /// @brief UIを表示する処理
     virtual void ShowUI(void) = 0;
 
-    /// <summary>
-    /// UIを非表示にする処理
-    /// </summary>
+    /// @brief UIを非表示にする処理
     virtual void HideUI(void) = 0;
 
-    virtual void OnPlayerHitAABB(Player* player, VECTOR& playerPos, const VECTOR& playerMin, const VECTOR& playerMax);
+    /// @brief プレイヤーとAABBの当たり判定処理
+    /// @param player プレイヤーのポインタ
+    /// @param playerPosition プレイヤーの座標
+    /// @param playerMinimum プレイヤーのAABB最小点
+    /// @param playerMaximum プレイヤーのAABB最大点
+    virtual void OnPlayerHitAABB(
+        Player* player,
+        VECTOR& playerPosition,
+        const VECTOR& playerMinimum,
+        const VECTOR& playerMaximum
+    );
 
-    virtual void OnPlayerHitSphere(VECTOR& playerPos, float playerRadius);
+    /// @brief プレイヤーと球体の当たり判定処理
+    /// @param playerPosition プレイヤーの座標
+    /// @param playerRadius プレイヤーの判定半径
+    virtual void OnPlayerHitSphere(VECTOR& playerPosition, float playerRadius);
 
+    /// @brief プレイヤーと接触した際の処理
     virtual void OnPlayerHit(void) = 0;
 
+    /// @brief プレイヤーとの接触が終了した際の処理
     virtual void OnPlayerExit(void) = 0;
 
-    virtual bool IsValid(void) const { return true; }
+    /// @brief 有効なオブジェクトか判定する
+    /// @return 有効であればtrue
+    virtual bool IsValid(void) const;
 
+    /// @brief UIの表示状態を更新する
+    /// @param isHit 接触しているかどうか
     virtual void UpdateUIVisibility(bool isHit);
 
 protected:
-    int stageID_ = -1;
 
-    bool uiVisible_ = false;
-    int uiHideDelayFrames_ = 0; // UI消すまでの猶予フレーム数
-    static constexpr int UI_HIDE_DELAY_MAX = 30; // 例えば30フレーム(0.5秒程度)
-
+    // 状態管理関連
+    int stageId_;              // ステージID
+    bool uiVisible_;           // UI表示フラグ
+    int uiHideDelayFrames_;    // UI消去までの猶予フレーム数
 };
-
-

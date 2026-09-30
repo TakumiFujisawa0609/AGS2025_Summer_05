@@ -42,13 +42,11 @@
 #include "../Item/Product/Garbage.h"
 #include "../Item/Seed/RandomSeed.h"
 
-
-// シングルトンインスタンスの初期化
 ItemManager* ItemManager::instance_ = nullptr;
 
 void ItemManager::CreateInstance(void)
 {
-    if (!instance_)
+    if (instance_ == nullptr)
     {
         instance_ = new ItemManager();
         instance_->Init();
@@ -60,14 +58,14 @@ ItemManager& ItemManager::GetInstance(void)
     return *instance_;
 }
 
-void ItemManager::Init()
+void ItemManager::Init(void)
 {
     materialItems_.clear();
     productItems_.clear();
+    seedItems_.clear();
     allItems_.clear();
     idItemMap_.clear();
 
-    // アイテム生成＆登録（素材）
     Register(std::make_shared<Herb>());
     Register(std::make_shared<AntidoteHerb>());
     Register(std::make_shared<MagicFlower>());
@@ -87,12 +85,11 @@ void ItemManager::Init()
     Register(std::make_shared<Sword>());
     Register(std::make_shared<Wand>());
 
-    // アイテム生成＆登録（完成品）
     Register(std::make_shared<RecoveryPotion>());
     Register(std::make_shared<AntidotePotion>());
     Register(std::make_shared<AntiParalysisPotion>());
     Register(std::make_shared<MagicPotion>());
-    Register(std::make_shared<Speed​​Potion>());
+    Register(std::make_shared<SpeedPotion>());
     Register(std::make_shared<PowerPotion>());
     Register(std::make_shared<DefensePotion>());
     Register(std::make_shared<FireSword>());
@@ -111,73 +108,84 @@ void ItemManager::Init()
     Register(std::make_shared<DarkWand>());
     Register(std::make_shared<Garbage>());
 
-    //アイテム生成＆登録(種子)
     Register(std::make_shared<RandomSeed>());
 
-
-    // allItems_に登録されたアイテムからカテゴリ別に振り分け
     for (auto& item : allItems_)
     {
-        if (auto material = std::dynamic_pointer_cast<MaterialItem>(item))
+        if (auto materialItem = std::dynamic_pointer_cast<MaterialItem>(item))
         {
-            materialItems_.push_back(material);
+            materialItems_.push_back(materialItem);
         }
-        else if (auto product = std::dynamic_pointer_cast<ProductItem>(item))
+        else if (auto productItem = std::dynamic_pointer_cast<ProductItem>(item))
         {
-            productItems_.push_back(product);
+            productItems_.push_back(productItem);
         }
-        else if (auto seed = std::dynamic_pointer_cast<SeedItem>(item))
+        else if (auto seedItem = std::dynamic_pointer_cast<SeedItem>(item))
         {
-            seedItems_.push_back(seed);
+            seedItems_.push_back(seedItem);
         }
     }
 
-    // 初期所持数設定（例）
-    AddQuantity(FindItemById("Herb"), 0); 
-    AddQuantity(FindItemById("AntidoteHerb"), 0);
-    AddQuantity(FindItemById("MagicFlower"), 0);
-    AddQuantity(FindItemById("ParalysisHerb"), 0);
-    AddQuantity(FindItemById("GaleHerb"), 0);
-    AddQuantity(FindItemById("DemonPowerHerb"), 0); 
-    AddQuantity(FindItemById("HardbodyHerb"), 0);
-    AddQuantity(FindItemById("Water"), 0); 
-    AddQuantity(FindItemById("IronOre"), 0);
-    AddQuantity(FindItemById("FireMagicStone"), 0);
-    AddQuantity(FindItemById("WaterMagicStone"), 0);
-    AddQuantity(FindItemById("WindMagicStone"), 0);
-    AddQuantity(FindItemById("EarthMagicStone"), 0);
-    AddQuantity(FindItemById("IceMagicStone"), 0);
-    AddQuantity(FindItemById("LightMagicStone"), 0);
-    AddQuantity(FindItemById("DarkMagicStone"), 0);
-    AddQuantity(FindItemById("Sword"), 0);
-    AddQuantity(FindItemById("Wand"), 0);
+    const int INITIAL_QUANTITY = 0;
 
-    // 完成品は0スタート
+    AddQuantity(FindItemById("Herb"), INITIAL_QUANTITY);
+    AddQuantity(FindItemById("AntidoteHerb"), INITIAL_QUANTITY);
+    AddQuantity(FindItemById("MagicFlower"), INITIAL_QUANTITY);
+    AddQuantity(FindItemById("ParalysisHerb"), INITIAL_QUANTITY);
+    AddQuantity(FindItemById("GaleHerb"), INITIAL_QUANTITY);
+    AddQuantity(FindItemById("DemonPowerHerb"), INITIAL_QUANTITY);
+    AddQuantity(FindItemById("HardbodyHerb"), INITIAL_QUANTITY);
+    AddQuantity(FindItemById("Water"), INITIAL_QUANTITY);
+    AddQuantity(FindItemById("IronOre"), INITIAL_QUANTITY);
+    AddQuantity(FindItemById("FireMagicStone"), INITIAL_QUANTITY);
+    AddQuantity(FindItemById("WaterMagicStone"), INITIAL_QUANTITY);
+    AddQuantity(FindItemById("WindMagicStone"), INITIAL_QUANTITY);
+    AddQuantity(FindItemById("EarthMagicStone"), INITIAL_QUANTITY);
+    AddQuantity(FindItemById("IceMagicStone"), INITIAL_QUANTITY);
+    AddQuantity(FindItemById("LightMagicStone"), INITIAL_QUANTITY);
+    AddQuantity(FindItemById("DarkMagicStone"), INITIAL_QUANTITY);
+    AddQuantity(FindItemById("Sword"), INITIAL_QUANTITY);
+    AddQuantity(FindItemById("Wand"), INITIAL_QUANTITY);
 }
 
 void ItemManager::AddItem(std::shared_ptr<ItemBase> item)
 {
-
+    (void)item;
 }
 
 std::shared_ptr<MaterialItem> ItemManager::GetMaterialItem(int index) const
 {
-    if (index >= 0 && index < (int)materialItems_.size())
+    const int MINIMUM_INDEX = 0;
+
+    if (index >= MINIMUM_INDEX && index < static_cast<int>(materialItems_.size()))
+    {
         return materialItems_[index];
+    }
+
     return nullptr;
 }
 
 std::shared_ptr<ProductItem> ItemManager::GetProductItem(int index) const
 {
-    if (index >= 0 && index < (int)productItems_.size())
+    const int MINIMUM_INDEX = 0;
+
+    if (index >= MINIMUM_INDEX && index < static_cast<int>(productItems_.size()))
+    {
         return productItems_[index];
+    }
+
     return nullptr;
 }
 
 std::shared_ptr<SeedItem> ItemManager::GetSeedItem(int index) const
 {
-    if (index >= 0 && index < (int)seedItems_.size())
+    const int MINIMUM_INDEX = 0;
+
+    if (index >= MINIMUM_INDEX && index < static_cast<int>(seedItems_.size()))
+    {
         return seedItems_[index];
+    }
+
     return nullptr;
 }
 
@@ -198,49 +206,56 @@ int ItemManager::GetSeedItemCount(void) const
 
 void ItemManager::AddQuantity(std::shared_ptr<ItemBase> item, int amount)
 {
-    if (item)
+    if (item != nullptr)
     {
         item->AddQuantity(amount);
 
-        // コールバック呼び出し
-        for (auto& cb : quantityChangeCallbacks_)
+        for (auto& callback : quantityChangeCallbacks_)
         {
-            cb(item->GetId(), amount);
+            callback(item->GetId(), amount);
         }
     }
 }
 
 void ItemManager::SubtractQuantity(std::shared_ptr<ItemBase> item, int amount)
 {
-    if (item)
+    if (item != nullptr)
     {
         item->SubtractQuantity(amount);
 
-        // コールバック呼び出し（減った量はマイナス値で通知）
-        for (auto& cb : quantityChangeCallbacks_)
+        const int INVERT_MULTIPLIER = -1;
+
+        for (auto& callback : quantityChangeCallbacks_)
         {
-            cb(item->GetId(), -amount);
+            callback(item->GetId(), amount * INVERT_MULTIPLIER);
         }
     }
 }
 
 void ItemManager::Register(std::shared_ptr<ItemBase> item)
 {
-    allItems_.push_back(item);
-    idItemMap_[item->GetId()] = item;
+    if (item != nullptr)
+    {
+        allItems_.push_back(item);
+        idItemMap_[item->GetId()] = item;
+    }
 }
 
 std::shared_ptr<ItemBase> ItemManager::FindItemById(const std::string& id)
 {
-    auto it = idItemMap_.find(id);
-    if (it != idItemMap_.end())
-        return it->second;
+    auto iterator = idItemMap_.find(id);
+
+    if (iterator != idItemMap_.end())
+    {
+        return iterator->second;
+    }
+
     return nullptr;
 }
 
-void ItemManager::RegisterQuantityChangeCallback(QuantityChangeCallback cb)
+void ItemManager::RegisterQuantityChangeCallback(QuantityChangeCallback callback)
 {
-    quantityChangeCallbacks_.push_back(cb);
+    quantityChangeCallbacks_.push_back(callback);
 }
 
 void ItemManager::Destroy(void)

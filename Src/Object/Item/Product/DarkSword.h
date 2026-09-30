@@ -2,9 +2,14 @@
 
 #include "ProductItem.h"
 
+/// @brief ダークソードのクラス
 class DarkSword : public ProductItem
 {
 public:
-	DarkSword(void);
-};
 
+    /// @brief コンストラクタ
+    DarkSword(void);
+
+    /// @brief デストラクタ
+    ~DarkSword(void) override = default;
+};
